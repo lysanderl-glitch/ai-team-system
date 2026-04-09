@@ -3,22 +3,19 @@
 ## 第一步：Clone仓库
 
 ```bash
-git clone https://github.com/lysanderl-glitch/obsidian-knowledge.git
-cd obsidian-knowledge
+git clone https://github.com/lysanderl-glitch/ai-team-system.git
+cd ai-team-system
 ```
 
 ## 第二步：运行安装
 
 ```bash
-cd agent-system/scripts
-bash setup.sh
+bash scripts/setup.sh
 ```
 
 安装脚本会：
 1. 检查Python依赖
 2. 安装Python包
-3. 同步Claude Code记忆
-4. 启动文件监控
 
 ## 第三步：启动Claude Code
 
@@ -54,25 +51,21 @@ claude
 ## 验证安装
 
 ```bash
-# 检查watcher是否运行
-pgrep -f hr_watcher.py
-
-# 检查HR同步
-cd agent-butler && python3 hr_base.py harness-stats
+# 检查HR知识库
+cd agent-butler
+python3 -c "from hr_base import load_org_config; print('Teams:', list(load_org_config()['teams'].keys()))"
 ```
 
 ## 常见问题
 
-### Q: hr_watcher启动失败
-A: 检查Python依赖 `pip3 install -r requirements.txt`
+### Q: Python依赖安装失败
+A: 运行 `pip3 install pyyaml watchdog --break-system-packages`
 
-### Q: Claude Code记忆未同步
-A: 运行 `bash scripts/sync-claude-memory.sh`
-
-### Q: 同步失败
-A: 检查Git配置 `git config --global user.email "your@email.com"`
+### Q: Git配置错误
+A: 运行 `git config --global user.email "your@email.com"`
 
 ## 下一步
 
 - 查看 [README.md](README.md) 了解完整架构
 - 查看 [docs/](docs/) 目录了解更多细节
+- 查看 [SETUP.md](SETUP.md) 详细安装配置

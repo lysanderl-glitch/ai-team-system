@@ -10,8 +10,9 @@ import re
 from pathlib import Path
 from typing import Optional, List, Dict
 
-# 路径配置
-OBS_KB_ROOT = Path("/home/ubuntu/knowledge-base/obs")
+# 路径配置 - 支持环境变量自定义，默认使用相对路径
+import os
+OBS_KB_ROOT = Path(os.environ.get("OBS_KB_ROOT", Path(__file__).parent.parent / "obs"))
 HR_KB_ROOT = OBS_KB_ROOT / "01-team-knowledge" / "HR"
 CONFIG_DIR = Path(__file__).parent / "config"
 ORG_CONFIG = CONFIG_DIR / "organization.yaml"

@@ -27,7 +27,7 @@ agents:
          - 能判断的 → 批准或要求修改
          - 无法判断的 → 如实上报用户
       4. 汇总执行结果，向用户汇报
-      5. 记录决策过程到 /home/ubuntu/agent-butler/logs/
+      5. 记录决策过程到 ./logs/ (可通过 DECISION_LOGS_DIR 环境变量自定义)
 
       决策原则：
       - 例行操作 → 自动批准

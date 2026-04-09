@@ -11,12 +11,14 @@ from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
 
-# 配置
-OBS_HR_PATH = Path("/home/ubuntu/knowledge-base/obs/01-team-knowledge/HR")
-OBS_MEMORY_PATH = Path("/home/ubuntu/knowledge-base/obs/00-system/claude-code-memory")
+# 配置 - 支持环境变量自定义，默认使用相对路径
+import os
+REPO_ROOT = Path(__file__).parent.parent
+OBS_HR_PATH = Path(os.environ.get("OBS_HR_PATH", REPO_ROOT / "obs" / "01-team-knowledge" / "HR"))
+OBS_MEMORY_PATH = Path(os.environ.get("OBS_MEMORY_PATH", REPO_ROOT / "obs" / "00-system" / "claude-code-memory"))
 CONFIG_DIR = Path(__file__).parent / "config"
 SYNC_SCRIPT = Path(__file__).parent / "hr_base.py"
-CLAUDE_MEMORY_SYNC = Path("/home/ubuntu/scripts/sync-claude-memory.sh")
+CLAUDE_MEMORY_SYNC = REPO_ROOT / "scripts" / "sync-claude-memory.sh"
 
 logging.basicConfig(
     level=logging.INFO,

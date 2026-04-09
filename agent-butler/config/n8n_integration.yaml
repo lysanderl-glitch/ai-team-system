@@ -63,5 +63,5 @@ notifications:
     enabled: false
     webhook_url: ""
 
-# 执行记录
-execution_log_dir: "/home/ubuntu/agent-butler/logs/n8n_executions"
+# 执行记录 - 路径可通过环境变量自定义
+execution_log_dir: "${N8N_LOGS_DIR:-./logs/n8n_executions}"

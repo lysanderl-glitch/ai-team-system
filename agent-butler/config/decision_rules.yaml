@@ -157,15 +157,15 @@ expert_mapping:
     - { keywords: ["知识库", "架构"], experts: ["obs_architecture_expert", "knowledge沉淀_expert"] }
     - { keywords: ["项目", "沉淀"], experts: ["knowledge沉淀_expert", "obs_architecture_expert"] }
 
-# 知识库配置
+# 知识库配置 - 路径可通过环境变量自定义
 knowledge_base:
-  decision_history_dir: "/home/ubuntu/agent-butler/logs/decisions"
-  discussion_history_dir: "/home/ubuntu/agent-butler/logs/phase2"
+  decision_history_dir: "${DECISION_LOGS_DIR:-./logs/decisions}"
+  discussion_history_dir: "${DISCUSSION_LOGS_DIR:-./logs/phase2}"
   max_similar_cases: 3
   similarity_threshold: 0.7
   # OBS知识库配置
   obs_knowledge_base:
-    root: "/home/ubuntu/knowledge-base/obs"
+    root: "${OBS_KB_ROOT:-../obs}"
     structures:
       - "01-team-knowledge"      # 团队知识
       - "02-project-knowledge"   # 项目知识

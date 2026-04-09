@@ -9,19 +9,44 @@
 ## 目录结构
 
 ```
-obsidian-knowledge/          # Git仓库根目录
-├── agent-system/           # Agent系统
-│   ├── agent-butler/       # 核心代码
-│   │   ├── hr_base.py      # HR知识库+决策体系
-│   │   ├── hr_watcher.py   # 文件监控
-│   │   └── config/         # 配置文件
-│   └── scripts/            # 执行脚本
-├── obs/                    # OBSidian知识库（Git管理）
-│   ├── 00-system/           # 系统配置
-│   │   └── claude-code-memory/  # Claude Code记忆
+ai-team-system/              # Git仓库根目录
+├── CLAUDE.md               # Claude Code项目配置
+├── README.md               # 项目说明
+├── QUICKSTART.md           # 快速开始
+├── SETUP.md                # 本文档
+├── LICENSE                 # MIT许可证
+│
+├── agent-butler/           # Agent系统核心
+│   ├── hr_base.py          # HR知识库+决策体系
+│   ├── hr_watcher.py       # 文件监控
+│   └── config/             # 配置文件
+│       ├── organization.yaml   # 团队结构配置
+│       ├── *_experts.yaml      # AI Agent定义
+│       └── ...
+│
+├── scripts/                # 执行脚本
+│   ├── setup.sh            # 一键安装
+│   ├── sync-all.sh         # 全量同步
+│   ├── sync-claude-memory.sh  # Claude记忆同步
+│   └── start-watcher.sh    # 启动文件监控
+│
+├── obs/                    # Obsidian知识库
 │   └── 01-team-knowledge/  # 团队知识
 │       └── HR/             # HR知识体系
-└── docs/                   # 文档
+│           ├── personnel/  # 人员卡片
+│           │   ├── butler/
+│           │   ├── rd/
+│           │   ├── obs/
+│           │   ├── graphify/
+│           │   ├── content_ops/
+│           │   ├── stock/
+│           │   └── lysander/
+│           └── positions/  # 岗位定义
+│
+└── docs/                   # 详细文档
+    ├── ARCHITECTURE.md     # 架构说明
+    ├── DECISION_SYSTEM.md  # 决策体系详解
+    └── CLAUDE_CODE.md      # Claude Code集成
 ```
 
 ## 安装步骤
@@ -39,26 +64,25 @@ git --version
 ### 2. Clone仓库
 
 ```bash
-git clone https://github.com/lysanderl-glitch/obsidian-knowledge.git
-cd obsidian-knowledge
+git clone https://github.com/lysanderl-glitch/ai-team-system.git
+cd ai-team-system
 ```
 
 ### 3. 运行安装脚本
 
 ```bash
-cd agent-system/scripts
-bash setup.sh
+bash scripts/setup.sh
 ```
 
 ### 4. 手动验证
 
 ```bash
-# 验证HR知识库同步
-cd ../../agent-butler
-python3 hr_base.py sync
+# 验证HR知识库加载
+cd agent-butler
+python3 -c "from hr_base import load_org_config; print('OK')"
 
-# 验证Claude Code记忆
-bash ../scripts/sync-claude-memory.sh
+# 验证团队配置
+python3 -c "from hr_base import load_org_config; c=load_org_config(); print('Teams:', list(c['teams'].keys()))"
 ```
 
 ### 5. 配置Git（必需）
@@ -74,30 +98,32 @@ git config --global user.email "your@email.com"
 
 参考: https://docs.anthropic.com/en/docs/claude-code/setup
 
-### 2. 配置项目记忆
-
-系统会自动同步OBSidian中的记忆到Claude Code：
-- 位置: `obs/00-system/claude-code-memory/`
-- 目标: `~/.claude/projects/-home-ubuntu/memory/`
-
-### 3. 使用方式
+### 2. 使用方式
 
 ```bash
 claude
 ```
 
-系统会自动加载记忆文件，包含角色定位和决策体系。
+Claude Code会自动加载项目根目录的 `CLAUDE.md` 文件。
 
 ## 团队配置
 
+### 团队列表
+
+| 团队 | 人数 | 职责 |
+|------|------|------|
+| butler | 8 | 数字化交付/IoT |
+| rd | 5 | 技术研发 |
+| obs | 4 | 知识管理 |
+| graphify | 4 | 智囊团/分析 |
+| content_ops | 4 | 内容运营 |
+| stock | 5 | 股票交易 |
+
 ### 添加新团队成员
 
-1. 在OBSidian中创建人员卡片:
-   ```
-   obs/01-team-knowledge/HR/personnel/{team}/{specialist_id}.md
-   ```
+1. 在 `obs/01-team-knowledge/HR/personnel/{team}/` 创建人员卡片
 
-2. 更新organization.yaml:
+2. 更新 `agent-butler/config/organization.yaml`:
    ```yaml
    teams:
      {team}:
@@ -105,51 +131,49 @@ claude
          - {specialist_id}
    ```
 
-3. 系统自动同步（hr_watcher监控中）
+3. 创建对应的 `agent-butler/config/{team}_experts.yaml` Agent定义
 
 ### 更新决策体系
 
-编辑 `obs/00-system/claude-code-memory/` 中的记忆文件，系统自动同步。
+编辑 `agent-butler/config/decision_rules.yaml`
 
 ## 文件监控
 
 ### 启动监控
 
 ```bash
-cd agent-system/agent-butler
+cd agent-butler
 bash ../scripts/start-watcher.sh
 ```
 
 ### 监控内容
 
-- `obs/01-team-knowledge/HR/personnel/*` → 自动同步到YAML
-- `obs/00-system/claude-code-memory/*` → 自动同步到.claude/
+- `obs/01-team-knowledge/HR/personnel/*` → 自动同步配置
 
 ### 查看日志
 
 ```bash
-tail -f agent-system/agent-butler/hr_watcher.log
+tail -f agent-butler/hr_watcher.log
 ```
 
 ## 同步命令
 
 | 命令 | 说明 |
 |------|------|
-| `bash scripts/sync-all.sh` | 同步所有（HR+YAML+记忆+Git） |
-| `python3 hr_base.py sync` | 仅同步HR知识库 |
-| `bash scripts/sync-claude-memory.sh` | 仅同步Claude记忆 |
+| `bash scripts/sync-all.sh` | 全量同步 |
+| `python3 agent-butler/hr_base.py sync` | 同步HR知识库 |
 
-## 博客发布
+## 环境变量（可选）
 
 ```bash
-bash agent-system/scripts/daily-publish.sh
-```
+# 自定义知识库路径（默认从 ../obs 相对路径查找）
+export OBS_KB_ROOT="/path/to/obs"
 
-或使用完整发布流程:
-```bash
-cd agent-butler
-python3 hr_base.py sync  # 同步
-npm run build            # 构建网站（需在website目录）
+# Claude API Key
+export ANTHROPIC_API_KEY="sk-..."
+
+# n8n服务器
+export N8N_URL="https://n8n.example.com"
 ```
 
 ## 故障排查
@@ -170,35 +194,8 @@ python3 --version
 python3 -c "import watchdog; print('ok')"
 ```
 
-### Git推送失败
-
-```bash
-# 检查远程仓库
-git remote -v
-
-# 重新设置（如果需要）
-git remote set-url origin https://github.com/lysanderl-glitch/obsidian-knowledge.git
-```
-
-## 目录权限
-
-确保以下目录有写权限：
-- `agent-butler/config/` - 写入YAML配置
-- `~/.claude/` - 写入记忆文件
-- `obs/` - Git操作
-
-## 环境变量（可选）
-
-```bash
-# Claude API Key
-export ANTHROPIC_API_KEY="sk-..."
-
-# n8n服务器
-export N8N_URL="https://n8n.lysander.bond"
-```
-
 ## 技术支持
 
 1. 查看日志: `tail -f agent-butler/hr_watcher.log`
-2. 查看GitHub Issues
+2. 查看 GitHub Issues
 3. 查看 `docs/` 目录的详细文档

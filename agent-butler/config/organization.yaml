@@ -341,8 +341,8 @@ task_routing:
 
 # OBS团队专有配置
 obs_team_config:
-  # 知识库根目录
-  knowledge_base_root: "/home/ubuntu/knowledge-base/obs"
+  # 知识库根目录 - 通过环境变量 OBS_KB_ROOT 设置，默认从 ../obs 相对路径查找
+  # knowledge_base_root: ${OBS_KB_ROOT:-../obs}
 
   # 知识库结构
   structure:
