@@ -1,0 +1,67 @@
+# n8n 集成配置
+# Phase 4: 管家决策 → n8n自动执行
+
+version: "1.0"
+
+# n8n Webhook 配置
+n8n:
+  base_url: "http://localhost:5678"
+  api_key: ""  # 如有API Key则填写
+
+# 触发规则
+triggers:
+  # L1自动执行：直接触发n8n
+  - decision_level: L1
+    action: "trigger_n8n"
+    webhook_url: "http://localhost:5678/webhook/butler-execute"
+
+  # L2管家批准：触发n8n，同时通知
+  - decision_level: L2
+    action: "trigger_n8n_notify"
+    webhook_url: "http://localhost:5678/webhook/butler-approved"
+    notify_channels: ["wechat", "slack"]
+
+  # L3上报用户：暂停，等待用户确认
+  - decision_level: L3
+    action: "wait_user_confirm"
+    notify_channels: ["wechat"]
+    wait_timeout: 7200  # 2小时超时
+
+# 任务类型到n8n工作流映射
+workflow_mapping:
+  "新项目需求分析":
+    workflow: "delivery-project-start"
+    description: "新项目启动流程"
+
+  "IoT施工启动":
+    workflow: "iot-construction-start"
+    description: "IoT施工启动流程"
+
+  "数字化建模验收":
+    workflow: "digital-modeling-review"
+    description: "数字化建模验收流程"
+
+  "PMO体系建设":
+    workflow: "pmo-establishment"
+    description: "PMO体系建设流程"
+
+  "UAT测试":
+    workflow: "uat-testing"
+    description: "UAT测试执行流程"
+
+  "IoT数据交付":
+    workflow: "iot-data-delivery"
+    description: "IoT数据交付流程"
+
+# 通知配置
+notifications:
+  wechat:
+    enabled: true
+    # 使用现有webhook
+
+  slack:
+    enabled: false
+    webhook_url: ""
+
+# 执行记录
+execution_log_dir: "/home/ubuntu/agent-butler/logs/n8n_executions"

@@ -1,0 +1,392 @@
+# OBS知识库结构配置
+# 版本: 1.0
+# 更新: 2026-04-08
+
+version: "1.0"
+
+# 知识库根目录
+knowledge_base_root: "/home/ubuntu/knowledge-base/obs"
+
+# 知识库结构定义
+structure:
+  # 一、团队知识 - 各Agent的能力和经验
+  team_knowledge:
+    name: "团队知识"
+    path: "01-team-knowledge"
+    description: "各Agent的专业能力、经验积累、协作模式"
+    subfolders:
+      agent_capabilities:
+        name: "Agent能力库"
+        description: "各专家Agent的核心能力定义和使用场景"
+        template: "agent_capability_template"
+        tags: ["agent", "capability", "团队知识"]
+
+      expert_profiles:
+        name: "专家画像"
+        description: "各领域专家的技能画像、专长、经验"
+        template: "expert_profile_template"
+        tags: ["expert", "profile", "团队知识"]
+
+      collaboration_patterns:
+        name: "协作模式"
+        description: "Agent间协作的标准流程和最佳实践"
+        template: "collaboration_template"
+        tags: ["collaboration", "pattern", "团队知识"]
+
+      lesson_learned:
+        name: "经验教训"
+        description: "项目执行中的经验总结和教训反思"
+        template: "lesson_template"
+        tags: ["lesson", "experience", "团队知识"]
+
+  # 二、项目知识 - 已交付项目的经验
+  project_knowledge:
+    name: "项目知识"
+    path: "02-project-knowledge"
+    description: "已交付项目的完整经验沉淀"
+    subfolders:
+      completed_projects:
+        name: "已交付项目"
+        description: "已完成项目的复盘报告和经验总结"
+        template: "project_knowledge_template"
+        tags: ["project", "completed", "项目知识"]
+        naming_convention: "YYYY-MM-DD_项目名称"
+
+      project_cases:
+        name: "项目案例库"
+        description: "典型项目案例的详细分析"
+        template: "case_study_template"
+        tags: ["case", "project", "项目知识"]
+
+      project_deliverables:
+        name: "交付物标准"
+        description: "各类项目交付物的标准模板和规范"
+        template: "deliverable_template"
+        tags: ["deliverable", "standard", "项目知识"]
+
+      client_feedback:
+        name: "客户反馈"
+        description: "客户验收意见、功能建议、满意度反馈"
+        tags: ["feedback", "client", "项目知识"]
+
+  # 三、流程知识 - 标准操作流程
+  process_knowledge:
+    name: "流程知识"
+    path: "03-process-knowledge"
+    description: "标准操作流程SOP和最佳实践"
+    subfolders:
+      standard_procedures:
+        name: "标准操作流程"
+        description: "SOP文档库"
+        template: "sop_template"
+        tags: ["sop", "procedure", "流程知识"]
+
+      decision_flows:
+        name: "决策流程"
+        description: "各类决策的标准流程和判断依据"
+        template: "decision_flow_template"
+        tags: ["decision", "flow", "流程知识"]
+
+      escalation_procedures:
+        name: "升级流程"
+        description: "问题升级和应急处理流程"
+        tags: ["escalation", "流程知识"]
+
+      quality_checklists:
+        name: "质量检查清单"
+        description: "各环节质量验证检查点"
+        template: "checklist_template"
+        tags: ["quality", "checklist", "流程知识"]
+
+  # 四、决策知识 - 历史决策记录和理由
+  decision_knowledge:
+    name: "决策知识"
+    path: "04-decision-knowledge"
+    description: "历史决策的记录、理由和效果追踪"
+    subfolders:
+      decision_records:
+        name: "决策记录"
+        description: "重大决策的完整记录"
+        template: "decision_record_template"
+        tags: ["decision", "record", "决策知识"]
+        naming_convention: "YYYYMMDD_Decision_关键词"
+
+      decision_rationale:
+        name: "决策依据"
+        description: "决策的背景、分析和判断依据"
+        tags: ["rationale", "decision", "决策知识"]
+
+      decision_outcomes:
+        name: "决策效果"
+        description: "决策执行后的效果追踪和评估"
+        tags: ["outcome", "decision", "决策知识"]
+
+      similar_decisions:
+        name: "相似决策参考"
+        description: "类似场景的历史决策案例"
+        tags: ["similar", "decision", "决策知识"]
+
+  # 五、行业知识 - 数字化建筑行业知识
+  industry_knowledge:
+    name: "行业知识"
+    path: "05-industry-knowledge"
+    description: "数字化建筑行业专业知识"
+    subfolders:
+      bim_knowledge:
+        name: "BIM知识"
+        description: "建筑信息模型相关知识"
+        tags: ["bim", "industry", "行业知识"]
+
+      iot_knowledge:
+        name: "IoT知识"
+        description: "物联网技术在建筑领域的应用"
+        tags: ["iot", "industry", "行业知识"]
+
+      digital_twin:
+        name: "数字孪生"
+        description: "建筑数字孪生技术和服务"
+        tags: ["digital-twin", "industry", "行业知识"]
+
+      regulations:
+        name: "行业规范"
+        description: "建筑数字化相关标准和规范"
+        tags: ["regulation", "standard", "行业知识"]
+
+      technology_trends:
+        name: "技术趋势"
+        description: "行业技术发展趋势研究"
+        tags: ["trend", "technology", "行业知识"]
+
+# 通用模板定义
+templates:
+  agent_capability_template:
+    name: "Agent能力模板"
+    fields:
+      - agent_name
+      - core_capabilities
+      - use_cases
+      - limitations
+      - related_agents
+
+  expert_profile_template:
+    name: "专家画像模板"
+    fields:
+      - expert_name
+      - domain
+      - skills
+      - certifications
+      - experience_years
+      - notable_projects
+
+  collaboration_template:
+    name: "协作模式模板"
+    fields:
+      - scenario
+      - participants
+      - steps
+      - success_criteria
+      - common_issues
+
+  lesson_template:
+    name: "经验教训模板"
+    fields:
+      - context
+      - what_went_well
+      - what_could_improve
+      - action_items
+      - tags
+
+  project_knowledge_template:
+    name: "项目知识模板"
+    fields:
+      - project_name
+      - client
+      - duration
+      - scope
+      - key_deliverables
+      - challenges_solved
+      - lessons_learned
+      - related_projects
+
+  case_study_template:
+    name: "案例分析模板"
+    fields:
+      - case_title
+      - background
+      - problem_statement
+      - solution_approach
+      - results
+      - key_insights
+
+  sop_template:
+    name: "SOP模板"
+    fields:
+      - procedure_name
+      - objective
+      - scope
+      - prerequisites
+      - steps
+      - quality_checkpoints
+      - troubleshooting
+
+  decision_record_template:
+    name: "决策记录模板"
+    fields:
+      - decision_date
+      - decision_title
+      - context
+      - options_considered
+      - rationale
+      - decision_made
+      - expected_outcome
+      - actual_outcome
+      - review_date
+
+  deliverable_template:
+    name: "交付物模板"
+    fields:
+      - deliverable_name
+      - type
+      - applicable_projects
+      - content_requirements
+      - quality_standards
+      - approval_process
+
+  checklist_template:
+    name: "检查清单模板"
+    fields:
+      - checklist_name
+      - applicable_phase
+      - check_items
+      - pass_criteria
+      - responsible_role
+
+# 标签体系
+tag_system:
+  # 层级标签定义
+  hierarchies:
+    - name: "知识类型"
+      prefix: "type"
+      values:
+        - concept        # 概念定义
+        - procedure     # 操作流程
+        - template      # 标准模板
+        - case          # 案例分析
+        - decision      # 决策记录
+        - reference     # 参考资料
+
+    - name: "知识状态"
+      prefix: "status"
+      values:
+        - draft         # 草稿
+        - review        # 待审核
+        - approved      # 已审核
+        - archived      # 归档
+
+    - name: "领域"
+      prefix: "domain"
+      values:
+        - butler        # Butler团队
+        - rd           # 研发团队
+        - obs          # OBS知识管理
+        - management   # 管理
+
+  # 标签使用规则
+  rules:
+    - "每篇笔记至少有一个type标签"
+    - "日期标签使用YYYY-MM-DD格式"
+    - "项目标签与项目知识库对应"
+    - "避免超过5个主要标签"
+
+# 链接规范
+link_conventions:
+  # MOC（内容地图）使用
+  moc_usage: |
+    每个知识领域根目录应有一个MOC文件作为索引：
+    - 命名：MOC_领域名.md
+    - 内容：该领域下所有重要笔记的链接列表
+    - 更新：笔记变动时同步更新
+
+  # 双向链接标准
+  backlink_standard: |
+    创建链接时使用 [[笔记名]] 格式
+    确保被链接的笔记有Backlinks段展示引用关系
+    链接文字使用描述性文字而非"这里"
+
+  # 块引用使用
+  block_reference: |
+    使用 ^blockref 引用特定内容块
+    便于在多处引用同一内容而保持同步
+
+# 元数据标准
+metadata_standard:
+  front_matter:
+    required:
+      - title
+      - created
+      - modified
+      - tags
+      - author
+
+    optional:
+      - related
+      - summary
+      - status
+
+  example: |
+    ---
+    title: "IoT设备选型标准"
+    created: 2026-04-08
+    modified: 2026-04-08
+    tags: [type/procedure, domain/iot, status/approved]
+    author: obs_architecture_expert
+    related: [[IoT施工验收标准]], [[传感器选型指南]]
+    summary: "IoT项目中设备选型的关键考虑因素和标准流程"
+    ---
+
+# 知识流转规则
+knowledge_flow:
+  # 入库流程
+  intake:
+    - step: "捕获"
+      agent: "knowledge沉淀_expert"
+      action: "从各种来源收集原始素材"
+    - step: "结构化"
+      agent: "obs_architecture_expert"
+      action: "确定存储位置和模板"
+    - step: "撰写"
+      agent: "knowledge沉淀_expert"
+      action: "按模板撰写/整理内容"
+    - step: "审核"
+      agent: "knowledge_quality_expert"
+      action: "质量检查和优化建议"
+    - step: "索引"
+      agent: "knowledge_search_expert"
+      action: "建立链接和索引"
+
+  # 更新流程
+  update:
+    - step: "识别"
+      agent: "knowledge_quality_expert"
+      action: "定期巡检发现需更新内容"
+    - step: "评估"
+      agent: "knowledge_quality_expert"
+      action: "评估更新范围和影响"
+    - step: "执行"
+      agent: "knowledge沉淀_expert"
+      action: "执行内容更新"
+    - step: "同步"
+      agent: "obs_architecture_expert"
+      action: "更新相关链接和MOC"
+
+  # 归档流程
+  archive:
+    - step: "评审"
+      agent: "knowledge_quality_expert"
+      action: "确认是否需要归档"
+    - step: "迁移"
+      agent: "obs_architecture_expert"
+      action: "移至归档目录并更新链接"
+    - step: "记录"
+      agent: "knowledge沉淀_expert"
+      action: "记录归档原因和去向"

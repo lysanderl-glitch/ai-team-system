@@ -1,0 +1,192 @@
+# Agent Butler 决策规则配置
+# 版本: 1.0
+# 更新: 2026-04-08
+
+version: "1.0"
+
+# 决策级别定义
+decision_levels:
+  L1:
+    name: "自动执行"
+    description: "例行操作、已有明确方案、低风险"
+    authority: "管家自动批准"
+    examples:
+      - "专家方案已完整验证"
+      - "日常任务分配"
+      - "标准流程执行"
+
+  L2:
+    name: "管家审批"
+    description: "需要确认的方案，管家判断通过即可执行"
+    authority: "管家审批后执行"
+    examples:
+      - "新方案首次执行"
+      - "跨专家协调方案"
+      - "风险可控的变更"
+
+  L3:
+    name: "上报用户"
+    description: "涉及风险、不可逆、重大资源投入"
+    authority: "必须上报用户决策"
+    examples:
+      - "预算投入 > 阈值"
+      - "组织架构调整"
+      - "合同/协议签署"
+      - "涉及多方利益"
+
+# 自动决策规则
+rules:
+  # PMO体系建设相关
+  - condition: "PMO体系建设 AND 第一阶段虚拟PMO"
+    level: L2
+    action: "批准执行"
+    reason: "虚拟起步，风险可控"
+
+  - condition: "PMO体系建设 AND (专职招聘 OR 预算投入)"
+    level: L3
+    action: "上报用户"
+    reason: "涉及不可逆资源决策"
+
+  # IoT数据交付相关
+  - condition: "IoT数据交付 AND (数据契约 OR 质量分级)"
+    level: L3
+    action: "上报用户"
+    reason: "影响全局的交付标准"
+
+  - condition: "IoT数据交付 AND 方案框架"
+    level: L2
+    action: "批准执行"
+    reason: "专家已达成共识"
+
+  # UAT测试相关
+  - condition: "UAT测试 AND (验收标准 OR 业主确认)"
+    level: L3
+    action: "上报用户"
+    reason: "涉及业主权益"
+
+  - condition: "UAT测试 AND (测试计划 OR 职责分工)"
+    level: L2
+    action: "批准执行"
+    reason: "内部执行事项"
+
+  # 通用规则
+  - condition: "涉及外部合同签署"
+    level: L3
+    action: "上报用户"
+    reason: "法律约束，不可逆"
+
+  - condition: "预算 > 100万"
+    level: L3
+    action: "上报用户"
+    reason: "重大财务决策"
+
+  - condition: "组织架构调整"
+    level: L3
+    action: "上报用户"
+    reason: "涉及人员利益"
+
+  - condition: "标准流程执行"
+    level: L1
+    action: "自动执行"
+    reason: "已有验证的流程"
+
+# 专家匹配规则
+expert_mapping:
+  keywords:
+    "培训":
+      - training_expert
+    "交付":
+      - delivery_expert
+    "PMO":
+      - pmo_expert
+    "IoT":
+      - iot_expert
+    "物联网":
+      - iot_expert
+    "传感器":
+      - iot_data_expert
+    "数据":
+      - iot_data_expert
+    "建模":
+      - digital_modeling_expert
+    "UAT":
+      - uat_test_expert
+    "测试":
+      - uat_test_expert
+    "验收":
+      - uat_test_expert
+    # OBS团队专家
+    "知识库":
+      - obs_architecture_expert
+    "OBS":
+      - obs_architecture_expert
+    "知识架构":
+      - obs_architecture_expert
+    "标签体系":
+      - obs_architecture_expert
+    "链接结构":
+      - obs_architecture_expert
+    "沉淀":
+      - knowledge沉淀_expert
+    "萃取":
+      - knowledge沉淀_expert
+    "SOP":
+      - knowledge沉淀_expert
+    "复盘":
+      - knowledge沉淀_expert
+    "检索":
+      - knowledge_search_expert
+    "搜索":
+      - knowledge_search_expert
+    "推荐":
+      - knowledge_search_expert
+    "质量":
+      - knowledge_quality_expert
+    "审核":
+      - knowledge_quality_expert
+    "去重":
+      - knowledge_quality_expert
+    "归档":
+      - knowledge_quality_expert
+
+  # 自动组合规则
+  auto_combinations:
+    - { keywords: ["IoT", "数据"], experts: ["iot_expert", "iot_data_expert"] }
+    - { keywords: ["PMO", "交付"], experts: ["pmo_expert", "delivery_expert"] }
+    - { keywords: ["UAT", "IoT"], experts: ["uat_test_expert", "iot_expert", "iot_data_expert"] }
+    - { keywords: ["知识库", "架构"], experts: ["obs_architecture_expert", "knowledge沉淀_expert"] }
+    - { keywords: ["项目", "沉淀"], experts: ["knowledge沉淀_expert", "obs_architecture_expert"] }
+
+# 知识库配置
+knowledge_base:
+  decision_history_dir: "/home/ubuntu/agent-butler/logs/decisions"
+  discussion_history_dir: "/home/ubuntu/agent-butler/logs/phase2"
+  max_similar_cases: 3
+  similarity_threshold: 0.7
+  # OBS知识库配置
+  obs_knowledge_base:
+    root: "/home/ubuntu/knowledge-base/obs"
+    structures:
+      - "01-team-knowledge"      # 团队知识
+      - "02-project-knowledge"   # 项目知识
+      - "03-process-knowledge"    # 流程知识
+      - "04-decision-knowledge"  # 决策知识
+      - "05-industry-knowledge"  # 行业知识
+
+# 权限配置
+permissions:
+  auto_approve:
+    - "专家方案审核"
+    - "任务分配"
+    - "标准流程执行"
+    - "内部协调"
+
+  require_confirmation:
+    - "方案重大变更"
+    - "跨阶段审批"
+    - "资源调配 > 50万"
+
+  require_user_decision:
+    - "L3规则匹配的事项"
+    - "新领域首次执行"
+    - "风险等级 High+"

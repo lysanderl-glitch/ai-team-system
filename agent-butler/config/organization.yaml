@@ -1,0 +1,376 @@
+# 组织架构配置
+# 版本: 1.1
+
+version: "1.1"
+
+# 公司/组织名称
+organization:
+  name: "数字化建筑运营管理公司"
+  ceo_role: "lysander"
+
+# 总裁（用户/最高决策者）
+president:
+  name: "总裁"
+  role: "公司最高决策者"
+  description: "公司的实际拥有者，Lysander CEO的老板"
+  reports_to: null  # 无上级
+
+# Lysander 配置
+lysander:
+  name: "lysander"
+  role: "公司CEO/管理者（AI分身）"
+  reports_to: "总裁（用户）"
+  goal: "统筹管理公司所有团队，协调资源，分解高层目标，汇总执行结果"
+  backstory: |
+    你是总裁（用户）的AI分身，担任公司CEO角色。
+
+    你的身份：
+    - 你是AI，不是真实的人类
+    - 总裁（用户）是你的老板，公司的最高决策者
+    - 你的职责是执行总裁的战略，管理日常运营
+
+    你的职责：
+    1. 理解总裁的战略目标和高层指令
+    2. 将目标分解为具体任务
+    3. 分派给合适的团队执行
+    4. 协调团队间协作
+    5. 汇总结果，向总裁汇报
+
+    你管理的团队：
+    - Graphify智囊团：第二大脑，深度分析和决策支持
+    - Butler团队：负责项目交付管理、培训体系、PMO建设、IoT施工等
+    - 研发团队：负责技术研发、系统建设
+    - OBS知识管理团队：负责知识沉淀、文档管理
+    - 内容运营团队：负责博客、微信等内容运营
+    - Stock股票项目：独立项目团队
+
+    决策原则：
+    - 例行管理 → 自动分解执行
+    - 需协调 → 找对应团队
+    - 需分析 → 召集智囊团
+    - 重大决策 → 上报总裁
+
+# 团队注册
+teams:
+  butler:
+    name: "Butler团队"
+    description: "项目交付管理专家团队"
+    specialists:
+      - delivery_expert      # 全球交付专家
+      - training_expert    # 培训专家
+      - pmo_expert         # PMO专家
+      - iot_expert         # IoT施工专家
+      - digital_modeling_expert  # 数字化建模专家
+      - iot_data_expert    # IoT数据专家
+      - uat_test_expert    # UAT测试专家
+    capabilities:
+      - 项目交付管理
+      - 培训体系设计
+      - PMO建设
+      - IoT施工规划
+      - 数字化建模
+      - UAT测试
+    access_key: "butler"  # 调用密钥
+
+  rd:
+    name: "研发团队"
+    description: "技术研发团队"
+    specialists:
+      - tech_lead              # 技术负责人
+      - backend_dev            # 后端开发工程师
+      - frontend_dev           # 前端开发工程师
+      - devops_engineer        # DevOps工程师
+      - qa_engineer            # QA测试工程师
+    capabilities:
+      - 系统开发
+      - 平台建设
+      - 技术架构
+    access_key: "rd"
+
+  obs:
+    name: "OBS知识管理团队"
+    description: "OBS知识管理团队 - 负责构建企业知识库，沉淀项目经验，优化知识流转"
+    specialists:
+      - obs_architecture_expert    # 知识架构专家 - 设计知识库架构、标签体系、链接结构
+      - knowledge_chandu_expert        # 知识沉淀专家 - 从项目/任务中提取知识、沉淀到知识库
+      - knowledge_search_expert    # 知识检索专家 - 快速检索、关联、推荐相关知识
+      - knowledge_quality_expert   # 知识质量专家 - 知识质量把控、去重、审核
+    capabilities:
+      - 知识库架构设计
+      - 标签体系规划
+      - 知识沉淀与萃取
+      - 文档标准化
+      - 知识检索与推荐
+      - 知识质量审核
+      - 去重与归档管理
+    access_key: "obs"
+
+  content_ops:
+    name: "内容运营团队"
+    description: "内容运营团队 - 管理博客和微信公众号内容生产与发布"
+    specialists:
+      - content_strategist        # 内容策划专家 - 选题规划、内容策划
+      - content_creator           # 内容创作专家 - 文章撰写、编辑优化
+      - visual_designer           # 视觉设计专家 - 配图、排版、视觉优化
+      - publishing_ops            # 发布运营专家 - 发布流程、排程、数据分析
+    capabilities:
+      - 内容策划与选题
+      - 文章撰写与编辑
+      - 视觉设计与排版
+      - 博客发布管理
+      - 微信公众号运营
+      - 内容数据分析
+    access_key: "content_ops"
+
+  graphify:
+    name: "Graphify智囊团"
+    description: "Graphify智囊团 - 你的第二大脑核心引擎，提供深度分析、关联发现、趋势洞察、决策支持"
+    specialists:
+      - strategist               # 战略分析师 - 深度分析、战略规划
+      - relation_discovery       # 关联发现专家 - 知识图谱、隐性关联
+      - trend_watcher           # 趋势洞察师 - 趋势识别、模式发现
+      - decision_advisor        # 决策顾问 - 决策支持、选项评估
+    capabilities:
+      - 战略分析
+      - 关联发现
+      - 趋势洞察
+      - 决策支持
+      - 知识图谱
+      - 预测分析
+    access_key: "graphify"
+
+  stock:
+    name: "股票交易系统项目"
+    description: "股票交易系统项目（趋势智选）- A股趋势交易指导系统，基于《炒股的智慧》策略"
+    project_type: "independent"  # 项目制，独立于现有研发团队
+    specialists:
+      - project_manager           # 项目经理 - 项目协调管理
+      - trader                   # 交易员Agent - 交易执行/回测/复盘
+      - quant_researcher          # 量化研究员 - 策略研究/指标开发
+      - frontend_dev              # 前端开发 - Vue3界面
+      - backend_dev              # 后端开发 - FastAPI服务
+    capabilities:
+      - A股趋势交易
+      - 量化策略研究
+      - 历史回测
+      - 模拟交易
+      - 仓位管理
+      - 止损监控
+    access_key: "stock"
+
+# 任务分解规则
+task_routing:
+  # 关键词匹配到团队
+  keywords:
+    "交付":
+      - butler
+    "项目":
+      - butler
+    "培训":
+      - butler
+    "PMO":
+      - butler
+    "IoT":
+      - butler
+    "建模":
+      - butler
+    "UAT":
+      - butler
+    "测试":
+      - butler
+    "研发":
+      - rd
+    "开发":
+      - rd
+    "系统":
+      - rd
+    # OBS团队关键词
+    "知识库":
+      - obs
+
+    # 研发团队关键词
+    "研发":
+      - rd
+    "开发":
+      - rd
+    "技术":
+      - rd
+    "架构":
+      - tech_lead
+    "后端":
+      - backend_dev
+    "前端":
+      - frontend_dev
+    "DevOps":
+      - devops_engineer
+    "测试":
+      - qa_engineer
+    "技术负责人":
+      - tech_lead
+    "部署":
+      - devops_engineer
+
+    # Graphify智囊团关键词
+    "分析":
+      - graphify
+    "战略":
+      - strategist
+    "关联":
+      - relation_discovery
+    "趋势":
+      - trend_watcher
+    "预测":
+      - trend_watcher
+    "决策":
+      - decision_advisor
+    "建议":
+      - decision_advisor
+    "洞察":
+      - graphify
+    "图谱":
+      - relation_discovery
+    "第二大脑":
+      - graphify
+    "帮我思考":
+      - graphify
+
+    # 股票交易系统关键词
+    "股票":
+      - stock
+    "炒股":
+      - stock
+    "交易":
+      - trader
+    "持仓":
+      - trader
+    "止损":
+      - trader
+    "回测":
+      - trader
+    "复盘":
+      - trader
+    "量化":
+      - quant_researcher
+    "指标":
+      - quant_researcher
+    "K线":
+      - frontend_dev
+    "前端":
+      - frontend_dev
+    "后端":
+      - backend_dev
+
+    "OBS":
+      - obs
+    "知识架构":
+      - obs_architecture_expert
+    "标签":
+      - obs_architecture_expert
+    "链接":
+      - obs_architecture_expert
+    "MOC":
+      - obs_architecture_expert
+    "沉淀":
+      - knowledge_chandu_expert
+    "萃取":
+      - knowledge_chandu_expert
+    "经验总结":
+      - knowledge_chandu_expert
+    "复盘":
+      - knowledge_chandu_expert
+    "SOP":
+      - knowledge_chandu_expert
+    "流程文档":
+      - knowledge_chandu_expert
+    "检索":
+      - knowledge_search_expert
+    "搜索":
+      - knowledge_search_expert
+    "查找":
+      - knowledge_search_expert
+    "推荐":
+      - knowledge_search_expert
+    "关联":
+      - knowledge_search_expert
+    "质量":
+      - knowledge_quality_expert
+    "审核":
+      - knowledge_quality_expert
+    "去重":
+      - knowledge_quality_expert
+    "归档":
+      - knowledge_quality_expert
+    "过时":
+      - knowledge_quality_expert
+
+  # 自动组合规则
+  auto_combinations:
+    # 知识库建设组合
+    - { keywords: ["知识库", "架构"], experts: ["obs_architecture_expert", "knowledge_chandu_expert"] }
+    - { keywords: ["知识库", "质量"], experts: ["knowledge_quality_expert", "knowledge_chandu_expert"] }
+
+    # 知识沉淀组合
+    - { keywords: ["项目", "沉淀"], experts: ["knowledge_chandu_expert", "obs_architecture_expert"] }
+    - { keywords: ["复盘", "总结"], experts: ["knowledge_chandu_expert", "knowledge_quality_expert"] }
+
+    # 知识检索组合
+    - { keywords: ["检索", "质量"], experts: ["knowledge_search_expert", "knowledge_quality_expert"] }
+
+    # IoT数据交付相关
+    - { keywords: ["IoT", "数据"], experts: ["iot_expert", "iot_data_expert"] }
+    - { keywords: ["PMO", "交付"], experts: ["pmo_expert", "delivery_expert"] }
+    - { keywords: ["UAT", "IoT"], experts: ["uat_test_expert", "iot_expert", "iot_data_expert"] }
+
+    # 研发团队组合
+    - { keywords: ["新功能", "开发"], experts: ["tech_lead", "backend_dev", "frontend_dev"] }
+    - { keywords: ["网站", "部署"], experts: ["frontend_dev", "devops_engineer", "qa_engineer"] }
+    - { keywords: ["API", "开发"], experts: ["tech_lead", "backend_dev"] }
+    - { keywords: ["IoT平台", "研发"], experts: ["tech_lead", "backend_dev", "devops_engineer"] }
+
+    # Graphify智囊团组合
+    - { keywords: ["深度分析", "战略"], experts: ["strategist", "relation_discovery", "trend_watcher"] }
+    - { keywords: ["决策", "建议"], experts: ["decision_advisor", "strategist"] }
+    - { keywords: ["知识图谱", "关联"], experts: ["relation_discovery", "trend_watcher"] }
+    - { keywords: ["帮我思考", "第二大脑"], experts: ["strategist", "relation_discovery", "decision_advisor"] }
+
+    # 股票交易系统项目组合
+    - { keywords: ["股票", "交易"], experts: ["trader", "quant_researcher"] }
+    - { keywords: ["每日复盘"], experts: ["trader", "quant_researcher", "project_manager"] }
+    - { keywords: ["回测", "分析"], experts: ["quant_researcher", "backend_dev", "trader"] }
+    - { keywords: ["炒股", "策略"], experts: ["trader", "quant_researcher"] }
+
+# OBS团队专有配置
+obs_team_config:
+  # 知识库根目录
+  knowledge_base_root: "/home/ubuntu/knowledge-base/obs"
+
+  # 知识库结构
+  structure:
+    - "01-team-knowledge"      # 团队知识
+    - "02-project-knowledge"   # 项目知识
+    - "03-process-knowledge"    # 流程知识
+    - "04-decision-knowledge"  # 决策知识
+    - "05-industry-knowledge"  # 行业知识
+
+  # OBS团队内部协作流程
+  internal_workflow:
+    knowledge_intake:
+      description: "知识入库流程"
+      sequence:
+        - obs_architecture_expert  # 1. 设计存储结构
+        - knowledge_chandu_expert      # 2. 执行沉淀
+        - knowledge_quality_expert # 3. 质量审核
+        - knowledge_search_expert  # 4. 建立索引
+
+    knowledge_query:
+      description: "知识查询流程"
+      sequence:
+        - knowledge_search_expert  # 1. 执行检索
+        - knowledge_quality_expert # 2. 结果校验（如需要）
+
+    knowledge_audit:
+      description: "知识审计流程"
+      sequence:
+        - knowledge_quality_expert  # 1. 执行审计
+        - obs_architecture_expert  # 2. 结构优化
+        - knowledge_chandu_expert       # 3. 补充缺失
