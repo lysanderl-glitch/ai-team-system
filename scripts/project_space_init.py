@@ -8,9 +8,13 @@ Notion 项目空间自动生成脚本
   - 动态查找关联的4个台账数据库并生成链接
   - 输出创建的页面 URL 供 n8n 工作流 WF-01 捕获
 
-调用方式：
-  命令行：python project_space_init.py --name "项目名" --code "PRJ-001" --client "客户" --pm "张三" --type "数字化交付"
-  n8n：通过 Execute Command 节点调用，解析 stdout 中的 JSON 输出
+调用方式（两种模式）：
+  --mode payload（推荐/默认）：输出 Notion API payload JSON，由 n8n HTTP Request 节点执行
+    python project_space_init.py --name "项目名" --code "PRJ-001" --client "客户" --pm "张三"
+    n8n 接收 stdout JSON → HTTP Request (Notion OAuth) → POST /pages
+
+  --mode execute（传统，需 NOTION_TOKEN 环境变量）：脚本直接调用 Notion API
+    NOTION_TOKEN=secret_xxx python project_space_init.py --name "项目名" --code "PRJ-001" --client "客户" --pm "张三"
 
 由 janus_pmo_auto 负责运维
 """
@@ -470,27 +474,114 @@ def build_project_page_children(
 # ---------------------------------------------------------------------------
 
 
+def build_notion_payload(
+    project_name: str,
+    project_code: str,
+    client_name: str,
+    pm_name: str,
+    project_type: str,
+    ledger_dbs: Optional[dict] = None,
+) -> dict:
+    """
+    构建 Notion 页面创建 payload（不调用 API）。
+    供 n8n HTTP Request 节点直接使用。
+
+    返回:
+        dict: {
+            "success": True,
+            "notion_api_url": "https://api.notion.com/v1/pages",
+            "notion_api_method": "POST",
+            "payload": {...},          # 首批 payload（≤100块）
+            "append_batches": [...],   # 追加批次列表，每项为 {"url": ..., "body": ...}
+            "page_title": ...,
+        }
+    """
+    MAX_CHILDREN_PER_REQUEST = 100
+    page_title = f"【{project_code}】{project_name}"
+
+    if ledger_dbs is None:
+        ledger_dbs = {k: {"id": "", "url": "", "title": f"{v}（待关联）"}
+                      for k, v in LEDGER_DB_NAMES.items()}
+
+    children = build_project_page_children(
+        project_name=project_name,
+        project_code=project_code,
+        client_name=client_name,
+        pm_name=pm_name,
+        project_type=project_type,
+        ledger_dbs=ledger_dbs,
+    )
+
+    first_batch = children[:MAX_CHILDREN_PER_REQUEST]
+    remaining = children[MAX_CHILDREN_PER_REQUEST:]
+
+    create_payload = {
+        "parent": {"page_id": PMO_PARENT_PAGE_ID},
+        "icon": {"type": "emoji", "emoji": "🏗️"},
+        "properties": {
+            "title": [{"type": "text", "text": {"content": page_title}}]
+        },
+        "children": first_batch,
+    }
+
+    # 追加批次：n8n 在创建页面后，用返回的 page_id 依次调用
+    append_batches = []
+    for i in range(0, len(remaining), MAX_CHILDREN_PER_REQUEST):
+        batch = remaining[i: i + MAX_CHILDREN_PER_REQUEST]
+        append_batches.append({
+            "notion_api_method": "PATCH",
+            "notion_api_url_template": "https://api.notion.com/v1/blocks/{page_id}/children",
+            "body": {"children": batch},
+        })
+
+    return {
+        "success": True,
+        "mode": "payload",
+        "notion_api_url": "https://api.notion.com/v1/pages",
+        "notion_api_method": "POST",
+        "payload": create_payload,
+        "append_batches": append_batches,
+        "page_title": page_title,
+        "project_code": project_code,
+        "project_name": project_name,
+        "pmo_parent_page_id": PMO_PARENT_PAGE_ID,
+    }
+
+
 def create_project_space(
     project_name: str,
     project_code: str,
     client_name: str,
     pm_name: str,
     project_type: str,
+    mode: str = "payload",
 ) -> dict:
     """
     创建 Notion 项目空间主页。
 
+    mode="payload"（默认）: 返回 Notion API payload，由 n8n 执行实际调用
+    mode="execute": 脚本直接调用 Notion API（需要 NOTION_TOKEN 环境变量）
+
     返回:
-        dict: {"success": True, "page_id": ..., "page_url": ...} 或 {"success": False, "error": ...}
+        dict: {"success": True, ...} 或 {"success": False, "error": ...}
     """
-    # 1. 获取 Notion Token
+    if mode == "payload":
+        return build_notion_payload(
+            project_name=project_name,
+            project_code=project_code,
+            client_name=client_name,
+            pm_name=pm_name,
+            project_type=project_type,
+        )
+
+    # mode == "execute": 直接调用 Notion API（需要 NOTION_TOKEN）
     token = os.environ.get("NOTION_TOKEN")
     if not token:
-        return {"success": False, "error": "环境变量 NOTION_TOKEN 未设置"}
+        return {"success": False, "error": "execute模式需要环境变量 NOTION_TOKEN，或改用默认的 payload 模式"}
 
     client = NotionClient(token)
 
-    # 2. 验证父页面可访问
+    # 验证父页面可访问
     try:
         client._request("GET", f"pages/{PMO_PARENT_PAGE_ID}")
         logger.info("父页面验证通过: PMO自动化管理体系")
@@ -500,7 +591,7 @@ def create_project_space(
             "error": f"无法访问 PMO 父页面 ({PMO_PARENT_PAGE_ID}): {e}",
         }
 
-    # 3. 检查是否已存在同名项目页面（防重复创建）
+    # 检查是否已存在同名项目页面（防重复创建）
     existing = client.search(f"{project_code} {project_name}", filter_type="page")
     for page in existing:
         title_parts = page.get("properties", {}).get("title", {}).get("title", [])
@@ -515,14 +606,12 @@ def create_project_space(
                 "existing_page_id": page["id"],
             }
 
-    # 4. 查找关联台账数据库
+    # 查找关联台账数据库
     logger.info("正在查找关联台账数据库...")
     ledger_dbs = find_ledger_databases(client, project_name)
 
-    # 5. 构建页面内容
-    logger.info("正在构建项目主页内容...")
-    page_title = f"【{project_code}】{project_name}"
-    children = build_project_page_children(
+    # 构建 payload 并执行
+    result = build_notion_payload(
         project_name=project_name,
         project_code=project_code,
         client_name=client_name,
@@ -530,20 +619,13 @@ def create_project_space(
         project_type=project_type,
         ledger_dbs=ledger_dbs,
     )
+    page_title = result["page_title"]
+    create_payload = result["payload"]
+    append_batches = result["append_batches"]
 
-    # 6. Notion API 限制每次最多100个子块，分批创建
-    MAX_CHILDREN_PER_REQUEST = 100
-    first_batch = children[:MAX_CHILDREN_PER_REQUEST]
-    remaining = children[MAX_CHILDREN_PER_REQUEST:]
-
-    logger.info(f"正在创建项目页面: {page_title} (共{len(children)}个块)")
+    logger.info(f"正在创建项目页面: {page_title}")
     try:
-        page = client.create_page(
-            parent_id=PMO_PARENT_PAGE_ID,
-            title=page_title,
-            children=first_batch,
-            icon="🏗️",
-        )
+        page = client._request("POST", "pages", create_payload)
     except NotionAPIError as e:
         return {"success": False, "error": f"创建项目页面失败: {e}"}
 
@@ -551,30 +633,21 @@ def create_project_space(
     page_url = page.get("url", "")
     logger.info(f"项目页面创建成功: {page_url}")
 
-    # 追加剩余块（如有）
-    if remaining:
-        for i in range(0, len(remaining), MAX_CHILDREN_PER_REQUEST):
-            batch = remaining[i : i + MAX_CHILDREN_PER_REQUEST]
-            try:
-                client._request(
-                    "PATCH",
-                    f"blocks/{page_id}/children",
-                    {"children": batch},
-                )
-            except NotionAPIError as e:
-                logger.error(f"追加第{i // MAX_CHILDREN_PER_REQUEST + 2}批块失败: {e}")
+    # 追加剩余块
+    for batch_info in append_batches:
+        try:
+            client._request("PATCH", f"blocks/{page_id}/children", batch_info["body"])
+        except NotionAPIError as e:
+            logger.error(f"追加块失败: {e}")
 
-    # 7. 返回结果
     return {
         "success": True,
+        "mode": "execute",
         "page_id": page_id,
         "page_url": page_url,
         "page_title": page_title,
         "project_code": project_code,
         "project_name": project_name,
-        "ledger_dbs_found": {
-            k: bool(v.get("id")) for k, v in ledger_dbs.items()
-        },
     }
 
 
@@ -588,9 +661,11 @@ def parse_args() -> argparse.Namespace:
         description="Janus PMO - Notion 项目空间自动生成工具",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-示例:
-  python project_space_init.py --name "XX大厦数字化" --code "PRJ-2026-001" --client "XX集团" --pm "张三" --type "数字化交付"
-  python project_space_init.py -n "智慧园区" -c "PRJ-2026-002" -cl "YY科技" -p "李四" -t "IoT集成"
+示例（payload模式，n8n HTTP Request执行API调用，无需NOTION_TOKEN）：
+  python project_space_init.py --name "XX大厦数字化" --code "PRJ-2026-001" --client "XX集团" --pm "张三"
+
+示例（execute模式，脚本直接调用Notion API，需要NOTION_TOKEN）：
+  python project_space_init.py --name "XX大厦数字化" --code "PRJ-2026-001" --client "XX集团" --pm "张三" --mode execute
         """,
     )
     parser.add_argument("--name", "-n", required=True, help="项目名称")
@@ -598,6 +673,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--client", "-cl", required=True, help="客户名称")
     parser.add_argument("--pm", "-p", required=True, help="项目经理姓名")
     parser.add_argument("--type", "-t", default="数字化交付", help="项目类型 (默认: 数字化交付)")
+    parser.add_argument(
+        "--mode", "-m",
+        choices=["payload", "execute"],
+        default="payload",
+        help="payload: 输出Notion API payload供n8n执行（默认，无需Token）; execute: 脚本直接调用Notion API（需NOTION_TOKEN）",
+    )
     return parser.parse_args()
 
 
@@ -610,6 +691,7 @@ def main():
         client_name=args.client,
         pm_name=args.pm,
         project_type=args.type,
+        mode=args.mode,
     )
 
     # 输出 JSON 到 stdout（供 n8n 捕获）

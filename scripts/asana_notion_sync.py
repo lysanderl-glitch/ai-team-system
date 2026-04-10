@@ -10,6 +10,15 @@ Asana↔Notion 进度看板同步脚本
   - 健康度 = 基于逾期任务比例自动判定（绿/黄/红）
   - 风险摘要 = 逾期任务top3摘要
 
+调用模式：
+  --mode payload（推荐/默认）：
+    - 从Notion查询项目列表（由n8n先行查询并传入，或使用NOTION_TOKEN查询）
+    - 从Asana拉取进度数据
+    - 输出 Notion 更新 payload JSON，由 n8n HTTP Request 节点执行更新
+    - ASANA_TOKEN 仍需设置，Notion写操作由n8n完成
+
+  --mode execute：脚本同时负责读写Notion（需 NOTION_TOKEN + ASANA_TOKEN）
+
 由 janus_pmo_auto 负责运维
 """
 import sys
@@ -147,8 +156,27 @@ def query_notion_projects():
     return resp.json().get("results", [])
 
 
-def sync_project(notion_page):
-    """同步单个项目"""
+def build_notion_update_payload(page_id: str, progress_data: dict) -> dict:
+    """构建 Notion 页面更新 payload（不调用 API）"""
+    return {
+        "notion_api_url": f"https://api.notion.com/v1/pages/{page_id}",
+        "notion_api_method": "PATCH",
+        "body": {
+            "properties": {
+                "进度%": {"number": round(progress_data["progress"], 2)},
+                "健康度": {"select": {"name": progress_data["health"]}},
+                "当前里程碑": {"rich_text": [{"text": {"content": progress_data["milestone"][:100]}}]},
+                "风险摘要": {"rich_text": [{"text": {"content": progress_data["risk_summary"][:200]}}]},
+            }
+        },
+    }
+
+
+def process_project(notion_page: dict) -> dict:
+    """
+    处理单个项目：从Asana拉取进度，返回结果（不执行Notion更新）。
+    返回 {"page_id": ..., "project_name": ..., "progress": ..., "notion_payload": ...}
+    """
     props = notion_page.get("properties", {})
     project_name = ""
     title_prop = props.get("项目名称", {}).get("title", [])
@@ -159,11 +187,8 @@ def sync_project(notion_page):
     asana_url = asana_link_prop.get("url", "")
 
     if not asana_url:
-        print(f"  ⚠️ {project_name}: 无Asana项目链接，跳过")
-        return False
+        return {"project_name": project_name, "skipped": True, "reason": "无Asana项目链接"}
 
-    # 从URL提取project GID
-    # 格式: https://app.asana.com/0/{project_gid}/...
     parts = asana_url.rstrip("/").split("/")
     project_gid = None
     for i, part in enumerate(parts):
@@ -172,53 +197,103 @@ def sync_project(notion_page):
             break
 
     if not project_gid:
-        print(f"  ⚠️ {project_name}: 无法解析Asana项目ID，跳过")
-        return False
+        return {"project_name": project_name, "skipped": True, "reason": "无法解析Asana项目ID"}
 
-    print(f"  📊 {project_name}: 正在同步...")
     tasks = get_asana_project_tasks(project_gid)
     progress = calculate_progress(tasks)
+    notion_payload = build_notion_update_payload(notion_page["id"], progress)
 
-    print(f"     进度: {progress['progress']:.0%} | 健康: {progress['health']} | 里程碑: {progress['milestone']}")
-    if progress["risk_summary"] != "无逾期风险":
-        print(f"     风险: {progress['risk_summary']}")
-
-    update_notion_project(notion_page["id"], progress)
-    print(f"     ✅ Notion已更新")
-    return True
+    return {
+        "page_id": notion_page["id"],
+        "project_name": project_name,
+        "progress": progress,
+        "notion_payload": notion_payload,
+        "skipped": False,
+    }
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Asana → Notion 进度同步")
+    parser.add_argument(
+        "--mode", choices=["payload", "execute"], default="payload",
+        help="payload: 输出Notion更新payload供n8n执行（默认）; execute: 脚本直接更新Notion（需NOTION_TOKEN）",
+    )
+    # payload模式可接收n8n传入的Notion项目列表JSON（避免脚本查询Notion）
+    parser.add_argument("--projects-json", help="JSON字符串：Notion项目列表（payload模式可选，不传则自动查询）")
+    args = parser.parse_args()
+
     if not ASANA_TOKEN:
-        print("❌ 未设置 ASANA_TOKEN 环境变量")
-        print("   设置方式: export ASANA_TOKEN=your_token")
-        sys.exit(1)
-    if not NOTION_TOKEN:
-        print("❌ 未设置 NOTION_TOKEN 环境变量")
-        print("   设置方式: export NOTION_TOKEN=your_token")
+        print(json.dumps({"success": False, "error": "未设置 ASANA_TOKEN 环境变量"}, ensure_ascii=False))
         sys.exit(1)
 
-    print("🔄 Asana → Notion 进度同步")
-    print("=" * 60)
+    if args.mode == "execute" and not NOTION_TOKEN:
+        print(json.dumps({"success": False, "error": "execute模式需要 NOTION_TOKEN 环境变量"}, ensure_ascii=False))
+        sys.exit(1)
 
-    projects = query_notion_projects()
-    print(f"📁 找到 {len(projects)} 个交付中项目\n")
+    # 获取项目列表
+    if args.projects_json:
+        projects = json.loads(args.projects_json)
+    else:
+        if not NOTION_TOKEN:
+            print(json.dumps({
+                "success": False,
+                "error": "未提供 --projects-json 且 NOTION_TOKEN 未设置，无法查询项目列表"
+            }, ensure_ascii=False))
+            sys.exit(1)
+        projects = query_notion_projects()
 
-    synced = 0
+    results = []
     for project in projects:
         try:
-            if sync_project(project):
-                synced += 1
+            result = process_project(project)
+            results.append(result)
         except Exception as e:
             props = project.get("properties", {})
             name = ""
             title_prop = props.get("项目名称", {}).get("title", [])
             if title_prop:
                 name = title_prop[0].get("text", {}).get("content", "")
-            print(f"  ❌ {name}: 同步失败 - {e}")
+            results.append({"project_name": name, "skipped": True, "reason": str(e)})
 
-    print(f"\n{'=' * 60}")
-    print(f"同步完成。成功 {synced}/{len(projects)} 个项目。")
+    if args.mode == "payload":
+        # 输出 payload 列表供 n8n 执行
+        notion_updates = [r["notion_payload"] for r in results if not r.get("skipped")]
+        output = {
+            "success": True,
+            "mode": "payload",
+            "total": len(projects),
+            "to_update": len(notion_updates),
+            "skipped": len(projects) - len(notion_updates),
+            "notion_updates": notion_updates,  # n8n 遍历此列表执行 HTTP Request
+            "summary": [
+                {"project": r["project_name"], "skipped": r.get("skipped", False),
+                 "progress": r.get("progress", {}).get("progress", 0) if not r.get("skipped") else None}
+                for r in results
+            ],
+        }
+        print(json.dumps(output, ensure_ascii=False, indent=2))
+        return 0
+
+    # execute 模式：直接更新 Notion
+    synced = 0
+    for result in results:
+        if result.get("skipped"):
+            print(f"  ⚠️ {result['project_name']}: {result.get('reason', '跳过')}")
+            continue
+        try:
+            update_notion_project(result["page_id"], result["progress"])
+            print(f"  ✅ {result['project_name']}: 进度{result['progress']['progress']:.0%} 已同步")
+            synced += 1
+        except Exception as e:
+            print(f"  ❌ {result['project_name']}: Notion更新失败 - {e}")
+
+    print(json.dumps({
+        "success": True,
+        "mode": "execute",
+        "synced": synced,
+        "total": len(projects),
+    }, ensure_ascii=False))
     return 0
 
 
