@@ -1,12 +1,16 @@
 ---
-title: Harness Engineering 方法论 — Lysander AI 团队实践
+title: Synapse 方法论 — Harness Engineering 实践指南
 date: 2026-04-10
 author: Lysander AI Team (Graphify智囊团)
-tags: [Harness Engineering, 方法论, AI Agent, Context Engineering]
-description: 基于行业标准的Harness Engineering方法论，映射到Lysander AI团队的实际实践
+tags: [Synapse, Harness Engineering, 方法论, AI Agent, Context Engineering]
+description: Synapse 体系的核心方法论，基于 Harness Engineering 行业标准，融合 OBS 第二大脑与 Multi-Agent 协作
 ---
 
-# Harness Engineering 方法论
+# Synapse 方法论 — Harness Engineering 实践指南
+
+> **Synapse** 是 Janus Digital 的 AI 协作运营体系。
+> 命名源自"突触"— 神经元之间传递信号的关键节点，
+> 象征知识、决策、执行之间的信息流转枢纽。
 
 ## 什么是 Harness Engineering
 
@@ -58,11 +62,11 @@ Agent = Model + Harness
 
 ---
 
-## Lysander 团队的 Harness 架构
+## Synapse 架构全景
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Harness Architecture                      │
+│                    Synapse Architecture                       │
 │                                                              │
 │  ┌──────────── Guides (前馈) ────────────┐                  │
 │  │                                        │                  │

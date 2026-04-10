@@ -2,21 +2,18 @@
 """
 generate-daily-intelligence.py — 每日AI技术情报HTML报告生成器
 
-将 Markdown 格式的情报报告转为品牌化 HTML，存储到 obs/daily-intelligence/
+视觉设计参考：https://www.janusd.com/
+品牌色：Gold #FCAD2A / Deep Blue #013A7D / Cyan #028CDC / White #FFFFFF
 
 Usage:
   python scripts/generate-daily-intelligence.py report.md
   python scripts/generate-daily-intelligence.py report.md --open
   python scripts/generate-daily-intelligence.py report.md --notify
-
-输入: Markdown 文件 (由 Claude Code 定时任务生成)
-输出: obs/daily-intelligence/YYYY-MM-DD-daily-ai-intelligence.html
 """
 
 import sys
 import re
 import argparse
-import subprocess
 from pathlib import Path
 from datetime import datetime
 
@@ -36,17 +33,20 @@ except ImportError:
     HAS_PYGMENTS = False
 
 
-# ── 品牌色彩 ──────────────────────────────────────────────────────────────────
-COLOR_BRAND         = "#1890ff"
-COLOR_ACCENT        = "#722ed1"   # 情报报告专用强调色(紫色)
-COLOR_TEXT          = "#333333"
-COLOR_MUTED         = "#666666"
-COLOR_BG_CODE       = "#282c34"
-COLOR_FG_CODE       = "#abb2bf"
-COLOR_BG_QUOTE      = "#f0f7ff"
-COLOR_SUCCESS       = "#52c41a"
-COLOR_WARNING       = "#faad14"
-COLOR_DANGER        = "#f5222d"
+# ── Janus Brand Colors (from janusd.com logo SVG) ───────────────────────────
+GOLD        = "#FCAD2A"
+DEEP_BLUE   = "#013A7D"
+CYAN        = "#028CDC"
+DARK_BG     = "#0A1628"
+DARK_CARD   = "#111D33"
+WHITE       = "#FFFFFF"
+LIGHT_GRAY  = "#F7F8FA"
+TEXT_PRIMARY = "#1A1A2E"
+TEXT_SECONDARY = "#5A6072"
+TEXT_MUTED   = "#8E95A7"
+BORDER      = "#E2E6EE"
+CODE_BG     = "#0D1B2A"
+CODE_FG     = "#E0E6F0"
 
 
 def _pygments_css() -> str:
@@ -59,136 +59,238 @@ def _pygments_css() -> str:
         return ""
 
 
+JANUS_LOGO_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="28" height="36" style="vertical-align: middle; margin-right: 10px;">
+  <path d="M24.39 0.09C25.4-0.32 26.42 0.73 26.42 2.18V41.44C26.42 42.89 25.4 43.93 24.39 43.52L9.71 39.63L18.24 38.6C18.75 38.52 19.21 38.25 19.55 37.83C19.89 37.41 20.08 36.87 20.08 36.32V7.32C20.07 6.76 19.89 6.23 19.55 5.81C19.21 5.4 18.74 5.12 18.24 5.05L9.63 4L24.39 0.09Z" fill="white"/>
+  <path d="M2.45 38.84L16.61 37.33C17.12 37.25 17.58 37 17.92 36.6C18.26 36.21 18.45 35.7 18.45 35.18V8.42C18.45 7.9 18.26 7.39 17.92 7C17.58 6.61 17.12 6.36 16.61 6.29L2.45 4.77C2.15 4.72 1.84 4.75 1.55 4.83C1.25 4.92 0.98 5.07 0.75 5.27C0.52 5.47 0.33 5.72 0.2 6C0.07 6.29 0 6.59 0 6.9V36.69C0 37 0.07 37.31 0.2 37.59C0.32 37.88 0.51 38.13 0.74 38.33C0.98 38.53 1.25 38.69 1.54 38.77C1.84 38.86 2.15 38.88 2.45 38.84Z" fill="#FCAD2A"/>
+  <path d="M31.87 7.93L28.1 7.52V36.09L31.87 35.71V7.93Z" fill="#013A7D"/>
+  <path d="M33.13 8.05V35.57C34.11 35.36 34.81 34.8 34.81 34.06V9.55C34.81 8.81 34.11 8.26 33.13 8.05Z" fill="#028CDC"/>
+</svg>"""
+
 REPORT_CSS = f"""
-* {{ box-sizing: border-box; }}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
 body {{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                  "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    font-size: 16px; line-height: 1.9; color: {COLOR_TEXT};
-    background: #f5f7fa; margin: 0; padding: 0;
-}}
-.report-container {{
-    max-width: 900px; margin: 0 auto; padding: 20px 24px 60px;
-    background: #ffffff; min-height: 100vh;
-    box-shadow: 0 0 40px rgba(0,0,0,0.06);
+    font-size: 15px; line-height: 1.8; color: {TEXT_PRIMARY};
+    background: {LIGHT_GRAY};
+    -webkit-font-smoothing: antialiased;
 }}
 
-/* 报告头部 */
+.report-wrapper {{
+    max-width: 880px; margin: 0 auto; padding: 32px 20px 80px;
+}}
+
+/* ── Hero Header (Dark, janusd.com style) ─────────────────────────────── */
 .report-header {{
-    background: linear-gradient(135deg, {COLOR_BRAND} 0%, {COLOR_ACCENT} 100%);
-    color: #ffffff; padding: 32px 28px; border-radius: 12px;
-    margin-bottom: 32px; position: relative; overflow: hidden;
+    background: {DARK_BG};
+    padding: 48px 40px 40px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+}}
+.report-header::before {{
+    content: "";
+    position: absolute; top: 0; right: 0;
+    width: 320px; height: 100%;
+    background: linear-gradient(135deg, transparent 30%, rgba(2,141,220,0.08) 100%);
+    pointer-events: none;
 }}
 .report-header::after {{
-    content: "AI"; position: absolute; right: 20px; top: -10px;
-    font-size: 120px; font-weight: 900; opacity: 0.08; color: #fff;
+    content: "";
+    position: absolute; bottom: 0; left: 40px; right: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, {GOLD}, {CYAN}, transparent);
+    border-radius: 2px;
 }}
-.report-title {{
-    font-size: 26px; font-weight: bold; margin: 0 0 8px 0;
-    line-height: 1.4; position: relative; z-index: 1;
-}}
-.report-subtitle {{
-    font-size: 14px; opacity: 0.85; margin: 0;
+.header-top {{
+    display: flex; align-items: center; margin-bottom: 24px;
     position: relative; z-index: 1;
 }}
-.report-date {{
-    display: inline-block; background: rgba(255,255,255,0.2);
-    padding: 4px 14px; border-radius: 20px; font-size: 13px;
-    margin-top: 12px; position: relative; z-index: 1;
+.header-brand {{
+    font-size: 13px; font-weight: 500; color: {TEXT_MUTED};
+    letter-spacing: 2px; text-transform: uppercase;
+}}
+.report-title {{
+    font-size: 28px; font-weight: 700; color: {WHITE};
+    line-height: 1.3; margin-bottom: 12px;
+    position: relative; z-index: 1;
+}}
+.report-subtitle {{
+    font-size: 14px; color: {TEXT_MUTED}; margin-bottom: 20px;
+    position: relative; z-index: 1;
+}}
+.header-meta {{
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    position: relative; z-index: 1;
+}}
+.meta-tag {{
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 5px 14px; border-radius: 20px;
+    font-size: 12px; color: rgba(255,255,255,0.7);
+    font-weight: 500;
+}}
+.meta-tag.gold {{ border-color: rgba(252,173,42,0.3); color: {GOLD}; }}
+
+/* ── Content Area ─────────────────────────────────────────────────────── */
+.report-content {{
+    background: {WHITE};
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid {BORDER};
 }}
 
-/* 执行摘要卡片 */
-.executive-summary {{
-    background: {COLOR_BG_QUOTE}; border-left: 4px solid {COLOR_BRAND};
-    padding: 20px 24px; border-radius: 0 8px 8px 0;
-    margin: 24px 0;
+/* ── Typography ───────────────────────────────────────────────────────── */
+h1 {{
+    font-size: 24px; font-weight: 700; color: {TEXT_PRIMARY};
+    margin: 40px 0 16px; line-height: 1.3;
 }}
-.executive-summary h2 {{
-    font-size: 18px; color: {COLOR_BRAND}; margin: 0 0 12px 0;
-    border: none; padding: 0;
-}}
-
-/* 正文样式 */
-h1 {{ font-size: 24px; font-weight: bold; margin: 32px 0 16px; color: {COLOR_TEXT}; }}
 h2 {{
-    font-size: 20px; font-weight: bold; margin: 28px 0 12px;
-    padding-left: 12px; border-left: 4px solid {COLOR_BRAND}; color: {COLOR_BRAND};
+    font-size: 19px; font-weight: 600; color: {DEEP_BLUE};
+    margin: 36px 0 14px; padding-bottom: 10px;
+    border-bottom: 2px solid {GOLD};
+    display: inline-block;
 }}
-h3 {{ font-size: 17px; font-weight: bold; margin: 22px 0 10px; color: {COLOR_TEXT}; }}
-h4 {{ font-size: 15px; font-weight: bold; margin: 18px 0 8px; color: {COLOR_MUTED}; }}
-p  {{ font-size: 15px; line-height: 1.9; margin: 14px 0; color: {COLOR_TEXT}; }}
-a  {{ color: {COLOR_BRAND}; text-decoration: none; border-bottom: 1px solid {COLOR_BRAND}; }}
-strong {{ color: {COLOR_BRAND}; font-weight: bold; }}
-em     {{ color: #e65100; }}
+h2::after {{
+    content: ""; display: block;
+}}
+h3 {{
+    font-size: 16px; font-weight: 600; color: {TEXT_PRIMARY};
+    margin: 28px 0 10px;
+}}
+h4 {{
+    font-size: 14px; font-weight: 600; color: {TEXT_SECONDARY};
+    margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}}
+p {{
+    font-size: 15px; line-height: 1.8; margin: 12px 0;
+    color: {TEXT_PRIMARY};
+}}
+a {{
+    color: {CYAN}; text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}}
+a:hover {{ border-bottom-color: {CYAN}; }}
+strong {{ color: {DEEP_BLUE}; font-weight: 600; }}
+em {{ color: {GOLD}; font-style: normal; font-weight: 500; }}
 
+/* ── Blockquote (Executive Summary) ───────────────────────────────────── */
+blockquote {{
+    background: linear-gradient(135deg, rgba(1,58,125,0.04), rgba(2,141,220,0.04));
+    border-left: 3px solid {GOLD};
+    padding: 20px 24px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 15px; line-height: 1.9;
+    color: {TEXT_PRIMARY};
+}}
+blockquote p {{ margin: 0; }}
+
+/* ── Code ─────────────────────────────────────────────────────────────── */
 code {{
-    font-family: Consolas, Monaco, "Courier New", monospace;
-    background: #f5f5f5; color: #e83e8c;
-    padding: 2px 6px; border-radius: 4px; font-size: 13px;
+    font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+    background: rgba(1,58,125,0.06); color: {DEEP_BLUE};
+    padding: 2px 7px; border-radius: 4px; font-size: 13px;
+    font-weight: 500;
 }}
 pre {{
-    background: {COLOR_BG_CODE}; color: {COLOR_FG_CODE};
-    padding: 16px 20px; border-radius: 8px; overflow-x: auto;
-    margin: 16px 0; font-size: 14px; line-height: 1.6;
+    background: {CODE_BG}; color: {CODE_FG};
+    padding: 20px 24px; border-radius: 10px; overflow-x: auto;
+    margin: 20px 0; font-size: 13px; line-height: 1.7;
+    border: 1px solid rgba(255,255,255,0.05);
 }}
-pre code {{ background: transparent; color: inherit; padding: 0; font-size: inherit; }}
+pre code {{
+    background: transparent; color: inherit;
+    padding: 0; border-radius: 0; font-size: inherit;
+}}
 
-blockquote {{
-    border-left: 4px solid {COLOR_BRAND}; padding: 12px 16px;
-    background: {COLOR_BG_QUOTE}; margin: 16px 0;
-    color: {COLOR_TEXT}; border-radius: 0 6px 6px 0;
-}}
+/* ── Lists ────────────────────────────────────────────────────────────── */
 ul, ol {{ padding-left: 24px; margin: 12px 0; }}
-li {{ margin: 8px 0; line-height: 1.7; }}
-
-table {{ width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }}
-th {{
-    background: {COLOR_BRAND}; color: #fff; padding: 12px;
-    border: 1px solid #e8e8e8; font-weight: bold; text-align: left;
+li {{
+    margin: 8px 0; line-height: 1.7;
+    color: {TEXT_PRIMARY};
 }}
-td {{ padding: 10px 12px; border: 1px solid #e8e8e8; }}
-tr:nth-child(even) td {{ background: #f8faff; }}
+li::marker {{ color: {GOLD}; }}
 
+/* ── Tables ───────────────────────────────────────────────────────────── */
+table {{
+    width: 100%; border-collapse: collapse;
+    margin: 20px 0; font-size: 14px;
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid {BORDER};
+}}
+th {{
+    background: {DEEP_BLUE}; color: {WHITE};
+    padding: 12px 16px; font-weight: 600;
+    text-align: left; font-size: 13px;
+    letter-spacing: 0.3px;
+}}
+td {{
+    padding: 11px 16px; border-bottom: 1px solid {BORDER};
+    color: {TEXT_PRIMARY};
+}}
+tr:last-child td {{ border-bottom: none; }}
+tr:nth-child(even) td {{ background: {LIGHT_GRAY}; }}
+
+/* ── Horizontal Rule ──────────────────────────────────────────────────── */
 hr {{
     border: none; height: 1px;
-    background: linear-gradient(to right, transparent, {COLOR_BRAND}, transparent);
-    margin: 28px 0;
+    background: {BORDER};
+    margin: 32px 0;
 }}
 
-/* 优先级标签 */
+/* ── Priority Tags ────────────────────────────────────────────────────── */
 .priority-high {{
-    display: inline-block; background: {COLOR_DANGER}; color: #fff;
-    padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;
+    display: inline-block; background: {GOLD}; color: {DARK_BG};
+    padding: 3px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
 }}
 .priority-medium {{
-    display: inline-block; background: {COLOR_WARNING}; color: #fff;
-    padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;
+    display: inline-block; background: {CYAN}; color: {WHITE};
+    padding: 3px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
 }}
 .priority-low {{
-    display: inline-block; background: {COLOR_SUCCESS}; color: #fff;
-    padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;
+    display: inline-block; background: rgba(1,58,125,0.1); color: {DEEP_BLUE};
+    padding: 3px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
 }}
 
-/* 行动建议卡片 */
-.action-card {{
-    background: #f6ffed; border: 1px solid #b7eb8f;
-    padding: 16px 20px; border-radius: 8px; margin: 12px 0;
+/* ── Images ───────────────────────────────────────────────────────────── */
+img {{
+    max-width: 100%; border-radius: 8px; margin: 16px 0;
 }}
 
-/* 页脚 */
+/* ── Footer ───────────────────────────────────────────────────────────── */
 .report-footer {{
-    margin-top: 48px; padding-top: 20px; border-top: 2px solid {COLOR_BRAND};
-    font-size: 12px; color: #aaa; text-align: center;
+    margin-top: 40px; padding: 24px 40px;
+    background: {DARK_BG}; border-radius: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
 }}
-.report-footer .brand {{
-    color: {COLOR_BRAND}; font-weight: bold;
+.footer-brand {{
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500;
+}}
+.footer-brand .gold {{ color: {GOLD}; }}
+.footer-info {{
+    font-size: 12px; color: rgba(255,255,255,0.35);
 }}
 
-/* 审查标记 */
-.review-badge {{
-    display: inline-block; background: {COLOR_SUCCESS}; color: #fff;
-    padding: 4px 12px; border-radius: 16px; font-size: 12px;
-    margin-left: 8px; vertical-align: middle;
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {{
+    .report-wrapper {{ padding: 16px 12px 60px; }}
+    .report-header {{ padding: 32px 24px 28px; }}
+    .report-content {{ padding: 24px 20px; }}
+    .report-title {{ font-size: 22px; }}
+    .report-footer {{ padding: 20px 24px; flex-direction: column; text-align: center; }}
 }}
 """
 
@@ -220,7 +322,6 @@ def convert_markdown(body: str) -> str:
 
 
 def post_process_html(html: str) -> str:
-    """后处理：添加优先级标签样式"""
     html = re.sub(r'【高优先级】', '<span class="priority-high">HIGH</span>', html)
     html = re.sub(r'【中优先级】', '<span class="priority-medium">MED</span>', html)
     html = re.sub(r'【低优先级】', '<span class="priority-low">LOW</span>', html)
@@ -228,40 +329,60 @@ def post_process_html(html: str) -> str:
 
 
 def build_report_html(meta: dict, content_html: str) -> str:
-    title = meta.get("title", f"AI技术情报日报")
+    title = meta.get("title", "AI技术情报日报")
     date_str = meta.get("date", datetime.today().strftime("%Y-%m-%d"))
     issue = meta.get("issue", "")
+    report_type = meta.get("report_type", "intelligence")
+    tags = meta.get("tags", [])
+    if isinstance(tags, str):
+        tags = [tags]
 
-    issue_text = f" | 第{issue}期" if issue else ""
+    issue_text = f"Issue #{issue}" if issue else ""
+    type_label = "Action Report" if report_type == "action" else "Daily Intelligence"
+
+    tags_html = "".join(f'<span class="meta-tag">{t}</span>' for t in tags[:4])
+    if issue_text:
+        tags_html += f'<span class="meta-tag gold">{issue_text}</span>'
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title} - {date_str}</title>
+  <title>{title} — {date_str}</title>
   <style>
 {REPORT_CSS}
 {_pygments_css()}
   </style>
 </head>
 <body>
-<div class="report-container">
+<div class="report-wrapper">
 
 <header class="report-header">
+  <div class="header-top">
+    {JANUS_LOGO_SVG}
+    <span class="header-brand">Synapse &middot; {type_label}</span>
+  </div>
   <h1 class="report-title">{title}</h1>
-  <p class="report-subtitle">Lysander CEO + Graphify 智囊团联合出品{issue_text}</p>
-  <span class="report-date">{date_str}</span>
-  <span class="review-badge">智囊团审查通过</span>
+  <p class="report-subtitle">Lysander CEO + Graphify Think Tank</p>
+  <div class="header-meta">
+    <span class="meta-tag gold">{date_str}</span>
+    {tags_html}
+  </div>
 </header>
 
-<article>
+<div class="report-content">
 {content_html}
-</article>
+</div>
 
 <footer class="report-footer">
-  <p><span class="brand">Lysander AI Team</span> &middot; Daily Intelligence Report</p>
-  <p>Generated {datetime.now().strftime("%Y-%m-%d %H:%M")} &middot; Reviewed by Graphify Think Tank</p>
+  <div class="footer-brand">
+    {JANUS_LOGO_SVG}
+    <span><span class="gold">Synapse</span> &middot; Janus Digital &middot; Lysander AI Team</span>
+  </div>
+  <div class="footer-info">
+    Generated {datetime.now().strftime("%Y-%m-%d %H:%M")} &middot; Reviewed by Graphify Think Tank
+  </div>
 </footer>
 
 </div>
@@ -293,7 +414,9 @@ def main():
     html = build_report_html(meta, content_html)
 
     date_str = str(meta.get("date", datetime.today().strftime("%Y-%m-%d")))[:10]
-    out_path = output_dir / f"{date_str}-daily-ai-intelligence.html"
+    report_type = meta.get("report_type", "intelligence")
+    suffix = "action-report" if report_type == "action" else "daily-ai-intelligence"
+    out_path = output_dir / f"{date_str}-{suffix}.html"
     out_path.write_text(html, encoding="utf-8")
 
     print(f"Generated: {out_path}")

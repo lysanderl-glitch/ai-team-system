@@ -1,14 +1,15 @@
 ---
-title: 人力资源知识库
-description: 公司AI Agent团队、人员、岗位、能力管理体系
+title: Synapse 人力资源知识库
+description: Synapse 体系下的AI Agent团队、人员、岗位、能力管理
 type: HR-index
-version: "1.0"
+version: "2.0"
 created: 2026-04-09
+updated: 2026-04-10
 ---
 
-# 人力资源知识库
+# Synapse — 人力资源知识库
 
-公司AI Agent团队、人员、岗位、能力管理的核心知识库。OBS作为单一数据源，为Lysander CEO提供团队召唤能力。
+Synapse 体系下的 AI Agent 团队、人员、岗位、能力管理的核心知识库。OBS 作为单一数据源，为 Lysander CEO 提供团队召唤能力。
 
 ## 重要说明
 

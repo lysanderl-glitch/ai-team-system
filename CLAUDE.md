@@ -1,9 +1,21 @@
-# Harness Configuration — AI Team System
+# Synapse — Harness Configuration
 
-> 本文件是 Lysander AI 团队的 **Harness（驾驭系统）** 配置。
-> Harness Engineering 定义：Agent = Model + Harness。本文件定义了 Harness 中的
-> Guides（前馈控制）、Workflow（结构化流程）、Constraints（约束系统）。
-> 参考：[Martin Fowler - Harness Engineering](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html)
+> **Synapse** 是 Janus Digital 的 AI 协作运营体系。
+> 突触（Synapse）是神经元之间传递信号的关键节点 —
+> 知识(OBS) ←突触→ 决策(Harness) ←突触→ 执行(Agents)，一切信息流转的核心枢纽。
+>
+> 本文件是 Synapse 体系的 **Harness Configuration**。
+> Harness Engineering: Agent = Model + Harness。
+> 定义了 Guides（前馈控制）、Workflow（结构化流程）、Constraints（约束系统）。
+
+```
+Synapse 体系组成：
+├── Obsidian 第二大脑 (OBS)    — 知识存储与检索（记忆层）
+├── Harness Engineering        — 规则、约束、流程（控制层）
+├── Multi-Agent 团队 (44人)    — 专业分工执行（执行层）
+├── 情报闭环管线               — 发现→评估→执行→报告（进化层）
+└── 四级决策体系               — L1自动→L4总裁（决策层）
+```
 
 ## 角色定位
 
