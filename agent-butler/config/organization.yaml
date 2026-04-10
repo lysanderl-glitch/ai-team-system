@@ -119,17 +119,18 @@ teams:
 
   content_ops:
     name: "内容团队"
-    description: "内容团队 - 负责内部文档、报告、提案、知识内容的策划、撰写与视觉呈现"
+    description: "内容团队 - 将工作会话/项目经验/知识沉淀转化为结构化文章，本地生成精美 HTML，内部归档与分发"
     specialists:
-      - content_strategist        # 内容策划专家 - 内容架构、选题策划
-      - content_creator           # 内容创作专家 - 文档撰写、报告编写
-      - visual_designer           # 视觉设计专家 - 配图、排版、呈现优化
+      - content_strategist        # 内容策划专家 - 内容架构、知识提炼
+      - content_creator           # 内容创作专家 - Markdown 文章撰写
+      - visual_designer           # 视觉设计专家 - 样式模板、排版优化
+      - publishing_ops            # HTML生成专家 - 调用 generate-article.py 生成本地 HTML
     capabilities:
-      - 内容架构与策划
-      - 文档/报告/提案撰写
-      - PPT与可视化呈现
-      - 视觉设计与排版
-      - 内容质量审核
+      - 知识内容提炼与结构化
+      - Markdown 文章撰写
+      - 本地 HTML 文章生成（generate-article.py）
+      - 科技蓝主题样式输出
+      - 内部内容归档与分发
     access_key: "content_ops"
 
   graphify:
@@ -141,6 +142,7 @@ teams:
       - trend_watcher           # 趋势洞察师 - 趋势识别、模式发现
       - decision_advisor        # 决策顾问 - 决策支持、选项评估
       - execution_auditor       # 执行审计师 - 任务分级、执行链审计、跨会话状态
+      - ai_tech_researcher     # AI技术研究员 - AI前沿追踪、实践价值筛选、每日情报
     capabilities:
       - 战略分析
       - 关联发现
@@ -151,6 +153,8 @@ teams:
       - 执行链审计
       - 任务分级
       - 跨会话状态管理
+      - AI技术前沿追踪
+      - 每日技术情报
     access_key: "graphify"
 
   growth:
