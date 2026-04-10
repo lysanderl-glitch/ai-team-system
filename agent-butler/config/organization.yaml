@@ -125,12 +125,15 @@ teams:
       - content_creator           # 内容创作专家 - Markdown 文章撰写
       - visual_designer           # 视觉设计专家 - 样式模板、排版优化
       - publishing_ops            # HTML生成专家 - 调用 generate-article.py 生成本地 HTML
+      - training_designer          # 培训课程设计师 - 课程体系/Workshop/认证设计
     capabilities:
       - 知识内容提炼与结构化
       - Markdown 文章撰写
       - 本地 HTML 文章生成（generate-article.py）
       - 科技蓝主题样式输出
       - 内部内容归档与分发
+      - 培训课程体系设计（ADDIE模型）
+      - 实操工作坊方案设计
     access_key: "content_ops"
 
   graphify:
@@ -198,13 +201,17 @@ teams:
     specialists:
       - customer_insights_manager    # 客户洞察经理 - 客户调研、需求验证、PMF分析
       - gtm_strategist               # GTM策略师 - 竞品跟踪、销售赋能、市场定位
+      - sales_enablement             # 销售赋能专家 - 销售材料/案例包装/提案报价
+      - community_manager            # 开源社区经理 - GitHub社区/DevRel/技术推广
     capabilities:
       - 客户需求调研与验证
       - 市场反馈汇总分析
       - 竞品跟踪与竞争定位
       - GTM策略设计
-      - 销售赋能材料制作
+      - 销售赋能材料制作与提案撰写
       - 内容ROI提升
+      - 开源社区运营与开发者关系
+      - B2B销售漏斗管理
     access_key: "growth"
 
   janus:
