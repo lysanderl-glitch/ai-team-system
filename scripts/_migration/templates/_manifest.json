@@ -1,0 +1,493 @@
+{
+  "exported_at": "2026-04-10",
+  "source": "Notion Template Library (模板库)",
+  "root_page_id": "33c3e99820c7818baa05d67851f33cd4",
+  "root_title": "模板库",
+  "total_files": 35,
+  "pages": [
+    {
+      "file": "00_root/模板库.md",
+      "page_id": "33c3e99820c7818baa05d67851f33cd4",
+      "title": "模板库",
+      "parent_id": null,
+      "parent_title": null,
+      "is_folder_index": true
+    },
+    {
+      "file": "模板使用指南/模板使用指南_Quick_Start.md",
+      "page_id": "33c3e99820c78198b76fd70530f27b2e",
+      "title": "模板使用指南 Quick Start",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "测试管理/_index.md",
+      "page_id": "33c3e99820c78112ab20fddd34a72c9a",
+      "title": "测试管理",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "测试管理/UAT_SIT测试计划模板.md",
+      "page_id": "33c3e99820c78150ba10e9c444d78945",
+      "title": "UAT/SIT 测试计划模板",
+      "parent_id": "33c3e99820c78112ab20fddd34a72c9a",
+      "parent_title": "测试管理",
+      "is_folder_index": false
+    },
+    {
+      "file": "测试管理/测试用例与缺陷跟踪表.md",
+      "page_id": "33c3e99820c7819586a4c10f7243328a",
+      "title": "测试用例 & 缺陷跟踪表",
+      "parent_id": "33c3e99820c78112ab20fddd34a72c9a",
+      "parent_title": "测试管理",
+      "is_folder_index": false
+    },
+    {
+      "file": "SOP标准操作流程/_index.md",
+      "page_id": "33c3e99820c7815081ddc7335e63f256",
+      "title": "SOP 标准操作流程",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "SOP标准操作流程/SOP-PM-01_项目启动.md",
+      "page_id": "33c3e99820c781908088e7477dc40b81",
+      "title": "SOP-PM-01 项目启动",
+      "parent_id": "33c3e99820c7815081ddc7335e63f256",
+      "parent_title": "SOP标准操作流程",
+      "is_folder_index": false
+    },
+    {
+      "file": "SOP标准操作流程/SOP-PM-02_变更管理.md",
+      "page_id": "33c3e99820c781dda446ce717cb729a6",
+      "title": "SOP-PM-02 变更管理",
+      "parent_id": "33c3e99820c7815081ddc7335e63f256",
+      "parent_title": "SOP标准操作流程",
+      "is_folder_index": false
+    },
+    {
+      "file": "SOP标准操作流程/SOP-PM-03_项目验收.md",
+      "page_id": "33c3e99820c78131ad21f73b51314861",
+      "title": "SOP-PM-03 项目验收",
+      "parent_id": "33c3e99820c7815081ddc7335e63f256",
+      "parent_title": "SOP标准操作流程",
+      "is_folder_index": false
+    },
+    {
+      "file": "00_售前/_index.md",
+      "page_id": "33c3e99820c781b39920c0dfa9be3a71",
+      "title": "00_售前",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "00_售前/JDG-PRE-LOG-002_售前成本评估表.md",
+      "page_id": "33c3e99820c781019a4fcaa6ed7da446",
+      "title": "JDG-PRE-LOG-002 售前成本评估表",
+      "parent_id": "33c3e99820c781b39920c0dfa9be3a71",
+      "parent_title": "00_售前",
+      "is_folder_index": false
+    },
+    {
+      "file": "00_售前/JDG-PRE-LOG-003_施工调研评估模板.md",
+      "page_id": "33c3e99820c7811ea7b3fa000cf4b3a2",
+      "title": "JDG-PRE-LOG-003 施工调研评估模板",
+      "parent_id": "33c3e99820c781b39920c0dfa9be3a71",
+      "parent_title": "00_售前",
+      "is_folder_index": false
+    },
+    {
+      "file": "01_项目启动/_index.md",
+      "page_id": "33c3e99820c78170aacbfcf583bc5fb1",
+      "title": "01_项目启动",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "01_项目启动/JDG-INI-ORG-002_干系人登记册.md",
+      "page_id": "33c3e99820c781ab8f6ae55ca4e288da",
+      "title": "JDG-INI-ORG-002 干系人登记册",
+      "parent_id": "33c3e99820c78170aacbfcf583bc5fb1",
+      "parent_title": "01_项目启动",
+      "is_folder_index": false
+    },
+    {
+      "file": "02_项目规划/_index.md",
+      "page_id": "33c3e99820c781f99d0bf9f0fedccc73",
+      "title": "02_项目规划",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "02_项目规划/JDG-PLN-PLN-001_项目策划总表V2.md",
+      "page_id": "33c3e99820c781ec81d5dc79696900c0",
+      "title": "JDG-PLN-PLN-001 项目策划总表 V2.0",
+      "parent_id": "33c3e99820c781f99d0bf9f0fedccc73",
+      "parent_title": "02_项目规划",
+      "is_folder_index": false
+    },
+    {
+      "file": "02_项目规划/JDG-PLN-RSK-006_风险登记册_规划期.md",
+      "page_id": "33c3e99820c78176b669cf602fefe794",
+      "title": "JDG-PLN-RSK-006 风险登记册",
+      "parent_id": "33c3e99820c781f99d0bf9f0fedccc73",
+      "parent_title": "02_项目规划",
+      "is_folder_index": false
+    },
+    {
+      "file": "02_项目规划/JDG-PLN-SCP-002_项目范围说明书V2.md",
+      "page_id": "33c3e99820c781eea83cc5ba51927326",
+      "title": "JDG-PLN-SCP-002 项目范围说明书 V2.0",
+      "parent_id": "33c3e99820c781f99d0bf9f0fedccc73",
+      "parent_title": "02_项目规划",
+      "is_folder_index": false
+    },
+    {
+      "file": "03_项目执行/_index.md",
+      "page_id": "33c3e99820c781b2b55bf0b74523eb8b",
+      "title": "03_项目执行",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "03_项目执行/JDG-EXE-LOG-001_开工检视V2.md",
+      "page_id": "33c3e99820c7819daa05cc3c80f552e6",
+      "title": "JDG-EXE-LOG-001 开工检视 V2.0",
+      "parent_id": "33c3e99820c781b2b55bf0b74523eb8b",
+      "parent_title": "03_项目执行",
+      "is_folder_index": false
+    },
+    {
+      "file": "03_项目执行/JDG-EXE-QTY-001_UAT测试用例模板.md",
+      "page_id": "33c3e99820c781a9b123d09067af9289",
+      "title": "JDG-EXE-QTY-001 UAT测试用例模板",
+      "parent_id": "33c3e99820c781b2b55bf0b74523eb8b",
+      "parent_title": "03_项目执行",
+      "is_folder_index": false
+    },
+    {
+      "file": "03_项目执行/JDG-ACP-RXD-001_项目验收策划方案.md",
+      "page_id": "33c3e99820c78173842ee5814fb883ac",
+      "title": "JDG-ACP-RXD-001 项目验收策划方案",
+      "parent_id": "33c3e99820c781b2b55bf0b74523eb8b",
+      "parent_title": "03_项目执行",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/_index.md",
+      "page_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "title": "04_项目监控",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "04_项目监控/JDG-MON-STS-010_项目状态报告.md",
+      "page_id": "33c3e99820c781b587bbe521a6b2767e",
+      "title": "JDG-MON-STS-010 项目状态报告",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/JDG-MON-STS-013_项目周报.md",
+      "page_id": "33c3e99820c78148ad57eb8602880e6c",
+      "title": "JDG-MON-STS-013 项目周报",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/JDG-MON-CHG-011_变更请求表.md",
+      "page_id": "33c3e99820c78156a036cbbdc5fb7318",
+      "title": "JDG-MON-CHG-011 变更请求表",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/JDG-MON-FIN-016_成本监控台账.md",
+      "page_id": "33c3e99820c7812680eafbf7d417f607",
+      "title": "JDG-MON-FIN-016 成本监控台账",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/JDG-MON-LOG-012_问题日志.md",
+      "page_id": "33c3e99820c7818ba141efaeb429d1e2",
+      "title": "JDG-MON-LOG-012 问题日志",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/JDG-MON-RSK-015_风险登记册_执行期.md",
+      "page_id": "33c3e99820c78171b784d50cd71345ce",
+      "title": "JDG-MON-RSK-015 风险登记册（执行期）",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "04_项目监控/JDG-MON-LOG-018_执行管理追踪表.md",
+      "page_id": "33c3e99820c781e184eeda407ee37c72",
+      "title": "JDG-MON-LOG-018 执行管理追踪表",
+      "parent_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "parent_title": "04_项目监控",
+      "is_folder_index": false
+    },
+    {
+      "file": "05_项目收尾/_index.md",
+      "page_id": "33c3e99820c7818587b4c70e3bc99c68",
+      "title": "05_项目收尾",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "05_项目收尾/JDG-CLO-RXD-001_经验教训总结.md",
+      "page_id": "33c3e99820c781389debd17c225e5292",
+      "title": "JDG-CLO-RXD-001 经验教训总结",
+      "parent_id": "33c3e99820c7818587b4c70e3bc99c68",
+      "parent_title": "05_项目收尾",
+      "is_folder_index": false
+    },
+    {
+      "file": "财务工具/_index.md",
+      "page_id": "33c3e99820c781209bf1dc7304cb0915",
+      "title": "财务工具",
+      "parent_id": "33c3e99820c7818baa05d67851f33cd4",
+      "parent_title": "模板库",
+      "is_folder_index": true
+    },
+    {
+      "file": "财务工具/EVM挣值管理仪表板.md",
+      "page_id": "33c3e99820c781ebb300d6ff9a920cea",
+      "title": "EVM 挣值管理仪表板",
+      "parent_id": "33c3e99820c781209bf1dc7304cb0915",
+      "parent_title": "财务工具",
+      "is_folder_index": false
+    },
+    {
+      "file": "财务工具/项目结算利润核算模板.md",
+      "page_id": "33c3e99820c781b59405f9de29b54eae",
+      "title": "项目结算/利润核算模板",
+      "parent_id": "33c3e99820c781209bf1dc7304cb0915",
+      "parent_title": "财务工具",
+      "is_folder_index": false
+    }
+  ],
+  "tree": [
+    {
+      "folder": "00_root",
+      "page_id": "33c3e99820c7818baa05d67851f33cd4",
+      "title": "模板库",
+      "children_folders": [
+        "模板使用指南",
+        "测试管理",
+        "SOP标准操作流程",
+        "00_售前",
+        "01_项目启动",
+        "02_项目规划",
+        "03_项目执行",
+        "04_项目监控",
+        "05_项目收尾",
+        "财务工具"
+      ]
+    },
+    {
+      "folder": "模板使用指南",
+      "page_id": "33c3e99820c78198b76fd70530f27b2e",
+      "title": "模板使用指南 Quick Start",
+      "children": []
+    },
+    {
+      "folder": "测试管理",
+      "page_id": "33c3e99820c78112ab20fddd34a72c9a",
+      "title": "测试管理",
+      "children": [
+        {
+          "page_id": "33c3e99820c78150ba10e9c444d78945",
+          "title": "UAT/SIT 测试计划模板"
+        },
+        {
+          "page_id": "33c3e99820c7819586a4c10f7243328a",
+          "title": "测试用例 & 缺陷跟踪表"
+        }
+      ]
+    },
+    {
+      "folder": "SOP标准操作流程",
+      "page_id": "33c3e99820c7815081ddc7335e63f256",
+      "title": "SOP 标准操作流程",
+      "children": [
+        {
+          "page_id": "33c3e99820c781908088e7477dc40b81",
+          "title": "SOP-PM-01 项目启动"
+        },
+        {
+          "page_id": "33c3e99820c781dda446ce717cb729a6",
+          "title": "SOP-PM-02 变更管理"
+        },
+        {
+          "page_id": "33c3e99820c78131ad21f73b51314861",
+          "title": "SOP-PM-03 项目验收"
+        }
+      ]
+    },
+    {
+      "folder": "00_售前",
+      "page_id": "33c3e99820c781b39920c0dfa9be3a71",
+      "title": "00_售前",
+      "children": [
+        {
+          "page_id": "33c3e99820c781019a4fcaa6ed7da446",
+          "title": "JDG-PRE-LOG-002 售前成本评估表"
+        },
+        {
+          "page_id": "33c3e99820c7811ea7b3fa000cf4b3a2",
+          "title": "JDG-PRE-LOG-003 施工调研评估模板"
+        }
+      ]
+    },
+    {
+      "folder": "01_项目启动",
+      "page_id": "33c3e99820c78170aacbfcf583bc5fb1",
+      "title": "01_项目启动",
+      "children": [
+        {
+          "page_id": "33c3e99820c781ab8f6ae55ca4e288da",
+          "title": "JDG-INI-ORG-002 干系人登记册"
+        },
+        {
+          "page_id": "7de4db25973c4d99854150f243488c72",
+          "title": "JDG-INI-DAT-003 补充收资清单",
+          "type": "database"
+        },
+        {
+          "page_id": "2cd46c9186524611b2fdf284de3277e8",
+          "title": "JDG-INI-DAT-004 空间台账",
+          "type": "database"
+        },
+        {
+          "page_id": "0029eb79c27641a98c56ff510b4df21c",
+          "title": "JDG-INI-DAT-005 设备台账",
+          "type": "database"
+        },
+        {
+          "page_id": "046af994c58747cead4f613fd81b9005",
+          "title": "JDG-INI-DAT-006 IoT点位清单",
+          "type": "database"
+        }
+      ]
+    },
+    {
+      "folder": "02_项目规划",
+      "page_id": "33c3e99820c781f99d0bf9f0fedccc73",
+      "title": "02_项目规划",
+      "children": [
+        {
+          "page_id": "33c3e99820c781ec81d5dc79696900c0",
+          "title": "JDG-PLN-PLN-001 项目策划总表 V2.0"
+        },
+        {
+          "page_id": "33c3e99820c78176b669cf602fefe794",
+          "title": "JDG-PLN-RSK-006 风险登记册"
+        },
+        {
+          "page_id": "33c3e99820c781eea83cc5ba51927326",
+          "title": "JDG-PLN-SCP-002 项目范围说明书 V2.0"
+        }
+      ]
+    },
+    {
+      "folder": "03_项目执行",
+      "page_id": "33c3e99820c781b2b55bf0b74523eb8b",
+      "title": "03_项目执行",
+      "children": [
+        {
+          "page_id": "33c3e99820c7819daa05cc3c80f552e6",
+          "title": "JDG-EXE-LOG-001 开工检视 V2.0"
+        },
+        {
+          "page_id": "33c3e99820c781a9b123d09067af9289",
+          "title": "JDG-EXE-QTY-001 UAT测试用例模板"
+        },
+        {
+          "page_id": "33c3e99820c78173842ee5814fb883ac",
+          "title": "JDG-ACP-RXD-001 项目验收策划方案"
+        }
+      ]
+    },
+    {
+      "folder": "04_项目监控",
+      "page_id": "33c3e99820c7810192d0f103ad8e92a2",
+      "title": "04_项目监控",
+      "children": [
+        {
+          "page_id": "33c3e99820c781b587bbe521a6b2767e",
+          "title": "JDG-MON-STS-010 项目状态报告"
+        },
+        {
+          "page_id": "33c3e99820c78148ad57eb8602880e6c",
+          "title": "JDG-MON-STS-013 项目周报"
+        },
+        {
+          "page_id": "33c3e99820c78156a036cbbdc5fb7318",
+          "title": "JDG-MON-CHG-011 变更请求表"
+        },
+        {
+          "page_id": "33c3e99820c7812680eafbf7d417f607",
+          "title": "JDG-MON-FIN-016 成本监控台账"
+        },
+        {
+          "page_id": "33c3e99820c7818ba141efaeb429d1e2",
+          "title": "JDG-MON-LOG-012 问题日志"
+        },
+        {
+          "page_id": "33c3e99820c78171b784d50cd71345ce",
+          "title": "JDG-MON-RSK-015 风险登记册（执行期）"
+        },
+        {
+          "page_id": "33c3e99820c781e184eeda407ee37c72",
+          "title": "JDG-MON-LOG-018 执行管理追踪表"
+        }
+      ]
+    },
+    {
+      "folder": "05_项目收尾",
+      "page_id": "33c3e99820c7818587b4c70e3bc99c68",
+      "title": "05_项目收尾",
+      "children": [
+        {
+          "page_id": "33c3e99820c781389debd17c225e5292",
+          "title": "JDG-CLO-RXD-001 经验教训总结"
+        }
+      ]
+    },
+    {
+      "folder": "财务工具",
+      "page_id": "33c3e99820c781209bf1dc7304cb0915",
+      "title": "财务工具",
+      "children": [
+        {
+          "page_id": "33c3e99820c781ebb300d6ff9a920cea",
+          "title": "EVM 挣值管理仪表板"
+        },
+        {
+          "page_id": "33c3e99820c781b59405f9de29b54eae",
+          "title": "项目结算/利润核算模板"
+        }
+      ]
+    }
+  ]
+}
