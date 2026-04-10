@@ -1,0 +1,37 @@
+{
+  "database_title": "📊 PMO 周报",
+  "database_id": "2c3a7590d03b482abcf1c70ecf11c852",
+  "data_source_id": "80b08016-4f48-49dd-9a4f-5a673747a30a",
+  "data_source_url": "collection://80b08016-4f48-49dd-9a4f-5a673747a30a",
+  "parent": {
+    "page_title": "📊 PMO自动化管理体系",
+    "page_id": "33b3e99820c78151ae33fef9952b08de"
+  },
+  "schema": {
+    "周报标题": { "type": "title", "description": "" },
+    "Slack已推送": { "type": "checkbox", "description": "" },
+    "下周重点": { "type": "text", "description": "" },
+    "关键风险": { "type": "text", "description": "" },
+    "创建时间": { "type": "created_time", "description": "" },
+    "报告周期": { "type": "date", "description": "" },
+    "整体完成率": { "type": "number", "number_format": "percent", "description": "" },
+    "本周完成任务数": { "type": "number", "description": "" },
+    "生成方式": {
+      "type": "select",
+      "description": "",
+      "options": [
+        { "name": "自动", "color": "blue" },
+        { "name": "手动", "color": "gray" }
+      ]
+    },
+    "覆盖项目数": { "type": "number", "description": "" },
+    "逾期任务数": { "type": "number", "description": "" }
+  },
+  "views": [
+    {
+      "name": "Default view",
+      "type": "table",
+      "url": "view://80b138bb-0fa9-469c-912a-80c8a7bf4208"
+    }
+  ]
+}

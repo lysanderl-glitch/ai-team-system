@@ -1,0 +1,93 @@
+{
+  "database_title": "📁 项目注册表",
+  "database_id": "33c3e99820c781fcac6fc8a54e6e8ad6",
+  "data_source_id": "33c3e998-20c7-81ee-87a7-000b94b40bf7",
+  "data_source_url": "collection://33c3e998-20c7-81ee-87a7-000b94b40bf7",
+  "parent": {
+    "page_title": "📊 PMO自动化管理体系",
+    "page_id": "33b3e99820c78151ae33fef9952b08de"
+  },
+  "schema": {
+    "项目名称": { "type": "title", "description": "" },
+    "PM负责人": { "type": "text", "description": "" },
+    "PM邮箱": { "type": "email", "description": "" },
+    "交付Asana项目链接": { "type": "url", "description": "" },
+    "健康度": {
+      "type": "select",
+      "description": "",
+      "options": [
+        { "name": "🟢 绿色", "color": "green" },
+        { "name": "🟡 黄色", "color": "yellow" },
+        { "name": "🔴 红色", "color": "red" }
+      ]
+    },
+    "合同文件链接": { "type": "url", "description": "" },
+    "合同签署日": { "type": "date", "description": "" },
+    "合同编号": { "type": "text", "description": "" },
+    "合同金额(万)": { "type": "number", "number_format": "number", "description": "" },
+    "售前Asana任务链接": { "type": "url", "description": "" },
+    "实际成本(万)": { "type": "number", "description": "" },
+    "客户关键联系人": { "type": "text", "description": "" },
+    "客户名称": { "type": "text", "description": "" },
+    "当前里程碑": { "type": "text", "description": "" },
+    "状态": {
+      "type": "select",
+      "description": "",
+      "options": [
+        { "name": "售前中", "color": "gray" },
+        { "name": "已签约", "color": "yellow" },
+        { "name": "初始化中", "color": "orange" },
+        { "name": "交付中", "color": "blue" },
+        { "name": "运维", "color": "green" },
+        { "name": "归档", "color": "default" }
+      ]
+    },
+    "章程Notion页链接": { "type": "url", "description": "" },
+    "进度%": { "type": "number", "number_format": "percent", "description": "" },
+    "项目类型": {
+      "type": "select",
+      "description": "",
+      "options": [
+        { "name": "商业综合体", "color": "blue" },
+        { "name": "写字楼", "color": "purple" },
+        { "name": "酒店", "color": "yellow" },
+        { "name": "机场", "color": "orange" },
+        { "name": "医院", "color": "green" },
+        { "name": "其他", "color": "gray" }
+      ]
+    },
+    "项目编号": { "type": "text", "description": "" },
+    "项目背景与范围": { "type": "text", "description": "" },
+    "预算(万)": { "type": "number", "description": "" },
+    "预计交付周期(月)": { "type": "number", "number_format": "number", "description": "" },
+    "预计开始日": { "type": "date", "description": "" },
+    "预计结束日": { "type": "date", "description": "" },
+    "风险摘要": { "type": "text", "description": "" }
+  },
+  "views": [
+    {
+      "name": "Default view",
+      "type": "table",
+      "url": "view://33c3e998-20c7-814c-ac75-000c88482de8"
+    },
+    {
+      "name": "📊 项目看板",
+      "type": "board",
+      "group_by": "状态",
+      "url": "view://33d3e998-20c7-81e0-992f-000cb9ab8c55"
+    },
+    {
+      "name": "📅 时间线",
+      "type": "timeline",
+      "timeline_by": "预计开始日",
+      "timeline_by_end": "预计结束日",
+      "url": "view://33d3e998-20c7-81b6-b5bd-000c3f12609d"
+    },
+    {
+      "name": "🔴 高风险项目",
+      "type": "table",
+      "filter": { "property": "健康度", "operator": "enum_is", "value": "🔴 红色" },
+      "url": "view://33d3e998-20c7-818b-a3ce-000ce258bb6d"
+    }
+  ]
+}

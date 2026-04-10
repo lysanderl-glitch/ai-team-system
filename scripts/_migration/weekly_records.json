@@ -1,0 +1,128 @@
+{
+  "database_title": "📊 PMO 周报",
+  "database_id": "2c3a7590d03b482abcf1c70ecf11c852",
+  "data_source_id": "80b08016-4f48-49dd-9a4f-5a673747a30a",
+  "total_records_found": 7,
+  "note": "Found 7 records via search (expected 8). 6 records share the same period 2026-03-31~2026-04-07 (WF-04 auto-generation duplicates), 1 record for 2026-04-01~2026-04-08.",
+  "records": [
+    {
+      "page_id": "33c3e99820c781189075fd246b981b83",
+      "url": "https://www.notion.so/33c3e99820c781189075fd246b981b83",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-04-01 ~ 2026-04-08",
+        "Slack已推送": true,
+        "下周重点": "1. 优先识别并推动可完成任务：从进行中任务中筛选可快速完成的任务，力求本周实现任务闭环。\n2. 紧急处理项目二逾期任务：立即指派负责人，明确解决路径与时间点，解除项目启动障碍。\n3. 加强任务指派与责任落实：确保所有进行中及逾期任务均有明确负责人。",
+        "关键风险": "未知项目 · 与方案初步梳理（逾期20天，未指派）\n未知项目 · 方案与成本评估（逾期13天，未指派）\n未知项目 · 招投标（逾期5天，未指派）",
+        "创建时间": "2026-04-08T07:06:14.533Z",
+        "报告周期": null,
+        "整体完成率": 0,
+        "本周完成任务数": 0,
+        "生成方式": "自动",
+        "覆盖项目数": 2,
+        "逾期任务数": 5
+      }
+    },
+    {
+      "page_id": "33b3e99820c781d799e5e1b789de2b68",
+      "url": "https://www.notion.so/33b3e99820c781d799e5e1b789de2b68",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-03-31 ~ 2026-04-07",
+        "Slack已推送": true,
+        "下周重点": "",
+        "关键风险": "未知项目 · Data Handling Protocols（逾期25天，michaelb@janusd.com）\n未知项目 · Workflow Integration（逾期25天，michaelb@janusd.com）\n未知项目 · AI Native Induction（逾期4天，michaelb@janusd.com）",
+        "创建时间": "2026-04-07T18:30:31.669Z",
+        "报告周期": null,
+        "整体完成率": 0.006,
+        "本周完成任务数": 2,
+        "生成方式": "自动",
+        "覆盖项目数": 7,
+        "逾期任务数": 100
+      }
+    },
+    {
+      "page_id": "33b3e99820c7817e897fcf27614faf26",
+      "url": "https://www.notion.so/33b3e99820c7817e897fcf27614faf26",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-03-31 ~ 2026-04-07",
+        "Slack已推送": true,
+        "下周重点": "1. 逾期任务专项清理：优先处理逾期任务，特别是未指派和逾期时间较长的任务，明确责任人并制定行动计划。\n2. 提升数据准确性：尽快更新并完善Asana中"未知项目"的项目名称，确保项目信息清晰可追溯。\n3. 推动任务完成：针对进行中的任务，加强进度跟踪，识别并解决潜在障碍，提高任务完成效率。",
+        "关键风险": "未知项目 · Data Handling Protocols（逾期25天，michaelb@janusd.com）\n未知项目 · Workflow Integration（逾期25天，michaelb@janusd.com）\n未知项目 · AI Native Induction（逾期4天，michaelb@janusd.com）",
+        "创建时间": "2026-04-07T18:51:24.284Z",
+        "报告周期": null,
+        "整体完成率": 0.006,
+        "本周完成任务数": 2,
+        "生成方式": "自动",
+        "覆盖项目数": 7,
+        "逾期任务数": 100
+      }
+    },
+    {
+      "page_id": "33b3e99820c781199722df3d645946a8",
+      "url": "https://www.notion.so/33b3e99820c781199722df3d645946a8",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-03-31 ~ 2026-04-07",
+        "Slack已推送": false,
+        "下周重点": "",
+        "关键风险": "未知项目 · Data Handling Protocols（逾期25天，michaelb@janusd.com）\n未知项目 · Workflow Integration（逾期25天，michaelb@janusd.com）\n未知项目 · AI Native Induction（逾期4天，michaelb@janusd.com）",
+        "创建时间": "2026-04-07T18:09:37.417Z",
+        "报告周期": null,
+        "整体完成率": 0.006,
+        "本周完成任务数": 2,
+        "生成方式": "自动",
+        "覆盖项目数": 7,
+        "逾期任务数": 100
+      }
+    },
+    {
+      "page_id": "33b3e99820c78135b6acddc5d34d7ee6",
+      "url": "https://www.notion.so/33b3e99820c78135b6acddc5d34d7ee6",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-03-31 ~ 2026-04-07",
+        "Slack已推送": true,
+        "下周重点": "",
+        "关键风险": "未知项目 · Data Handling Protocols（逾期25天，michaelb@janusd.com）\n未知项目 · Workflow Integration（逾期25天，michaelb@janusd.com）\n未知项目 · AI Native Induction（逾期4天，michaelb@janusd.com）",
+        "创建时间": "2026-04-07T18:48:04.175Z",
+        "报告周期": null,
+        "整体完成率": 0.006,
+        "本周完成任务数": 2,
+        "生成方式": "自动",
+        "覆盖项目数": 7,
+        "逾期任务数": 100
+      }
+    },
+    {
+      "page_id": "33b3e99820c7816f8ec4c68a3293bfdb",
+      "url": "https://www.notion.so/33b3e99820c7816f8ec4c68a3293bfdb",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-03-31 ~ 2026-04-07",
+        "Slack已推送": true,
+        "下周重点": "",
+        "关键风险": "未知项目 · Data Handling Protocols（逾期25天，michaelb@janusd.com）\n未知项目 · Workflow Integration（逾期25天，michaelb@janusd.com）\n未知项目 · AI Native Induction（逾期4天，michaelb@janusd.com）",
+        "创建时间": "2026-04-07T18:19:48.104Z",
+        "报告周期": null,
+        "整体完成率": 0.006,
+        "本周完成任务数": 2,
+        "生成方式": "自动",
+        "覆盖项目数": 7,
+        "逾期任务数": 100
+      }
+    },
+    {
+      "page_id": "33b3e99820c78181b9e0d42462adaae8",
+      "url": "https://www.notion.so/33b3e99820c78181b9e0d42462adaae8",
+      "properties": {
+        "周报标题": "PMO周报 · 2026-03-31 ~ 2026-04-07",
+        "Slack已推送": true,
+        "下周重点": "",
+        "关键风险": "未知项目 · Data Handling Protocols（逾期25天，michaelb@janusd.com）\n未知项目 · Workflow Integration（逾期25天，michaelb@janusd.com）\n未知项目 · AI Native Induction（逾期4天，michaelb@janusd.com）",
+        "创建时间": "2026-04-07T18:45:33.646Z",
+        "报告周期": null,
+        "整体完成率": 0.006,
+        "本周完成任务数": 2,
+        "生成方式": "自动",
+        "覆盖项目数": 7,
+        "逾期任务数": 100
+      }
+    }
+  ]
+}

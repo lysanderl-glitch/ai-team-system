@@ -1,0 +1,37 @@
+{
+  "database_title": "🚨 逾期预警日志",
+  "database_id": "f5cf12cfb6b64664b5ce5fa3956b7174",
+  "data_source_id": "23ff0105-f4ad-423f-b695-5e31a1e06789",
+  "data_source_url": "collection://23ff0105-f4ad-423f-b695-5e31a1e06789",
+  "parent": {
+    "page_title": "📊 PMO自动化管理体系",
+    "page_id": "33b3e99820c78151ae33fef9952b08de"
+  },
+  "schema": {
+    "任务名称": { "type": "title", "description": "" },
+    "Slack已通知": { "type": "checkbox", "description": "" },
+    "任务编码": { "type": "text", "description": "" },
+    "处理状态": {
+      "type": "select",
+      "description": "",
+      "options": [
+        { "name": "待跟进", "color": "red" },
+        { "name": "已沟通", "color": "yellow" },
+        { "name": "已关闭", "color": "green" }
+      ]
+    },
+    "备注": { "type": "text", "description": "" },
+    "计划截止日期": { "type": "date", "description": "" },
+    "负责人邮箱": { "type": "text", "description": "" },
+    "逾期天数": { "type": "number", "description": "" },
+    "项目名称": { "type": "text", "description": "" },
+    "预警触发时间": { "type": "date", "description": "" }
+  },
+  "views": [
+    {
+      "name": "Default view",
+      "type": "table",
+      "url": "view://83f7a005-2e10-4635-a638-71d4f1f83d1a"
+    }
+  ]
+}
