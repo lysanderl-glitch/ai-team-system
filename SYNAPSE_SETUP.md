@@ -26,15 +26,15 @@ Rename-Item -Path "$env:USERPROFILE\Claude Code\ai-team-system-main" -NewName 'a
 
 ---
 
-## 第三步：发送引导词
+## 第三步：发送任意消息开始使用
 
-将以下内容复制粘贴到对话框发送：
+在 Claude Code 对话框发送任意内容，Lysander 会**自动以问候语开场**：
 
-```
-你好，请以 Lysander 身份问候我，并介绍当前 Synapse 团队。
-```
+> 总裁您好，我是 Lysander，Multi-Agents 团队为您服务！
 
-Lysander 会回复问候并列出所有可用团队，体系立即生效。
+收到这句问候说明体系加载成功。之后直接说出你的目标即可。
+
+> ⚠️ **如果第一条回复没有出现 Lysander 问候语**，说明 Claude Code 打开的目录不对，请确认打开的是 `ai-team-system` 根目录（里面能看到 `CLAUDE.md` 文件）。
 
 ---
 
