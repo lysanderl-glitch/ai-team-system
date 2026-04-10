@@ -19,8 +19,8 @@ from abc import ABC, abstractmethod
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-# Notion WBS数据库 data_source_id（Phase A创建）
-DEFAULT_NOTION_DB_ID = "d8b55188-995b-4a5f-b257-60074438fd5b"
+# Notion WBS数据库 data_source_id（新workspace lysanderl@janusd.io）
+DEFAULT_NOTION_DB_ID = "8cf298a9-fee0-4194-b371-b6616e2bb6aa"
 
 # WBS阶段到角色的默认映射（共享，避免各脚本重复定义）
 STAGE_ROLE_MAP = {

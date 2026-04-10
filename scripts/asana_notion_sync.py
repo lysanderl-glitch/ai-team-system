@@ -30,7 +30,7 @@ ASANA_TOKEN = os.environ.get("ASANA_TOKEN", "")
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 NOTION_PROJECT_DB_ID = os.environ.get(
     "NOTION_PROJECT_DB_ID",
-    "33c3e998-20c7-81ee-87a7-000b94b40bf7"  # 项目注册表 data source ID
+    "29aba1e3-ddcf-4e72-9680-2e19c290befc"  # 项目注册表 data source ID (新workspace lysanderl@janusd.io)
 )
 
 ASANA_HEADERS = {

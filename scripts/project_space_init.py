@@ -40,7 +40,7 @@ except ImportError:
 
 NOTION_API_VERSION = "2022-06-28"
 NOTION_BASE_URL = "https://api.notion.com/v1"
-PMO_PARENT_PAGE_ID = "33b3e99820c78151ae33fef9952b08de"
+PMO_PARENT_PAGE_ID = "33e114fc090c812dad23d802c0c71dc9"  # 新workspace: 📊 PMO自动化管理体系
 
 # 台账数据库名称（用于动态查找）
 LEDGER_DB_NAMES = {
