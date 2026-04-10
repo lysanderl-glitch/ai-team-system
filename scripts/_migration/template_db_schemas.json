@@ -1,0 +1,219 @@
+{
+  "backup_date": "2026-04-10",
+  "parent_page": {
+    "title": "模板库/01_项目启动",
+    "page_id": "33c3e99820c78170aacbfcf583bc5fb1"
+  },
+  "databases": [
+    {
+      "title": "📋 JDG-INI-DAT-003 补充收资清单",
+      "database_id": "7de4db25973c4d99854150f243488c72",
+      "data_source_id": "b2b3aefa-0d74-4672-9ef6-a357bb7eb982",
+      "data_source_url": "collection://b2b3aefa-0d74-4672-9ef6-a357bb7eb982",
+      "record_count": 0,
+      "schema": {
+        "资料名称": { "type": "title", "description": "" },
+        "优先级": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "必需", "color": "red" },
+            { "name": "重要", "color": "yellow" },
+            { "name": "可选", "color": "gray" }
+          ]
+        },
+        "关联WBS": { "type": "text", "description": "WBS编码，如DA002" },
+        "备注": { "type": "text", "description": "" },
+        "截止日期": { "type": "date", "description": "" },
+        "提供方": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "客户", "color": "blue" },
+            { "name": "第三方", "color": "orange" },
+            { "name": "内部", "color": "green" }
+          ]
+        },
+        "状态": {
+          "type": "select",
+          "description": "收资状态跟踪",
+          "options": [
+            { "name": "待收集", "color": "red" },
+            { "name": "已收到", "color": "green" },
+            { "name": "审核中", "color": "yellow" },
+            { "name": "已确认", "color": "blue" }
+          ]
+        },
+        "负责人": { "type": "person", "description": "" },
+        "资料类别": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "图纸", "color": "blue" },
+            { "name": "台账", "color": "green" },
+            { "name": "协议", "color": "orange" },
+            { "name": "技术文档", "color": "purple" },
+            { "name": "其他", "color": "gray" }
+          ]
+        }
+      }
+    },
+    {
+      "title": "📋 JDG-INI-DAT-004 空间台账",
+      "database_id": "2cd46c9186524611b2fdf284de3277e8",
+      "data_source_id": "1bef35d4-1b27-4dbd-aade-04051f244ce7",
+      "data_source_url": "collection://1bef35d4-1b27-4dbd-aade-04051f244ce7",
+      "record_count": 0,
+      "schema": {
+        "空间名称": { "type": "title", "description": "" },
+        "交付状态": {
+          "type": "select",
+          "description": "交付全流程状态",
+          "options": [
+            { "name": "待交付", "color": "red" },
+            { "name": "建模中", "color": "yellow" },
+            { "name": "已建模", "color": "blue" },
+            { "name": "已核查", "color": "green" },
+            { "name": "已贴码", "color": "purple" }
+          ]
+        },
+        "功能描述": { "type": "text", "description": "" },
+        "备注": { "type": "text", "description": "" },
+        "建筑": { "type": "text", "description": "" },
+        "楼层": { "type": "text", "description": "" },
+        "空间类型": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "办公区", "color": "blue" },
+            { "name": "公共区", "color": "green" },
+            { "name": "机房", "color": "purple" },
+            { "name": "走廊", "color": "gray" },
+            { "name": "停车场", "color": "orange" },
+            { "name": "其他", "color": "gray" }
+          ]
+        },
+        "空间编码": { "type": "text", "description": "按客户命名规则" },
+        "贴码范围": { "type": "checkbox", "description": "是否在贴码范围内" },
+        "面积(㎡)": { "type": "number", "description": "" }
+      }
+    },
+    {
+      "title": "📋 JDG-INI-DAT-005 设备台账",
+      "database_id": "0029eb79c27641a98c56ff510b4df21c",
+      "data_source_id": "b8af4ebd-fd74-42c7-8f6b-30de7d8859c6",
+      "data_source_url": "collection://b8af4ebd-fd74-42c7-8f6b-30de7d8859c6",
+      "record_count": 0,
+      "schema": {
+        "设备名称": { "type": "title", "description": "" },
+        "IoT接入": { "type": "checkbox", "description": "是否需要IoT数据接入" },
+        "交付状态": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "待交付", "color": "red" },
+            { "name": "建模中", "color": "yellow" },
+            { "name": "已建模", "color": "blue" },
+            { "name": "已核查", "color": "green" },
+            { "name": "已贴码", "color": "purple" },
+            { "name": "已绑点", "color": "green" }
+          ]
+        },
+        "信息点数量": { "type": "number", "description": "该设备IoT信息点数" },
+        "品牌型号": { "type": "text", "description": "" },
+        "备注": { "type": "text", "description": "" },
+        "所在空间": { "type": "text", "description": "" },
+        "所属系统": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "暖通空调", "color": "blue" },
+            { "name": "给排水", "color": "green" },
+            { "name": "强电", "color": "orange" },
+            { "name": "弱电", "color": "purple" },
+            { "name": "安防", "color": "red" },
+            { "name": "电梯", "color": "gray" },
+            { "name": "消防", "color": "red" },
+            { "name": "其他", "color": "gray" }
+          ]
+        },
+        "设备类型": { "type": "text", "description": "" },
+        "设备编码": { "type": "text", "description": "按客户命名规则" },
+        "贴码范围": { "type": "checkbox", "description": "" }
+      }
+    },
+    {
+      "title": "📋 JDG-INI-DAT-006 IoT点位清单",
+      "database_id": "046af994c58747cead4f613fd81b9005",
+      "data_source_id": "2690d10d-f815-4c3a-bc33-975138589a2c",
+      "data_source_url": "collection://2690d10d-f815-4c3a-bc33-975138589a2c",
+      "record_count": 0,
+      "schema": {
+        "信息点名称": { "type": "title", "description": "" },
+        "OPS已上数": { "type": "checkbox", "description": "" },
+        "协议类型": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "BACnet/IP", "color": "blue" },
+            { "name": "Modbus TCP", "color": "green" },
+            { "name": "Modbus RTU", "color": "orange" },
+            { "name": "OPC UA", "color": "purple" },
+            { "name": "MQTT", "color": "blue" },
+            { "name": "KNX", "color": "gray" },
+            { "name": "其他", "color": "gray" }
+          ]
+        },
+        "单位": { "type": "text", "description": "" },
+        "备注": { "type": "text", "description": "" },
+        "所属系统": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "暖通空调", "color": "blue" },
+            { "name": "给排水", "color": "green" },
+            { "name": "强电", "color": "orange" },
+            { "name": "弱电", "color": "purple" },
+            { "name": "安防", "color": "red" },
+            { "name": "消防", "color": "red" },
+            { "name": "电梯", "color": "gray" },
+            { "name": "其他", "color": "gray" }
+          ]
+        },
+        "所属设备": { "type": "text", "description": "" },
+        "数据一致性": { "type": "checkbox", "description": "OPS监测与现场一致" },
+        "数据方向": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "读取", "color": "blue" },
+            { "name": "写入", "color": "orange" },
+            { "name": "读写", "color": "green" }
+          ]
+        },
+        "点位类型": {
+          "type": "select",
+          "description": "",
+          "options": [
+            { "name": "模拟量AI", "color": "blue" },
+            { "name": "模拟量AO", "color": "green" },
+            { "name": "数字量DI", "color": "orange" },
+            { "name": "数字量DO", "color": "purple" },
+            { "name": "累计量", "color": "gray" }
+          ]
+        },
+        "绑点状态": {
+          "type": "select",
+          "description": "IoT绑点全流程状态",
+          "options": [
+            { "name": "待绑点", "color": "red" },
+            { "name": "已绑点", "color": "green" },
+            { "name": "测试中", "color": "yellow" },
+            { "name": "已验证", "color": "blue" },
+            { "name": "异常", "color": "red" }
+          ]
+        }
+      }
+    }
+  ]
+}
