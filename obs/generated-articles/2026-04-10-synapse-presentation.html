@@ -6,753 +6,426 @@
 <title>Synapse — 用一场对话构建AI协作运营体系</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════════════
-   Synapse Presentation — PPT-style Slide Deck
-   Brand: Janus Digital (Gold #FCAD2A / Deep Blue #013A7D / Cyan #028CDC)
-   ═══════════════════════════════════════════════════════════ */
-
 :root {
-  --gold: #FCAD2A;
-  --deep-blue: #013A7D;
-  --cyan: #028CDC;
-  --dark: #0A1628;
-  --dark-card: #111D33;
-  --white: #FFFFFF;
-  --gray: #F7F8FA;
-  --text: #1A1A2E;
-  --text-sec: #5A6072;
-  --text-muted: #8E95A7;
-  --border: #E2E6EE;
+  --gold: #FCAD2A; --deep-blue: #013A7D; --cyan: #028CDC;
+  --dark: #0A1628; --dark-card: #111D33; --white: #FFFFFF;
+  --gray: #F7F8FA; --text: #1A1A2E; --text-sec: #5A6072;
+  --text-muted: #8E95A7; --border: #E2E6EE;
+  --red: #f5222d; --green: #52c41a;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI",
-               "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #000;
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-  height: 100vh;
+  font-family: 'Inter', -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #000; -webkit-font-smoothing: antialiased;
+  overflow: hidden; height: 100vh;
 }
-
-/* ── Slide Container ─────────────────────────────────── */
-.deck {
-  width: 100vw; height: 100vh;
-  position: relative; overflow: hidden;
-}
-
+.deck { width: 100vw; height: 100vh; position: relative; }
 .slide {
-  position: absolute; top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  padding: 60px 80px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.5s ease;
+  position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 56px 72px; opacity: 0; pointer-events: none; transition: opacity 0.45s ease;
+  overflow-y: auto;
 }
 .slide.active { opacity: 1; pointer-events: auto; }
-
-/* ── Slide Themes ─────────────────────────────────── */
 .slide.dark { background: var(--dark); color: var(--white); }
+.slide.gradient { background: linear-gradient(135deg, var(--dark) 0%, #0D2847 50%, var(--deep-blue) 100%); color: var(--white); }
 .slide.white { background: var(--white); color: var(--text); }
-.slide.gradient {
-  background: linear-gradient(135deg, var(--dark) 0%, #0D2847 50%, var(--deep-blue) 100%);
-  color: var(--white);
-}
-.slide.blue { background: var(--deep-blue); color: var(--white); }
-.slide.gold-accent {
-  background: var(--dark);
-  color: var(--white);
-  border-bottom: 4px solid var(--gold);
-}
 
-/* ── Typography ─────────────────────────────────── */
-.slide-title {
-  font-size: 52px; font-weight: 800; line-height: 1.2;
-  margin-bottom: 24px; letter-spacing: -1px;
-}
+/* Typography */
+.slide-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+.slide-title { font-size: 48px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; letter-spacing: -1px; }
 .slide-title .gold { color: var(--gold); }
 .slide-title .cyan { color: var(--cyan); }
-
-.slide-subtitle {
-  font-size: 24px; font-weight: 400; line-height: 1.6;
-  color: rgba(255,255,255,0.7); max-width: 800px;
-  text-align: center;
-}
-.white .slide-subtitle { color: var(--text-sec); }
-
-.slide-label {
-  font-size: 13px; font-weight: 600; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold);
-  margin-bottom: 20px;
-}
-
-.slide-body {
-  max-width: 960px; width: 100%; text-align: left;
-}
-
-h2.section-title {
-  font-size: 36px; font-weight: 700; margin-bottom: 32px;
-  line-height: 1.3;
-}
-.dark h2.section-title, .gradient h2.section-title,
-.blue h2.section-title, .gold-accent h2.section-title {
-  color: var(--white);
-}
-.white h2.section-title { color: var(--text); }
-h2.section-title .gold { color: var(--gold); }
-
-p.body-text {
-  font-size: 20px; line-height: 1.8; margin-bottom: 16px;
-}
-.dark p.body-text { color: rgba(255,255,255,0.8); }
-.white p.body-text { color: var(--text-sec); }
-
-/* ── Cards ─────────────────────────────────── */
-.card-grid {
-  display: grid; gap: 20px; width: 100%;
-}
-.card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-.card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-.card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-
-.card {
-  background: var(--dark-card); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px; padding: 28px;
-}
-.white .card {
-  background: var(--gray); border-color: var(--border);
-}
-.card .card-num {
-  font-size: 48px; font-weight: 900; color: var(--gold);
-  opacity: 0.3; line-height: 1; margin-bottom: 8px;
-}
-.card .card-title {
-  font-size: 18px; font-weight: 700; margin-bottom: 8px;
-  color: var(--white);
-}
-.white .card .card-title { color: var(--text); }
-.card .card-desc {
-  font-size: 14px; line-height: 1.7;
-  color: rgba(255,255,255,0.6);
-}
-.white .card .card-desc { color: var(--text-sec); }
-
-/* ── Timeline ─────────────────────────────────── */
-.timeline { display: flex; flex-direction: column; gap: 20px; }
-.timeline-item {
-  display: flex; gap: 20px; align-items: flex-start;
-}
-.timeline-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--gold); margin-top: 6px; flex-shrink: 0;
-  box-shadow: 0 0 12px rgba(252,173,42,0.4);
-}
-.timeline-content { flex: 1; }
-.timeline-label {
-  font-size: 13px; font-weight: 600; color: var(--gold);
-  letter-spacing: 1px; margin-bottom: 4px;
-}
-.timeline-text {
-  font-size: 17px; line-height: 1.6;
-  color: rgba(255,255,255,0.8);
-}
-
-/* ── Stats ─────────────────────────────────── */
-.stat-row {
-  display: flex; gap: 40px; justify-content: center;
-  flex-wrap: wrap;
-}
-.stat-item { text-align: center; }
-.stat-num {
-  font-size: 56px; font-weight: 900; color: var(--gold);
-  line-height: 1;
-}
-.stat-label {
-  font-size: 15px; color: rgba(255,255,255,0.6);
-  margin-top: 8px;
-}
-
-/* ── Code Block ─────────────────────────────────── */
-.code-block {
-  background: #0D1B2A; border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px; padding: 24px 28px;
-  font-family: 'JetBrains Mono', Consolas, monospace;
-  font-size: 15px; line-height: 1.7; color: #E0E6F0;
-  white-space: pre; overflow-x: auto; margin: 16px 0;
-}
-.code-block .comment { color: #546E7A; }
-.code-block .keyword { color: var(--gold); }
-.code-block .string { color: var(--cyan); }
-
-/* ── Table ─────────────────────────────────── */
-.slide-table {
-  width: 100%; border-collapse: collapse;
-  font-size: 16px; margin: 16px 0;
-}
-.slide-table th {
-  background: var(--deep-blue); color: white;
-  padding: 14px 18px; text-align: left;
-  font-weight: 600; font-size: 14px; letter-spacing: 0.5px;
-}
-.slide-table td {
-  padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.8);
-}
-.white .slide-table td {
-  border-color: var(--border); color: var(--text);
-}
-.slide-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-.white .slide-table tr:nth-child(even) td { background: var(--gray); }
-
-/* ── Tags ─────────────────────────────────── */
-.tag {
-  display: inline-block; padding: 4px 14px; border-radius: 20px;
-  font-size: 13px; font-weight: 600; margin: 3px;
-}
+.slide-subtitle { font-size: 20px; font-weight: 400; line-height: 1.6; color: rgba(255,255,255,0.65); max-width: 800px; text-align: center; }
+h2.stitle { font-size: 32px; font-weight: 700; margin-bottom: 28px; line-height: 1.3; color: var(--white); }
+h2.stitle .gold { color: var(--gold); }
+.body { max-width: 960px; width: 100%; text-align: left; }
+p.bt { font-size: 18px; line-height: 1.8; margin-bottom: 14px; color: rgba(255,255,255,0.75); }
+.tag { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 3px; }
 .tag.gold { background: rgba(252,173,42,0.15); color: var(--gold); }
 .tag.cyan { background: rgba(2,141,220,0.15); color: var(--cyan); }
 .tag.green { background: rgba(82,196,26,0.15); color: #52c41a; }
+.tag.red { background: rgba(245,34,45,0.15); color: var(--red); }
 
-/* ── Quote ─────────────────────────────────── */
-.big-quote {
-  font-size: 28px; font-weight: 300; font-style: italic;
-  line-height: 1.6; max-width: 800px; text-align: center;
-  color: rgba(255,255,255,0.85);
-  border-left: 3px solid var(--gold); padding-left: 24px;
-  text-align: left;
+/* ── Chat Bubbles ─────────────────────────────── */
+.chat { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+.msg { display: flex; gap: 12px; max-width: 85%; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg.ai { align-self: flex-start; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800;
 }
+.msg.user .avatar { background: var(--gold); color: var(--dark); }
+.msg.ai .avatar { background: var(--cyan); color: white; }
+.bubble {
+  padding: 14px 18px; border-radius: 14px; font-size: 15px; line-height: 1.7;
+}
+.msg.user .bubble { background: rgba(252,173,42,0.1); border: 1px solid rgba(252,173,42,0.2); color: rgba(255,255,255,0.9); border-top-right-radius: 4px; }
+.msg.ai .bubble { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); border-top-left-radius: 4px; }
+.bubble strong { color: var(--gold); }
+.bubble em { color: var(--cyan); font-style: normal; }
+.bubble .tag { font-size: 11px; padding: 2px 10px; }
 
-/* ── Progress Bar ─────────────────────────────────── */
-.progress-bar {
-  display: flex; gap: 4px; align-items: center;
-  margin: 8px 0;
+/* ── Expert Panel ─────────────────────────────── */
+.panel { display: flex; flex-direction: column; gap: 12px; }
+.expert-row { display: flex; gap: 12px; align-items: flex-start; }
+.expert-badge {
+  flex-shrink: 0; width: 100px; padding: 6px 0; text-align: center;
+  border-radius: 8px; font-size: 12px; font-weight: 700;
+  background: var(--dark-card); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--gold);
 }
-.progress-fill {
-  height: 8px; border-radius: 4px; background: var(--gold);
-}
-.progress-empty {
-  height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1);
-  flex: 1;
-}
-.progress-label {
-  font-size: 14px; font-weight: 700; color: var(--gold);
-  min-width: 50px; text-align: right;
-}
+.expert-text { flex: 1; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.75); }
 
-/* ── Navigation ─────────────────────────────────── */
-.nav {
-  position: fixed; bottom: 32px; right: 40px;
-  display: flex; gap: 12px; z-index: 100;
+/* ── Score Card ──────────────────────────────── */
+.score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.score-card {
+  background: var(--dark-card); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; padding: 16px; text-align: center;
 }
-.nav button {
-  width: 44px; height: 44px; border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4);
-  color: white; font-size: 18px; cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: all 0.2s;
-}
-.nav button:hover { background: var(--deep-blue); border-color: var(--cyan); }
+.score-card .sc-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.score-card .sc-num { font-size: 28px; font-weight: 800; color: var(--gold); }
+.score-card .sc-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
 
-.slide-counter {
-  position: fixed; bottom: 38px; left: 40px;
-  font-size: 14px; color: rgba(255,255,255,0.4);
-  font-weight: 500; z-index: 100;
-}
-
-/* ── Logo ─────────────────────────────────── */
-.logo-fixed {
-  position: fixed; top: 28px; left: 36px; z-index: 100;
-  display: flex; align-items: center; gap: 10px;
-}
-.logo-text {
-  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.5);
-  letter-spacing: 1px;
-}
-.logo-text .gold { color: var(--gold); }
-
-/* ── Diagram ─────────────────────────────────── */
-.diagram {
-  font-family: 'JetBrains Mono', Consolas, monospace;
-  font-size: 14px; line-height: 1.6;
-  color: rgba(255,255,255,0.7);
-  white-space: pre; margin: 12px 0;
-}
+/* ── Cards / Table / Progress ─────────────────── */
+.card-grid { display: grid; gap: 16px; }
+.card-grid.c2 { grid-template-columns: 1fr 1fr; }
+.card-grid.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.card { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 24px; }
+.card .cn { font-size: 40px; font-weight: 900; color: var(--gold); opacity: 0.25; line-height: 1; margin-bottom: 6px; }
+.card .ct { font-size: 17px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+.card .cd { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.55); }
+.stbl { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; }
+.stbl th { background: var(--deep-blue); color: white; padding: 11px 14px; text-align: left; font-weight: 600; font-size: 13px; }
+.stbl td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.75); }
+.pb { display: flex; gap: 4px; align-items: center; margin: 6px 0; }
+.pb .pf { height: 8px; border-radius: 4px; background: var(--gold); }
+.pb .pe { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); flex: 1; }
+.pb .pl { font-size: 14px; font-weight: 700; color: var(--gold); min-width: 45px; text-align: right; }
+.stat-row { display: flex; gap: 36px; justify-content: center; flex-wrap: wrap; }
+.stat-item { text-align: center; }
+.stat-num { font-size: 52px; font-weight: 900; color: var(--gold); line-height: 1; }
+.stat-label { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+.diagram { font-family: Consolas, monospace; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.6); white-space: pre; margin: 10px 0; }
 .diagram .hl { color: var(--gold); font-weight: 700; }
 .diagram .cy { color: var(--cyan); }
+.big-quote { font-size: 26px; font-weight: 300; font-style: italic; line-height: 1.6; max-width: 820px; text-align: left; color: rgba(255,255,255,0.8); border-left: 3px solid var(--gold); padding-left: 24px; }
 
-/* ── Responsive for smaller screens ──────────── */
+/* ── Annotation Arrow ────────────────────────── */
+.anno { display: inline-block; background: rgba(252,173,42,0.12); border: 1px dashed var(--gold); border-radius: 6px; padding: 8px 14px; font-size: 13px; color: var(--gold); margin: 8px 0; }
+
+/* Navigation */
+.nav { position: fixed; bottom: 28px; right: 36px; display: flex; gap: 10px; z-index: 100; }
+.nav button { width: 42px; height: 42px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.5); color: white; font-size: 18px; cursor: pointer; backdrop-filter: blur(8px); transition: all 0.2s; }
+.nav button:hover { background: var(--deep-blue); border-color: var(--cyan); }
+.sc { position: fixed; bottom: 34px; left: 36px; font-size: 13px; color: rgba(255,255,255,0.35); font-weight: 500; z-index: 100; }
+.logo-f { position: fixed; top: 24px; left: 32px; z-index: 100; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.4); }
+.logo-f .gold { color: var(--gold); }
+
 @media (max-width: 1024px) {
-  .slide { padding: 40px; }
-  .slide-title { font-size: 36px; }
-  .card-grid.cols-3, .card-grid.cols-4 { grid-template-columns: 1fr 1fr; }
-  .stat-num { font-size: 40px; }
+  .slide { padding: 36px 28px; }
+  .slide-title { font-size: 32px; }
+  .card-grid.c3 { grid-template-columns: 1fr 1fr; }
+  .score-grid { grid-template-columns: 1fr 1fr; }
+  .msg { max-width: 95%; }
 }
 </style>
 </head>
 <body>
 
-<div class="logo-fixed">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="24" height="30">
-    <path d="M24.39 0.09C25.4-0.32 26.42 0.73 26.42 2.18V41.44C26.42 42.89 25.4 43.93 24.39 43.52L9.71 39.63L18.24 38.6C18.75 38.52 19.21 38.25 19.55 37.83C19.89 37.41 20.08 36.87 20.08 36.32V7.32C20.07 6.76 19.89 6.23 19.55 5.81C19.21 5.4 18.74 5.12 18.24 5.05L9.63 4L24.39 0.09Z" fill="white"/>
-    <path d="M2.45 38.84L16.61 37.33C17.12 37.25 17.58 37 17.92 36.6C18.26 36.21 18.45 35.7 18.45 35.18V8.42C18.45 7.9 18.26 7.39 17.92 7C17.58 6.61 17.12 6.36 16.61 6.29L2.45 4.77C2.15 4.72 1.84 4.75 1.55 4.83C1.25 4.92 0.98 5.07 0.75 5.27C0.52 5.47 0.33 5.72 0.2 6C0.07 6.29 0 6.59 0 6.9V36.69C0 37 0.07 37.31 0.2 37.59C0.32 37.88 0.51 38.13 0.74 38.33C0.98 38.53 1.25 38.69 1.54 38.77C1.84 38.86 2.15 38.88 2.45 38.84Z" fill="#FCAD2A"/>
-    <path d="M31.87 7.93L28.1 7.52V36.09L31.87 35.71V7.93Z" fill="#013A7D"/>
-    <path d="M33.13 8.05V35.57C34.11 35.36 34.81 34.8 34.81 34.06V9.55C34.81 8.81 34.11 8.26 33.13 8.05Z" fill="#028CDC"/>
-  </svg>
-  <span class="logo-text"><span class="gold">Synapse</span> by Janus Digital</span>
+<div class="logo-f">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="22" height="28"><path d="M24.39.09C25.4-.32 26.42.73 26.42 2.18V41.44c0 1.45-1.02 2.49-2.03 2.08L9.71 39.63l8.53-1.03c.51-.08.98-.35 1.31-.77.34-.42.53-.96.53-1.51V7.32c0-.56-.19-1.09-.53-1.51-.34-.42-.81-.69-1.31-.77L9.63 4 24.39.09Z" fill="#fff"/><path d="M2.45 38.84L16.61 37.33c.51-.08.97-.33 1.31-.73.34-.39.53-.9.53-1.42V8.42c0-.52-.19-1.03-.53-1.42-.34-.39-.8-.64-1.31-.71L2.45 4.77c-.3-.05-.61-.02-.9.06-.3.09-.57.24-.8.44s-.42.45-.55.73c-.13.28-.2.59-.2.9v29.79c0 .31.07.62.2.9.13.28.3.53.54.73.23.2.51.35.8.44.29.09.61.11.91.06Z" fill="#FCAD2A"/><path d="M31.87 7.93L28.1 7.52v28.57l3.77-.38V7.93Z" fill="#013A7D"/><path d="M33.13 8.05v27.52c.98-.21 1.68-.77 1.68-1.51V9.55c0-.73-.7-1.29-1.68-1.5Z" fill="#028CDC"/></svg>
+  <span><span class="gold">Synapse</span> by Janus Digital</span>
 </div>
-
-<div class="slide-counter"><span id="current">1</span> / <span id="total"></span></div>
-
-<nav class="nav">
-  <button onclick="prevSlide()">&#8592;</button>
-  <button onclick="nextSlide()">&#8594;</button>
-</nav>
+<div class="sc"><span id="cur">1</span> / <span id="tot"></span></div>
+<nav class="nav"><button onclick="prev()">&#8592;</button><button onclick="next()">&#8594;</button></nav>
 
 <div class="deck" id="deck">
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 1: Title
-     ════════════════════════════════════════════════════════ -->
+<!-- ═══════ 01 封面 ═══════ -->
 <div class="slide gradient active">
   <div class="slide-label">Janus Digital &middot; 2026.04.10</div>
-  <h1 class="slide-title" style="text-align:center;">
-    <span class="gold">Synapse</span><br>
-    用一场对话<br>构建AI协作运营体系
-  </h1>
-  <p class="slide-subtitle">
-    一个真实案例：如何在一天内搭建 10 个 AI 团队、46 个 Agent、<br>
-    完整的执行链、决策链、情报闭环和人力资源管理体系
-  </p>
-  <div style="margin-top: 32px;">
-    <span class="tag gold">Harness Engineering</span>
-    <span class="tag cyan">Multi-Agent</span>
-    <span class="tag green">Claude Code</span>
-  </div>
+  <h1 class="slide-title" style="text-align:center"><span class="gold">Synapse</span><br>用一场对话<br>构建AI协作运营体系</h1>
+  <p class="slide-subtitle">一个真实案例：如何通过与 AI CEO 的对话，<br>一天内搭建 10 个团队、46 个 Agent 的完整运营体系</p>
+  <div style="margin-top:28px"><span class="tag gold">Harness Engineering</span><span class="tag cyan">Multi-Agent</span><span class="tag green">Claude Code</span></div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 2: What is Synapse
-     ════════════════════════════════════════════════════════ -->
+<!-- ═══════ 02 背景 ═══════ -->
 <div class="slide dark">
-  <div class="slide-label">概述</div>
-  <h2 class="section-title">什么是 <span class="gold">Synapse</span>？</h2>
-  <div class="slide-body">
-    <p class="body-text">
-      突触（Synapse）是神经元之间传递信号的关键节点。<br>
-      <strong style="color:var(--gold)">Synapse</strong> 是 Janus Digital 的 AI 协作运营体系 —— 知识、决策、执行之间的信息流转枢纽。
-    </p>
-    <div class="card-grid cols-3" style="margin-top: 32px;">
-      <div class="card">
-        <div class="card-num">01</div>
-        <div class="card-title">Obsidian 第二大脑</div>
-        <div class="card-desc">知识存储、检索、沉淀<br>记忆层 — 组织的长期记忆</div>
-      </div>
-      <div class="card">
-        <div class="card-num">02</div>
-        <div class="card-title">Harness Engineering</div>
-        <div class="card-desc">规则、约束、流程、反馈<br>控制层 — Agent 的行为边界</div>
-      </div>
-      <div class="card">
-        <div class="card-num">03</div>
-        <div class="card-title">Multi-Agent 团队</div>
-        <div class="card-desc">10 个专业团队，46 个 AI Agent<br>执行层 — 专业分工协作</div>
-      </div>
+  <div class="slide-label">背景</div>
+  <h2 class="stitle">AI技术发展太快，<span class="gold">CEO一个人管不过来</span></h2>
+  <div class="body">
+    <p class="bt">Janus Digital 是一家建筑数字化资产运营管理公司。总裁刘子杨面临一个所有企业管理者都面临的挑战：</p>
+    <div class="big-quote" style="margin:20px 0">
+      AI工具层出不穷，每天都有新的可能性。<br>
+      但我没有足够的时间去逐一评估、选择、应用。<br>
+      <strong style="color:var(--gold);font-style:normal">我需要一个AI团队替我管理这一切。</strong>
     </div>
-    <div class="card-grid cols-2" style="margin-top: 20px;">
-      <div class="card">
-        <div class="card-num">04</div>
-        <div class="card-title">情报闭环管线</div>
-        <div class="card-desc">发现 → 评估 → 执行 → 报告<br>进化层 — 自动学习与进化</div>
-      </div>
-      <div class="card">
-        <div class="card-num">05</div>
-        <div class="card-title">四级决策体系</div>
-        <div class="card-desc">L1 自动 → L2 CEO → L3 专家 → L4 总裁<br>决策层 — 权责分级管控</div>
-      </div>
-    </div>
+    <p class="bt">于是，在一场持续数小时的对话中，总裁与 AI CEO "Lysander" 一起，从零构建了一套完整的AI协作运营体系。</p>
+    <p class="bt" style="color:var(--gold)">以下是这场对话的真实过程。</p>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 3: The Journey — Overview
-     ════════════════════════════════════════════════════════ -->
+<!-- ═══════ 03 场景一：角色定位 ═══════ -->
 <div class="slide dark">
-  <div class="slide-label">今天发生了什么</div>
-  <h2 class="section-title">一天之内，<span class="gold">从零到完整体系</span></h2>
-  <div class="slide-body">
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <div class="timeline-label">场景一</div>
-          <div class="timeline-text"><strong>确认管理体系</strong> — 验证 Lysander CEO 管理体系是否生效，确认总裁与 AI CEO 的角色边界</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <div class="timeline-label">场景二</div>
-          <div class="timeline-text"><strong>重构执行链与决策链</strong> — 从"总裁什么都管"到"总裁只管目标和验收"，建立四级决策体系</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <div class="timeline-label">场景三</div>
-          <div class="timeline-text"><strong>构建每日情报系统</strong> — AI 自动搜索→筛选→分析→生成报告→通知，全自动化</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <div class="timeline-label">场景四</div>
-          <div class="timeline-text"><strong>情报→行动闭环</strong> — 从发现到落地的全自动管线：评估→评审→执行→成果报告</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <div class="timeline-label">场景五</div>
-          <div class="timeline-text"><strong>发现问题 & 修复机制</strong> — 识别执行链漏洞，建立强制团队派单制度和自动化编排</div>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <div class="timeline-label">场景六</div>
-          <div class="timeline-text"><strong>建立HR管理体系</strong> — Agent 质量审计引擎，全员从 64 分提升到 94 分</div>
-        </div>
-      </div>
+  <div class="slide-label">场景一 &middot; 第一个对话就暴露了问题</div>
+  <h2 class="stitle">"<span class="gold">我是总裁刘子杨，Lysander是CEO</span>"</h2>
+  <div class="body">
+    <p class="bt" style="font-size:15px;color:var(--text-muted)">确认体系时，总裁发现AI系统混淆了"总裁"和"CEO"的角色定位。一句简单的纠正，定义了整个体系的权责基础。</p>
+    <div class="chat" style="margin-top:16px">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">我是总裁 刘子杨；Lysander 是CEO，把这个定位确认清楚</div></div>
+      <div class="msg ai"><div class="avatar">AI</div><div class="bubble">明白，总裁刘子杨。角色关系已全局更新：<br><strong>总裁 刘子杨</strong> → 最高决策者<br><strong>Lysander CEO</strong> → AI管理者，向总裁汇报<br>已修改 5 个核心文件，确保全体系一致。</div></div>
     </div>
+    <div class="anno" style="margin-top:16px">启示：AI体系的第一步不是技术，是定义"谁对谁负责"。角色不清，后面所有流程都是空中楼阁。</div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 4: Scene 1 — Execution Chain
-     ════════════════════════════════════════════════════════ -->
+<!-- ═══════ 04 场景二：重构决策链 ═══════ -->
 <div class="slide dark">
-  <div class="slide-label">场景一 &middot; 核心架构</div>
-  <h2 class="section-title">执行链 v2.0 — <span class="gold">总裁只管两件事</span></h2>
-  <div class="slide-body">
-    <div style="display:flex; gap: 40px; align-items: flex-start;">
-      <div style="flex:1;">
-        <p class="body-text">
-          <strong style="color:var(--gold)">总裁提出目标</strong> → Lysander 全权执行 → <strong style="color:var(--gold)">总裁验收结果</strong>
-        </p>
-        <p class="body-text" style="font-size:16px; color:rgba(255,255,255,0.5);">
-          中间过程的所有方案设计、决策判断、团队调度、质量审查，<br>全部由 AI CEO + 智囊团 + 执行团队自主完成。
-        </p>
-        <div class="diagram" style="margin-top:24px;">
-<span class="hl">开场问候</span> → <span class="cy">目标确认</span> → <span class="hl">智囊团分级(S/M/L)</span>
-    ↓
-<span class="cy">团队派单(强制)</span> → <span class="hl">团队执行</span> → <span class="cy">QA审查(强制)</span>
-    ↓
-<span class="hl">交付结果</span></div>
-      </div>
-      <div style="flex:0 0 320px;">
-        <table class="slide-table" style="font-size:14px;">
-          <tr><th>级别</th><th>决策者</th><th>场景</th></tr>
-          <tr><td style="color:var(--gold);font-weight:700">L1</td><td>自动</td><td>例行操作</td></tr>
-          <tr><td style="color:var(--gold);font-weight:700">L2</td><td>专家评审</td><td>专业问题先过专家</td></tr>
-          <tr><td style="color:var(--gold);font-weight:700">L3</td><td>Lysander</td><td>基于专家建议决策</td></tr>
-          <tr><td style="color:var(--gold);font-weight:700">L4</td><td>总裁</td><td>法律/&gt;100万</td></tr>
-        </table>
-        <p style="font-size:13px; color:rgba(255,255,255,0.4); margin-top:12px; text-align:center;">
-          专业的事交给专家<br>不上报让总裁猜
-        </p>
-      </div>
+  <div class="slide-label">场景二 &middot; 智囊团评审会实录</div>
+  <h2 class="stitle">"我参与越少越好，<span class="gold">我的判断不一定准确</span>"</h2>
+  <div class="body">
+    <div class="chat">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">原则是我参与的越少越好，我的判断和决策不一定准确，更多时候应该引入专家评审和决策</div></div>
     </div>
+    <p class="bt" style="margin-top:16px;font-size:15px;">Lysander 立即召集智囊团 4 位专家开评审会 ——</p>
+    <div class="panel" style="margin-top:12px">
+      <div class="expert-row"><div class="expert-badge">战略分析师</div><div class="expert-text">执行链有3个结构性问题：无程序化强制、跨会话状态丢失、简单任务的执行链开销。<strong>评分 5/5</strong></div></div>
+      <div class="expert-row"><div class="expert-badge">关联发现专家</div><div class="expert-text">发现3条断裂点：CLAUDE.md与代码逻辑断裂、决策配置与实际行为断裂、执行链与会话边界断裂。</div></div>
+      <div class="expert-row"><div class="expert-badge">趋势洞察师</div><div class="expert-text">预测执行链遵守度会随对话深度递减 — 不是AI偷懒，是<strong>架构层面没有强制检查点</strong>。</div></div>
+      <div class="expert-row"><div class="expert-badge">决策顾问</div><div class="expert-text">评估当前体系：设计完整性 8/10，<span style="color:var(--red)">强制执行力 3/10</span>，<span style="color:var(--red)">跨会话连续性 2/10</span>。</div></div>
+    </div>
+    <div class="anno" style="margin-top:14px">评审结果：均分 5.0 → 批准执行三级改进方案（规则层+机制层+代码层），当天全部落地。</div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 5: Harness Engineering
-     ════════════════════════════════════════════════════════ -->
-<div class="slide gradient">
-  <div class="slide-label">方法论</div>
-  <h2 class="section-title" style="text-align:center;">Harness Engineering<br><span style="font-size:24px;font-weight:400;color:rgba(255,255,255,0.6);">2026年AI工程新范式 — Agent = Model + Harness</span></h2>
-  <div class="slide-body">
-    <div class="card-grid cols-2" style="margin-top:24px;">
-      <div class="card" style="border-left: 3px solid var(--gold);">
-        <div class="card-title" style="color:var(--gold);">Guides — 前馈控制</div>
-        <div class="card-desc" style="font-size:15px; line-height:2;">
-          <strong>CLAUDE.md</strong> → 角色、规则、流程<br>
-          <strong>organization.yaml</strong> → 团队架构、路由<br>
-          <strong>decision_rules.yaml</strong> → 决策约束<br>
-          <strong>HR/personnel/*.md</strong> → 能力档案
-        </div>
-      </div>
-      <div class="card" style="border-left: 3px solid var(--cyan);">
-        <div class="card-title" style="color:var(--cyan);">Sensors — 反馈控制</div>
-        <div class="card-desc" style="font-size:15px; line-height:2;">
-          <strong>QA 自动评分</strong> → 质量门禁<br>
-          <strong>执行链检查</strong> → 流程完整性<br>
-          <strong>决策日志</strong> → 误判追踪<br>
-          <strong>专家评审团</strong> → 多维度评分
-        </div>
-      </div>
-    </div>
-    <div class="big-quote" style="margin-top:36px; font-size:20px;">
-      竞争优势不在于谁的模型最大，<br>而在于谁的 <span style="color:var(--gold)">Harness</span> 最有效。<br>
-      <span style="font-size:14px; color:rgba(255,255,255,0.4);">— Martin Fowler / Red Hat, 2026</span>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 6: Intelligence Pipeline
-     ════════════════════════════════════════════════════════ -->
+<!-- ═══════ 05 场景二续：决策体系 ═══════ -->
 <div class="slide dark">
-  <div class="slide-label">场景三 &middot; 自动化</div>
-  <h2 class="section-title">每日情报 → 行动 <span class="gold">全自动闭环</span></h2>
-  <div class="slide-body">
-    <div class="diagram" style="font-size:15px;">
-<span class="hl">6:00am</span> ─── 任务恢复Agent ─── 检查未完成工作，自动续接
-   │
-<span class="hl">8:00am</span> ─── 情报日报Agent ─── 搜索AI前沿 → 筛选 → 分析报告
-   │                               → HTML → git push → <span class="cy">Slack通知</span>
-   │
-<span class="hl">10:00am</span> ── 行动管线Agent ─── 提取建议 → <span class="cy">4专家评估(1-5分)</span>
-   │                               → 评审决策 → <span class="hl">Harness Ops执行</span>
-   │                               → 成果报告 → <span class="cy">Slack通知</span>
-   │
-<span class="hl">每周一</span> ─── HR审计Agent ──── 全员质量审计 → 自动修复 → 报告</div>
-    <p class="body-text" style="margin-top:24px; font-size:17px; text-align:center; color:rgba(255,255,255,0.5);">
-      总裁只在 Slack 上收到最终通知。整个体系无需人工启动即持续运转。
-    </p>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 7: Team Dispatch Problem
-     ════════════════════════════════════════════════════════ -->
-<div class="slide dark">
-  <div class="slide-label">场景五 &middot; 发现问题并修复</div>
-  <h2 class="section-title">从"口头承诺"到 <span class="gold">制度强制</span></h2>
-  <div class="slide-body">
-    <div class="card-grid cols-2">
-      <div class="card" style="border-top: 3px solid #f5222d;">
-        <div class="card-title" style="color:#f5222d;">发现的问题</div>
-        <div class="card-desc" style="font-size:15px; line-height:2;">
-          Lysander 反复跳过团队派单环节<br>
-          自己一个人做完所有工作<br>
-          执行链写了"路由到团队"<br>
-          <strong>但没有机制检查是否真的路由了</strong><br>
-          <br>
-          <span style="color:var(--gold)">根因：有 Guides，没 Sensors</span>
-        </div>
+  <div class="slide-label">场景二 &middot; 成果</div>
+  <h2 class="stitle">四级决策体系 — <span class="gold">专业问题先过专家</span></h2>
+  <div class="body" style="display:flex; gap:36px">
+    <div style="flex:1">
+      <p class="bt">总裁后来又纠正了一个关键逻辑 ——</p>
+      <div class="chat">
+        <div class="msg user"><div class="avatar">总裁</div><div class="bubble">当前的四级决策体系对吗？我认为 <strong>L1自动 → L2专家 → L3 CEO → L4总裁</strong> 更合适</div></div>
       </div>
-      <div class="card" style="border-top: 3px solid #52c41a;">
-        <div class="card-title" style="color:#52c41a;">建立的制度</div>
-        <div class="card-desc" style="font-size:15px; line-height:2;">
-          <strong>强制团队派单制度</strong><br>
-          M/L级任务执行前必须输出派单表<br>
-          每个工作块标注执行者<br>
-          与开场问候同级，不可省略<br>
-          <br>
-          <span style="color:var(--cyan)">Guide + Sensor 双保险</span>
-        </div>
-      </div>
+      <div class="anno" style="margin-top:14px">总裁一语道破：专业问题应该先过专家，CEO再基于专家建议做管理决策，而非反过来。</div>
+      <div class="diagram" style="margin-top:16px">
+修正前: L1自动 → <span style="color:var(--red)">L2 CEO</span> → L3专家 → L4总裁
+修正后: L1自动 → <span class="hl">L2 专家</span> → <span class="cy">L3 CEO</span> → L4总裁</div>
     </div>
-    <p class="body-text" style="margin-top:24px; font-size:17px; text-align:center;">
-      <span style="color:var(--gold)">体系不靠"下次注意"，靠制度强制。</span>
-    </p>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 8: HR System
-     ════════════════════════════════════════════════════════ -->
-<div class="slide dark">
-  <div class="slide-label">场景六 &middot; 组织质量</div>
-  <h2 class="section-title">HR 管理体系 — <span class="gold">Agent 也需要人力资源</span></h2>
-  <div class="slide-body" style="display:flex; gap:40px;">
-    <div style="flex:1;">
-      <p class="body-text" style="font-size:17px;">
-        <strong style="color:var(--gold)">问题</strong>：Agent 想加就加，加完没人管，管了没标准。<br>
-        审计发现：Janus 6人全部 0 分，Growth 全员 0 分。
-      </p>
-      <p class="body-text" style="font-size:17px;">
-        <strong style="color:var(--cyan)">方案</strong>：建立完整的 Agent 人力资源管理体系 —
-      </p>
-      <div style="font-size:15px; line-height:2.2; color:rgba(255,255,255,0.7); margin-top:8px;">
-        &bull; 强制 Schema — 每个 Agent 必须有完整档案<br>
-        &bull; 能力质量分级 — A/B/C 三级，C 级不合格<br>
-        &bull; 入职审批 — HR Director 8 项检查清单<br>
-        &bull; 周度自动审计 — 每周一自动评分全员<br>
-        &bull; 情报联动进化 — 新技术出现 → 自动更新能力<br>
-        &bull; 退役制度 — 不达标就降级或退役
-      </div>
-    </div>
-    <div style="flex:0 0 280px;">
-      <div style="font-size:14px; font-weight:600; color:var(--gold); margin-bottom:16px;">全员审计分数变化</div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:13px; color:rgba(255,255,255,0.5);">第一轮（发现问题）</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:64%;"></div><div class="progress-empty"></div><div class="progress-label">64.1</div></div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:13px; color:rgba(255,255,255,0.5);">第二轮（基础修复）</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:83%;"></div><div class="progress-empty"></div><div class="progress-label">83.1</div></div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:13px; color:rgba(255,255,255,0.5);">第三轮（提标90分）</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:88%;"></div><div class="progress-empty"></div><div class="progress-label">88.6</div></div>
-      </div>
-      <div>
-        <div style="font-size:13px; color:rgba(255,255,255,0.5);">最终（全员达标）</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:94%;"></div><div class="progress-empty"></div><div class="progress-label" style="font-size:18px;">93.8</div></div>
-      </div>
-      <div style="text-align:center; margin-top:16px;">
-        <span class="tag green">不合格：11人 → 0人</span>
-      </div>
+    <div style="flex:0 0 260px">
+      <table class="stbl">
+        <tr><th>级别</th><th>决策者</th></tr>
+        <tr><td style="color:var(--gold);font-weight:700">L1</td><td>自动执行</td></tr>
+        <tr><td style="color:var(--gold);font-weight:700">L2</td><td>专家评审</td></tr>
+        <tr><td style="color:var(--gold);font-weight:700">L3</td><td>Lysander CEO</td></tr>
+        <tr><td style="color:var(--gold);font-weight:700">L4</td><td>总裁</td></tr>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px">CEO的每个决策<br>都有专家分析做支撑</p>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 9: Organization
-     ════════════════════════════════════════════════════════ -->
+<!-- ═══════ 06 场景三：情报系统 ═══════ -->
 <div class="slide dark">
-  <div class="slide-label">组织全景</div>
-  <h2 class="section-title"><span class="gold">10</span> 个团队 &middot; <span class="gold">46</span> 个 Agent</h2>
-  <div class="slide-body">
-    <table class="slide-table">
-      <tr>
-        <th>团队</th><th>人数</th><th>定位</th><th>审计分</th>
-      </tr>
-      <tr><td style="color:var(--gold);font-weight:600;">Graphify 智囊团</td><td>6</td><td>战略分析、评估评审、情报研究、执行审计</td><td>96.0</td></tr>
-      <tr><td>OBS 知识管理</td><td>4</td><td>知识架构、沉淀萃取、检索推荐、质量审核</td><td>96.0</td></tr>
-      <tr><td>Harness Ops 驾驭运维</td><td>4</td><td>Harness配置、代码开发、知识沉淀、集成测试</td><td>95.5</td></tr>
-      <tr><td>Stock 股票项目</td><td>5</td><td>趋势交易、量化研究、前后端开发</td><td>95.2</td></tr>
-      <tr><td style="color:var(--gold);font-weight:600;">HR 管理</td><td>2</td><td>Agent入职审批、能力评审、组织管理</td><td>94.5</td></tr>
-      <tr><td>Growth 增长</td><td>2</td><td>客户洞察、GTM策略、竞品分析</td><td>93.0</td></tr>
-      <tr><td>RD 研发</td><td>5</td><td>技术架构、前后端开发、DevOps、QA</td><td>92.8</td></tr>
-      <tr><td>Content_ops 内容</td><td>4</td><td>内容策划、创作、视觉设计、HTML发布</td><td>92.5</td></tr>
-      <tr><td>Butler 交付</td><td>7</td><td>项目交付、IoT施工、PMO、培训、UAT</td><td>92.0</td></tr>
-      <tr><td>Janus 项目交付</td><td>6</td><td>建筑数字化全生命周期交付、WBS管理</td><td>91.8</td></tr>
+  <div class="slide-label">场景三 &middot; 从一个需求到完整管道</div>
+  <h2 class="stitle">"每天给我一份<span class="gold">有用的</span>AI情报"</h2>
+  <div class="body">
+    <div class="chat">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">AI技术发展太快，我没有足够的时间查看所有内容。<br>目标：每天收到经过<strong>专业AI专家</strong>结合<strong>我的日常工作</strong>整理出来对我有价值的分析报告</div></div>
+      <div class="msg ai"><div class="avatar">AI</div><div class="bubble">目标确认。L级任务，智囊团方案已成型。<br>需要新建：<em>AI技术研究员</em>（Graphify第6名成员）+ <em>情报日报管线</em> + <em>HTML报告生成器</em> + <em>远程定时任务</em></div></div>
+    </div>
+    <p class="bt" style="margin-top:16px;font-size:15px;">Lysander 立即搜索了5组AI前沿动态，撰写首期报告，生成品牌化HTML，创建远程定时任务 —— 总裁验收后评价：</p>
+    <div class="chat">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">质量完全符合我的要求，<strong>非常棒</strong>。</div></div>
+    </div>
+    <div class="diagram" style="margin-top:18px">
+每日自动管道（无需人工启动）：
+<span class="hl">6am</span> 任务恢复 → <span class="hl">8am</span> 情报日报 → <span class="hl">10am</span> 行动管线 → <span class="cy">Slack通知</span></div>
+  </div>
+</div>
+
+<!-- ═══════ 07 场景四：情报变行动 ═══════ -->
+<div class="slide dark">
+  <div class="slide-label">场景四 &middot; 评审评分实录</div>
+  <h2 class="stitle">"报告不是用来看的，<span class="gold">是用来执行的</span>"</h2>
+  <div class="body">
+    <p class="bt" style="font-size:15px;">首期情报日报的建议经过4专家评审后，3条批准执行 ——</p>
+    <table class="stbl" style="margin:14px 0">
+      <tr><th>建议</th><th>战略</th><th>决策</th><th>趋势</th><th>技术</th><th>均分</th><th>决定</th></tr>
+      <tr><td>CLAUDE.md→Harness Configuration</td><td>5</td><td>4</td><td>5</td><td>5</td><td style="color:var(--gold);font-weight:700">4.75</td><td><span class="tag green" style="font-size:11px">批准</span></td></tr>
+      <tr><td>创建Harness Engineering方法论</td><td>5</td><td>4</td><td>5</td><td>—</td><td style="color:var(--gold);font-weight:700">4.67</td><td><span class="tag green" style="font-size:11px">批准</span></td></tr>
+      <tr><td>QA自动化评分引擎</td><td>4</td><td>4</td><td>5</td><td>4</td><td style="color:var(--gold);font-weight:700">4.25</td><td><span class="tag green" style="font-size:11px">批准</span></td></tr>
+      <tr><td>NVIDIA OpenShell关注</td><td colspan="5" style="color:var(--text-muted)">—</td><td><span class="tag" style="font-size:11px;background:rgba(255,255,255,0.05);color:var(--text-muted)">暂缓</span></td></tr>
     </table>
+    <p class="bt" style="font-size:15px;">评审规则：均分≥4.0批准 / 3.0-3.9有条件 / &lt;3.0暂缓 / 任一专家=1一票否决</p>
+    <div class="anno">从"看报告"到"报告变成代码变更"，每条建议都有完整的评估→执行→验证链路。</div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 10: Stats
-     ════════════════════════════════════════════════════════ -->
-<div class="slide gradient">
-  <div class="slide-label">今日成果</div>
-  <h2 class="section-title" style="text-align:center;">一天构建，<span class="gold">持续运转</span></h2>
-  <div class="stat-row" style="margin-top:48px;">
-    <div class="stat-item">
-      <div class="stat-num">10</div>
-      <div class="stat-label">专业团队</div>
+<!-- ═══════ 08 场景五+Harness：发现Bug修Bug ═══════ -->
+<div class="slide dark">
+  <div class="slide-label">场景五 &middot; 在实践中验证 Harness Engineering</div>
+  <h2 class="stitle">"<span class="gold">写了规则但没人遵守</span>" — Guide 有了，Sensor 呢？</h2>
+  <div class="body">
+    <div class="chat">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">刚才谁执行的？是AI团队吗？</div></div>
+      <div class="msg ai"><div class="avatar">AI</div><div class="bubble">直说：<strong>不是。是我 Lysander 一个人执行的</strong>，没有体现团队分工。</div></div>
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">不要光是期望，要<strong>强制按照流程来干活</strong>。</div></div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">46</div>
-      <div class="stat-label">AI Agent</div>
+    <p class="bt" style="margin-top:16px;font-size:15px;">这恰好印证了 Harness Engineering 的核心概念 ——</p>
+    <div class="card-grid c2" style="margin-top:12px">
+      <div class="card" style="border-top:3px solid var(--red)">
+        <div class="ct" style="color:var(--red)">问题：只有 Guides</div>
+        <div class="cd" style="font-size:14px;line-height:1.8">CLAUDE.md写了"路由到团队"<br>但没有任何机制检查<br>是否真的路由了<br><br><strong style="color:var(--red)">→ 纸上的规则 ≠ 执行的保证</strong></div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--green)">
+        <div class="ct" style="color:var(--green)">解决：Guide + Sensor 双保险</div>
+        <div class="cd" style="font-size:14px;line-height:1.8"><strong>Guide</strong>：强制团队派单表<br>（执行前必须输出谁做什么）<br><strong>Sensor</strong>：执行审计师前置检查<br>（没有派单就阻止执行）<br><br><strong style="color:var(--gold)">→ 与开场问候同级，不可省略</strong></div>
+      </div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">5</div>
-      <div class="stat-label">自动化定时任务</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">93.8</div>
-      <div class="stat-label">全员平均审计分</div>
-    </div>
+    <div class="anno" style="margin-top:14px">Harness Engineering 核心公式：Agent = Model + Harness。模型不变，改变 Harness（环境、约束、反馈），行为就改变。</div>
   </div>
-  <div class="stat-row" style="margin-top:40px;">
-    <div class="stat-item">
-      <div class="stat-num" style="font-size:40px;">4</div>
-      <div class="stat-label">决策级别</div>
+</div>
+
+<!-- ═══════ 09 插曲：视觉升级 ═══════ -->
+<div class="slide dark">
+  <div class="slide-label">插曲 &middot; 一个有趣的小案例</div>
+  <h2 class="stitle">"视觉效果参考 <span class="gold">janusd.com</span>"</h2>
+  <div class="body">
+    <div class="chat">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble">视觉效果 参考 https://www.janusd.com/ 重新定义该内容</div></div>
+      <div class="msg ai"><div class="avatar">AI</div><div class="bubble">网站是动态渲染的，CSS无法直接提取。换一个方式 — 抓取 Logo SVG 源码，从中提取品牌色彩系统。</div></div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num" style="font-size:40px;">90</div>
-      <div class="stat-label">HR合格线</div>
+    <p class="bt" style="margin-top:14px;font-size:15px;">AI 团队从一个 SVG 文件中逆向工程出完整品牌色彩体系 ——</p>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:8px;background:#FCAD2A"></div><div style="font-size:14px;color:rgba(255,255,255,0.6)">#FCAD2A<br><strong style="color:var(--gold)">Gold 品牌金</strong></div></div>
+      <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:8px;background:#013A7D"></div><div style="font-size:14px;color:rgba(255,255,255,0.6)">#013A7D<br><strong style="color:var(--cyan)">Deep Blue</strong></div></div>
+      <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:8px;background:#028CDC"></div><div style="font-size:14px;color:rgba(255,255,255,0.6)">#028CDC<br><strong style="color:var(--cyan)">Cyan 天蓝</strong></div></div>
+      <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:8px;background:#0A1628;border:1px solid rgba(255,255,255,0.1)"></div><div style="font-size:14px;color:rgba(255,255,255,0.6)">#0A1628<br><strong style="color:rgba(255,255,255,0.7)">Dark BG</strong></div></div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num" style="font-size:40px;">0</div>
-      <div class="stat-label">不合格Agent</div>
+    <p class="bt" style="margin-top:18px;font-size:15px;">然后用这套色彩重写了报告模板 — 从头部渐变、表格配色、优先级标签到页脚，全部对齐品牌视觉。</p>
+    <div class="anno">这就是 AI 团队的工作方式：给它一个 URL，它自己完成调研→提取→设计→实现→验证。</div>
+  </div>
+</div>
+
+<!-- ═══════ 10 场景六：HR体系 ═══════ -->
+<div class="slide dark">
+  <div class="slide-label">场景六 &middot; "审计结果触目惊心"</div>
+  <h2 class="stitle">Agent 也需要<span class="gold">绩效考核</span></h2>
+  <div class="body" style="display:flex;gap:32px">
+    <div style="flex:1">
+      <div class="chat">
+        <div class="msg user"><div class="avatar">总裁</div><div class="bubble">需要有专门的人力资源支持创建团队，并且创建的团队成员的能力是符合人力资源标准的</div></div>
+      </div>
+      <p class="bt" style="margin-top:12px;font-size:15px;">HR Director 上任后的第一次全量审计结果：</p>
+      <div style="font-size:14px;line-height:2;color:rgba(255,255,255,0.65);margin-top:8px">
+        &bull; Janus 团队 6 人：<strong style="color:var(--red)">全部 0 分</strong>（无元数据）<br>
+        &bull; Growth 团队 2 人：<strong style="color:var(--red)">全部 0 分</strong>（Schema缺失）<br>
+        &bull; 三种不同的卡片格式<br>
+        &bull; 大量 C 级能力描述（"项目管理"、"知识沉淀"）
+      </div>
+      <div class="anno" style="margin-top:12px">根因：Agent 想加就加，加完没人管，管了没标准。</div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num" style="font-size:40px;">24/7</div>
-      <div class="stat-label">自动运转</div>
+    <div style="flex:0 0 240px">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px">四轮整治进度</div>
+      <div style="margin-bottom:10px"><div style="font-size:12px;color:var(--text-muted)">第一轮 · 发现问题</div><div class="pb"><div class="pf" style="width:64%"></div><div class="pe"></div><div class="pl">64.1</div></div></div>
+      <div style="margin-bottom:10px"><div style="font-size:12px;color:var(--text-muted)">第二轮 · 基础修复</div><div class="pb"><div class="pf" style="width:83%"></div><div class="pe"></div><div class="pl">83.1</div></div></div>
+      <div style="margin-bottom:10px"><div style="font-size:12px;color:var(--text-muted)">第三轮 · 提标90分</div><div class="pb"><div class="pf" style="width:89%"></div><div class="pe"></div><div class="pl">88.6</div></div></div>
+      <div><div style="font-size:12px;color:var(--text-muted)">最终 · 全员达标</div><div class="pb"><div class="pf" style="width:94%"></div><div class="pe"></div><div class="pl" style="font-size:17px">93.8</div></div></div>
+      <div style="text-align:center;margin-top:14px"><span class="tag green">不合格 11→0人</span></div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 11: Key Insight
-     ════════════════════════════════════════════════════════ -->
-<div class="slide dark" style="justify-content:center;">
+<!-- ═══════ 11 场景七：命名风暴 ═══════ -->
+<div class="slide dark">
+  <div class="slide-label">场景七 &middot; 智囊团头脑风暴现场</div>
+  <h2 class="stitle">20个候选 → 5维评审 → <span class="gold">Synapse</span></h2>
+  <div class="body">
+    <p class="bt" style="font-size:15px;">为这套体系命名，Lysander 组织了全员头脑风暴 ——</p>
+    <div class="panel" style="margin-top:12px">
+      <div class="expert-row"><div class="expert-badge">关联发现</div><div class="expert-text">5条隐喻路径：Janus品牌延伸 / 神经系统 / 操作系统 / 建筑 / 数字孪生。产出20个候选名称。</div></div>
+      <div class="expert-row"><div class="expert-badge">趋势洞察师</div><div class="expert-text">行业调研：避免"OS"后缀（太多人用）、"AI"前缀（无辨识度）。好名字 = 一个词能讲故事。</div></div>
+      <div class="expert-row"><div class="expert-badge">决策顾问</div><div class="expert-text">5维评审（品牌关联25% / 记忆度25% / 含义深度20% / 差异化15% / 扩展性15%），筛出Top 3。</div></div>
+    </div>
+    <table class="stbl" style="margin-top:14px">
+      <tr><th>候选</th><th>品牌</th><th>记忆</th><th>含义</th><th>差异</th><th>扩展</th><th>总分</th></tr>
+      <tr><td><strong>Janus Cortex</strong></td><td>5</td><td>4</td><td>5</td><td>4</td><td>4</td><td>4.50</td></tr>
+      <tr style="background:rgba(252,173,42,0.06)"><td><strong style="color:var(--gold)">Synapse</strong></td><td>3</td><td>5</td><td>5</td><td>4</td><td>4</td><td style="color:var(--gold);font-weight:700">4.20</td></tr>
+      <tr><td><strong>Nexus</strong></td><td>3</td><td>5</td><td>4</td><td>3</td><td>5</td><td>4.00</td></tr>
+    </table>
+    <div class="chat" style="margin-top:14px">
+      <div class="msg user"><div class="avatar">总裁</div><div class="bubble"><strong>Synapse</strong></div></div>
+    </div>
+    <div class="anno">突触 — 神经元之间传递信号的关键节点。知识←突触→决策←突触→执行。一个词，讲完了整个体系。</div>
+  </div>
+</div>
+
+<!-- ═══════ 12 全景 ═══════ -->
+<div class="slide dark">
+  <div class="slide-label">Synapse 全景</div>
+  <h2 class="stitle"><span class="gold">10</span> 团队 &middot; <span class="gold">46</span> Agent &middot; <span class="gold">5</span> 自动任务</h2>
+  <div class="body">
+    <div class="stat-row" style="margin-bottom:28px">
+      <div class="stat-item"><div class="stat-num">93.8</div><div class="stat-label">全员审计均分</div></div>
+      <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">不合格 Agent</div></div>
+      <div class="stat-item"><div class="stat-num">90</div><div class="stat-label">合格线标准</div></div>
+      <div class="stat-item"><div class="stat-num">24/7</div><div class="stat-label">自动运转</div></div>
+    </div>
+    <div class="diagram">
+<span class="hl">Synapse 体系架构</span>
+├── <span class="cy">记忆层</span> ── Obsidian 第二大脑 (OBS)
+├── <span class="cy">控制层</span> ── Harness Engineering (Guides + Sensors)
+├── <span class="cy">执行层</span> ── 10 个团队 46 个 AI Agent
+│    ├ Graphify智囊团(6) ── 评估/审计/情报
+│    ├ HR管理(2) ── 入职/评审/退役
+│    ├ Harness Ops(4) ── 配置/开发/测试
+│    ├ Butler(7) · RD(5) · OBS(4) · Content(4)
+│    └ Growth(2) · Janus(6) · Stock(5)
+├── <span class="cy">进化层</span> ── 情报闭环 (日报→评估→执行→报告)
+└── <span class="cy">决策层</span> ── L1自动 → L2专家 → L3 CEO → L4总裁</div>
+  </div>
+</div>
+
+<!-- ═══════ 13 洞察 ═══════ -->
+<div class="slide dark" style="justify-content:center">
   <div class="slide-label">核心洞察</div>
-  <div class="big-quote" style="font-size:32px; max-width:900px; border:none; text-align:center; padding:0;">
+  <div class="big-quote" style="font-size:30px;border:none;text-align:center;padding:0;max-width:880px">
     AI 的竞争力不在模型本身，<br>
     而在于你为它构建的<br>
-    <span style="color:var(--gold); font-weight:700; font-style:normal;">环境、约束、反馈和组织。</span>
+    <span style="color:var(--gold);font-weight:700;font-style:normal">环境、约束、反馈和组织。</span>
   </div>
-  <p style="margin-top:40px; font-size:18px; color:rgba(255,255,255,0.4); text-align:center;">
-    Agent = Model + <strong style="color:var(--gold)">Harness</strong><br>
-    模型人人可用，<strong style="color:var(--cyan)">Harness</strong> 才是壁垒。
+  <p style="margin-top:36px;font-size:17px;color:rgba(255,255,255,0.4);text-align:center">
+    模型人人可用。<strong style="color:var(--gold)">Harness</strong> 才是壁垒。<br>
+    <span style="font-size:14px">— 从今天的实践中验证的结论</span>
   </p>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SLIDE 12: Closing
-     ════════════════════════════════════════════════════════ -->
-<div class="slide gradient" style="justify-content:center;">
-  <div style="text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="56" height="72" style="margin-bottom:24px;">
-      <path d="M24.39 0.09C25.4-0.32 26.42 0.73 26.42 2.18V41.44C26.42 42.89 25.4 43.93 24.39 43.52L9.71 39.63L18.24 38.6C18.75 38.52 19.21 38.25 19.55 37.83C19.89 37.41 20.08 36.87 20.08 36.32V7.32C20.07 6.76 19.89 6.23 19.55 5.81C19.21 5.4 18.74 5.12 18.24 5.05L9.63 4L24.39 0.09Z" fill="white"/>
-      <path d="M2.45 38.84L16.61 37.33C17.12 37.25 17.58 37 17.92 36.6C18.26 36.21 18.45 35.7 18.45 35.18V8.42C18.45 7.9 18.26 7.39 17.92 7C17.58 6.61 17.12 6.36 16.61 6.29L2.45 4.77C2.15 4.72 1.84 4.75 1.55 4.83C1.25 4.92 0.98 5.07 0.75 5.27C0.52 5.47 0.33 5.72 0.2 6C0.07 6.29 0 6.59 0 6.9V36.69C0 37 0.07 37.31 0.2 37.59C0.32 37.88 0.51 38.13 0.74 38.33C0.98 38.53 1.25 38.69 1.54 38.77C1.84 38.86 2.15 38.88 2.45 38.84Z" fill="#FCAD2A"/>
-      <path d="M31.87 7.93L28.1 7.52V36.09L31.87 35.71V7.93Z" fill="#013A7D"/>
-      <path d="M33.13 8.05V35.57C34.11 35.36 34.81 34.8 34.81 34.06V9.55C34.81 8.81 34.11 8.26 33.13 8.05Z" fill="#028CDC"/>
-    </svg>
-    <h1 class="slide-title" style="text-align:center; font-size:44px;">
-      <span class="gold">Synapse</span>
-    </h1>
-    <p class="slide-subtitle" style="font-size:20px;">
-      Janus Digital AI Operating Framework
-    </p>
-    <p style="margin-top:40px; font-size:16px; color:rgba(255,255,255,0.35);">
-      Powered by Claude Code &middot; Harness Engineering &middot; Obsidian<br>
-      刘子杨 &middot; Janus Digital &middot; 2026
-    </p>
-  </div>
+<!-- ═══════ 14 结尾 ═══════ -->
+<div class="slide gradient" style="justify-content:center">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="52" height="66" style="margin-bottom:20px"><path d="M24.39.09C25.4-.32 26.42.73 26.42 2.18V41.44c0 1.45-1.02 2.49-2.03 2.08L9.71 39.63l8.53-1.03c.51-.08.98-.35 1.31-.77.34-.42.53-.96.53-1.51V7.32c0-.56-.19-1.09-.53-1.51-.34-.42-.81-.69-1.31-.77L9.63 4 24.39.09Z" fill="#fff"/><path d="M2.45 38.84L16.61 37.33c.51-.08.97-.33 1.31-.73.34-.39.53-.9.53-1.42V8.42c0-.52-.19-1.03-.53-1.42-.34-.39-.8-.64-1.31-.71L2.45 4.77c-.3-.05-.61-.02-.9.06-.3.09-.57.24-.8.44s-.42.45-.55.73c-.13.28-.2.59-.2.9v29.79c0 .31.07.62.2.9.13.28.3.53.54.73.23.2.51.35.8.44.29.09.61.11.91.06Z" fill="#FCAD2A"/><path d="M31.87 7.93L28.1 7.52v28.57l3.77-.38V7.93Z" fill="#013A7D"/><path d="M33.13 8.05v27.52c.98-.21 1.68-.77 1.68-1.51V9.55c0-.73-.7-1.29-1.68-1.5Z" fill="#028CDC"/></svg>
+  <h1 class="slide-title" style="text-align:center;font-size:42px"><span class="gold">Synapse</span></h1>
+  <p class="slide-subtitle" style="font-size:18px">Janus Digital AI Operating Framework</p>
+  <p style="margin-top:36px;font-size:15px;color:rgba(255,255,255,0.3)">
+    Powered by Claude Code &middot; Harness Engineering &middot; Obsidian<br>
+    刘子杨 &middot; Janus Digital &middot; 2026
+  </p>
 </div>
 
-</div><!-- /deck -->
+</div>
 
 <script>
-const slides = document.querySelectorAll('.slide');
-const totalEl = document.getElementById('total');
-const currentEl = document.getElementById('current');
-let idx = 0;
-totalEl.textContent = slides.length;
-
-function show(i) {
-  slides.forEach(s => s.classList.remove('active'));
-  slides[i].classList.add('active');
-  currentEl.textContent = i + 1;
-}
-
-function nextSlide() { if (idx < slides.length - 1) { idx++; show(idx); } }
-function prevSlide() { if (idx > 0) { idx--; show(idx); } }
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
-  if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); prevSlide(); }
-  if (e.key === 'Home') { idx = 0; show(0); }
-  if (e.key === 'End') { idx = slides.length - 1; show(idx); }
-});
-
-// Touch support
-let touchStartX = 0;
-document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-document.addEventListener('touchend', e => {
-  const diff = touchStartX - e.changedTouches[0].clientX;
-  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
-});
+const S=document.querySelectorAll('.slide'),T=document.getElementById('tot'),C=document.getElementById('cur');
+let i=0;T.textContent=S.length;
+function show(n){S.forEach(s=>s.classList.remove('active'));S[n].classList.add('active');C.textContent=n+1;}
+function next(){if(i<S.length-1){i++;show(i);}}
+function prev(){if(i>0){i--;show(i);}}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}if(e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();prev();}if(e.key==='Home'){i=0;show(0);}if(e.key==='End'){i=S.length-1;show(i);}});
+let tx=0;document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){d>0?next():prev();}});
 </script>
-
 </body>
 </html>

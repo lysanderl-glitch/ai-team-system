@@ -6,7 +6,7 @@
 >
 > **同事只需将以下一句话发给 Claude Code：**
 > ```
-> 请从 https://raw.githubusercontent.com/lysanderl-glitch/ai-team-system/master/SYNAPSE_SETUP.md 获取安装文档，按文档完成 Synapse 体系构建。
+> 请从 https://raw.githubusercontent.com/lysanderl-glitch/ai-team-system/main/SYNAPSE_SETUP.md 获取安装文档，按文档完成 Synapse 体系构建。
 > ```
 
 ---
