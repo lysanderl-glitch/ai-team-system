@@ -16,29 +16,30 @@ version: "1.0"
 
 # 活跃任务列表
 active_tasks:
-  - id: "TASK-2026-0410-001"
-    title: "PMO Notion 迁移 - 新Workspace重建"
-    level: "L"
-    status: "in_progress"
-    current_chain_step: "②执行中（Phase 1完成，等待Phase 2）"
+  - id: "TASK-2026-0410-002"
+    title: "PMO Notion 迁移 - 遗留: 更新Notion API Token"
+    level: "S"
+    status: "blocked"
+    current_chain_step: "②等待总裁操作"
     assigned_teams:
       - janus
     decision_level: "L3"
     created_at: "2026-04-10"
     updated_at: "2026-04-10"
     context: |
-      旧账号(Lysander Liu's Space HQ / janusd.com) → 新账号(lysanderl@janusd.io)
-      备份文件: ai-team-system/scripts/_migration/
-      ID映射: ai-team-system/scripts/_migration/phase1_id_mapping.json
-    blockers: []
+      主迁移任务(TASK-2026-0410-001)已完成Phase 1-5。
+      最后一步: 在新账号(lysanderl@janusd.io)创建Notion Integration,
+      获取新Token并更新 obs/credentials.md 中的 NOTION_TOKEN。
+      影响脚本: project_space_init.py / wbs_data_source.py / asana_notion_sync.py / pmo_knowledge_loop.py
+    blockers:
+      - "需要总裁在 notion.so/profile/integrations 为新账号创建 Integration 并提供 Token"
     deliverables:
-      - "Phase 1: 新workspace建空库结构 ✅ 完成"
-      - "Phase 2: 导入WBS(115条)+周报(7条)+注册表(1条)"
-      - "Phase 3: Relations重建(WBS自关联+Gate↔WBS跨库)"
-      - "Phase 4: 代码更新(旧DB ID替换+Token更新)"
-      - "Phase 5: 验证(WF-01/04/05功能测试)"
+      - "更新 obs/credentials.md 中 NOTION_TOKEN"
+      - "用新Token验证 WF-01/WF-04/WF-05 脚本可调用 Notion API"
     next_steps:
-      - "执行Phase 2: 数据导入"
+      - "总裁登录 notion.so → Settings → Integrations → 创建新 Integration → 复制 Token"
+      - "Lysander 更新 obs/credentials.md 中的 NOTION_TOKEN"
+
   # 示例:
   # - id: "TASK-2026-0410-001"
   #   title: "重构执行链和决策链"
@@ -61,7 +62,20 @@ active_tasks:
   #     - "交付总裁验收"
 
 # 已完成任务归档（保留最近20条）
-completed_tasks: []
+completed_tasks:
+  - id: "TASK-2026-0410-001"
+    title: "PMO Notion 迁移 - 新Workspace重建"
+    level: "L"
+    status: "completed"
+    completed_at: "2026-04-10"
+    summary: |
+      旧账号(janusd.com) → 新账号(lysanderl@janusd.io) 全5阶段完成。
+      Phase 1: 9个数据库空结构建立
+      Phase 2: WBS 115条 + 周报 7条 + 注册表 1条 导入
+      Phase 3: WBS自关联(父/子/前置/后续任务) + Gate↔WBS跨库关联
+      Phase 4: 3个脚本旧DB ID替换完成
+      Phase 5: 结构验证通过
+      遗留: NOTION_TOKEN需总裁更换新账号Token(见TASK-2026-0410-002)
 
 # 跨会话恢复提示
 # 新会话开始时，Lysander应读取此文件，恢复上下文
