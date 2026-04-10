@@ -6,15 +6,15 @@
 
 ## 第一步：下载到本地
 
-打开 Windows **命令提示符**或 **PowerShell**，粘贴以下命令回车：
+打开 **PowerShell**（按 `Win + X` → 选择 Windows PowerShell），粘贴以下命令回车：
 
 ```powershell
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/lysanderl-glitch/ai-team-system/archive/refs/heads/main.zip' -OutFile \"$env:USERPROFILE\Downloads\synapse.zip\"; Expand-Archive \"$env:USERPROFILE\Downloads\synapse.zip\" -DestinationPath \"$env:USERPROFILE\Documents\Synapse\" -Force; Rename-Item \"$env:USERPROFILE\Documents\Synapse\ai-team-system-main\" 'ai-team-system' -ErrorAction SilentlyContinue"
+Invoke-WebRequest -Uri 'https://github.com/lysanderl-glitch/ai-team-system/archive/refs/heads/main.zip' -OutFile "$env:USERPROFILE\Downloads\synapse.zip"
+Expand-Archive -Path "$env:USERPROFILE\Downloads\synapse.zip" -DestinationPath "$env:USERPROFILE\Claude Code" -Force
+Rename-Item -Path "$env:USERPROFILE\Claude Code\ai-team-system-main" -NewName 'ai-team-system' -ErrorAction SilentlyContinue
 ```
 
-完成后，文件位于：`C:\Users\你的用户名\Documents\Synapse\ai-team-system`
-
-> **不想用命令行？** 直接浏览器访问 https://github.com/lysanderl-glitch/ai-team-system → 点绿色 **Code** → **Download ZIP** → 解压到任意位置即可。
+完成后，文件位于：`C:\Users\你的用户名\Claude Code\ai-team-system`
 
 ---
 
