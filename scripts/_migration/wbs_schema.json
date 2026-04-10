@@ -1,0 +1,148 @@
+{
+  "database_id": "6714567e05f5437bad4b726202ecbb6e",
+  "data_source_id": "d8b55188-995b-4a5f-b257-60074438fd5b",
+  "title": "WBS工序数据库 Work Breakdown Structure",
+  "properties": {
+    "WBS编码": {
+      "name": "WBS编码",
+      "type": "title",
+      "description": ""
+    },
+    "任务名称": {
+      "name": "任务名称",
+      "type": "text",
+      "description": ""
+    },
+    "关联阶段门检查项": {
+      "name": "关联阶段门检查项",
+      "type": "relation",
+      "description": "",
+      "relation_data_source": "collection://421c5639-8591-4514-ad31-23357e9d8272",
+      "relation_property": "collectionProperty://421c5639-8591-4514-ad31-23357e9d8272/QUhCPQ"
+    },
+    "前置任务": {
+      "name": "前置任务",
+      "type": "relation",
+      "description": "",
+      "relation_data_source": "collection://d8b55188-995b-4a5f-b257-60074438fd5b"
+    },
+    "前置依赖": {
+      "name": "前置依赖",
+      "type": "text",
+      "description": "逗号分隔的前置WBS编码，Phase C将转为Self-Relation"
+    },
+    "备注": {
+      "name": "备注",
+      "type": "text",
+      "description": ""
+    },
+    "层级": {
+      "name": "层级",
+      "type": "number",
+      "description": "L1=1, L2=2, L3=3, L4=4"
+    },
+    "工期(天)": {
+      "name": "工期(天)",
+      "type": "number",
+      "description": ""
+    },
+    "并行组": {
+      "name": "并行组",
+      "type": "select",
+      "description": "",
+      "options": [
+        {"name": "P-TR", "color": "blue"},
+        {"name": "P-DA", "color": "purple"},
+        {"name": "P-DP", "color": "green"},
+        {"name": "P-EX1", "color": "orange"},
+        {"name": "P-EX2", "color": "red"},
+        {"name": "P-EX3", "color": "pink"},
+        {"name": "P-EX6", "color": "brown"},
+        {"name": "无", "color": "gray"}
+      ]
+    },
+    "序号": {
+      "name": "序号",
+      "type": "number",
+      "description": "用于排序"
+    },
+    "所属阶段": {
+      "name": "所属阶段",
+      "type": "select",
+      "description": "",
+      "options": [
+        {"name": "S-售前", "color": "gray"},
+        {"name": "D", "color": "default"},
+        {"name": "DA-启动筹备", "color": "blue"},
+        {"name": "DP-项目策划", "color": "blue"},
+        {"name": "DO-开工会", "color": "blue"},
+        {"name": "DC-沟通管理", "color": "green"},
+        {"name": "DD-深化设计", "color": "green"},
+        {"name": "DS-系统部署", "color": "purple"},
+        {"name": "DY-系统调试", "color": "purple"},
+        {"name": "DB-BIM建模", "color": "orange"},
+        {"name": "DR-BIM审核", "color": "orange"},
+        {"name": "DI-BIM集成", "color": "orange"},
+        {"name": "DT-测试验收", "color": "red"},
+        {"name": "DU-培训移交", "color": "red"},
+        {"name": "DV-质保运维", "color": "red"}
+      ]
+    },
+    "执行流": {
+      "name": "执行流",
+      "type": "select",
+      "description": "",
+      "options": [
+        {"name": "P-EX1-项目管理主线", "color": "blue"},
+        {"name": "P-EX2-软件部署", "color": "green"},
+        {"name": "P-EX3-静态数字化", "color": "purple"},
+        {"name": "P-EX4-动态数字化", "color": "pink"},
+        {"name": "P-EX5-业务链路", "color": "orange"},
+        {"name": "P-EX6-外立面", "color": "brown"}
+      ]
+    },
+    "父任务": {
+      "name": "父任务",
+      "type": "relation",
+      "description": "",
+      "relation_data_source": "collection://d8b55188-995b-4a5f-b257-60074438fd5b"
+    },
+    "状态": {
+      "name": "状态",
+      "type": "status",
+      "description": "",
+      "groups": {
+        "to_do": [{"name": "Not started"}],
+        "in_progress": [{"name": "In progress", "color": "blue"}],
+        "complete": [{"name": "Done", "color": "green"}]
+      }
+    },
+    "负责角色": {
+      "name": "负责角色",
+      "type": "multi_select",
+      "description": "",
+      "options": [
+        {"name": "PM", "color": "blue"},
+        {"name": "DE", "color": "green"},
+        {"name": "SA", "color": "purple"},
+        {"name": "CDE", "color": "orange"},
+        {"name": "QA", "color": "red"},
+        {"name": "Sales", "color": "yellow"}
+      ]
+    },
+    "阶段门": {
+      "name": "阶段门",
+      "type": "select",
+      "description": "该任务对应的阶段门检查点",
+      "options": [
+        {"name": "G0-售前移交", "color": "gray"},
+        {"name": "G1-进场准备", "color": "blue"},
+        {"name": "G2-数字化内验", "color": "purple"},
+        {"name": "G3-业务可用", "color": "orange"},
+        {"name": "G4-系统验收", "color": "red"},
+        {"name": "G5-项目复盘", "color": "brown"}
+      ]
+    }
+  },
+  "sqlite_schema": "CREATE TABLE IF NOT EXISTS \"collection://d8b55188-995b-4a5f-b257-60074438fd5b\" (\n\turl TEXT UNIQUE,\n\tcreatedTime TEXT,\n\t\"层级\" FLOAT,\n\t\"前置任务\" TEXT,\n\t\"工期(天)\" FLOAT,\n\t\"关联阶段门检查项\" TEXT,\n\t\"阶段门\" TEXT,\n\t\"任务名称\" TEXT,\n\t\"状态\" TEXT,\n\t\"父任务\" TEXT,\n\t\"前置依赖\" TEXT,\n\t\"所属阶段\" TEXT,\n\t\"执行流\" TEXT,\n\t\"负责角色\" TEXT,\n\t\"备注\" TEXT,\n\t\"并行组\" TEXT,\n\t\"序号\" FLOAT,\n\t\"WBS编码\" TEXT\n)"
+}

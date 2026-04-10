@@ -1,0 +1,88 @@
+{
+  "database_id": "8f61420ca15148c092c13f67b89f6029",
+  "data_source_id": "421c5639-8591-4514-ad31-23357e9d8272",
+  "title": "阶段门检查清单 Stage Gate Checklist",
+  "properties": {
+    "检查项": {
+      "name": "检查项",
+      "type": "title",
+      "description": ""
+    },
+    "阶段门": {
+      "name": "阶段门",
+      "type": "select",
+      "description": "",
+      "options": [
+        {"name": "G0 机会准入", "color": "gray"},
+        {"name": "G1 售前评审", "color": "yellow"},
+        {"name": "G2 策划完成", "color": "orange"},
+        {"name": "G3 执行准备", "color": "blue"},
+        {"name": "G4 交付验收", "color": "green"},
+        {"name": "G5 运维交接", "color": "purple"}
+      ]
+    },
+    "优先级": {
+      "name": "优先级",
+      "type": "select",
+      "description": "",
+      "options": [
+        {"name": "关键", "color": "red"},
+        {"name": "重要", "color": "orange"},
+        {"name": "建议", "color": "gray"}
+      ]
+    },
+    "状态": {
+      "name": "状态",
+      "type": "select",
+      "description": "",
+      "options": [
+        {"name": "待检查", "color": "default"},
+        {"name": "✅ 通过", "color": "green"},
+        {"name": "❌ 未通过", "color": "red"},
+        {"name": "🟡 有条件通过", "color": "yellow"},
+        {"name": "N/A 不适用", "color": "gray"}
+      ]
+    },
+    "责任角色": {
+      "name": "责任角色",
+      "type": "multi_select",
+      "description": "",
+      "options": [
+        {"name": "PM", "color": "blue"},
+        {"name": "DE", "color": "green"},
+        {"name": "SA", "color": "purple"},
+        {"name": "CDE", "color": "orange"},
+        {"name": "Sales", "color": "yellow"},
+        {"name": "QA", "color": "red"}
+      ]
+    },
+    "序号": {
+      "name": "序号",
+      "type": "number",
+      "description": "同一阶段门内的排序序号"
+    },
+    "评审备注": {
+      "name": "评审备注",
+      "type": "text",
+      "description": ""
+    },
+    "评审日期": {
+      "name": "评审日期",
+      "type": "date",
+      "description": ""
+    },
+    "项目名称": {
+      "name": "项目名称",
+      "type": "text",
+      "description": "关联项目名称，新项目初始化时自动填入"
+    },
+    "关联WBS工序": {
+      "name": "关联WBS工序",
+      "type": "relation",
+      "description": "",
+      "relation_data_source": "collection://d8b55188-995b-4a5f-b257-60074438fd5b",
+      "relation_property": "collectionProperty://d8b55188-995b-4a5f-b257-60074438fd5b/RkZfSQ"
+    }
+  },
+  "sqlite_schema": "CREATE TABLE IF NOT EXISTS \"collection://421c5639-8591-4514-ad31-23357e9d8272\" (\n\turl TEXT UNIQUE,\n\tcreatedTime TEXT,\n\t\"关联WBS工序\" TEXT,\n\t\"评审备注\" TEXT,\n\t\"责任角色\" TEXT,\n\t\"序号\" FLOAT,\n\t\"优先级\" TEXT,\n\t\"状态\" TEXT,\n\t\"date:评审日期:start\" TEXT,\n\t\"date:评审日期:end\" TEXT,\n\t\"date:评审日期:is_datetime\" INTEGER,\n\t\"阶段门\" TEXT,\n\t\"项目名称\" TEXT,\n\t\"检查项\" TEXT\n)"
+}
