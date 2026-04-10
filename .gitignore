@@ -28,3 +28,4 @@ hr_watcher.log
 
 # 加密凭证库 — 绝不上传 GitHub
 credentials.enc.md
+obs/credentials.md
