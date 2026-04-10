@@ -1,211 +1,166 @@
 #!/usr/bin/env python3
 """
-Encrypted Credentials Manager — ai-team-system
-AES-256-GCM encryption, PBKDF2-SHA256 key derivation (600k iterations)
+Credentials Manager — ai-team-system
+支持读取 Obsidian Meld Encrypt (β 格式) 加密的凭证文件。
 
-Usage:
-  python creds.py init                          # 初始化新的凭证库
-  python creds.py add KEY VALUE                 # 添加/更新凭证
-  python creds.py get KEY                       # 获取单个凭证值
-  python creds.py list                          # 列出所有 Key 名
-  python creds.py export                        # 导出全部（JSON 格式，供 AI 使用）
-  python creds.py delete KEY                    # 删除凭证
-  python creds.py add KEY VALUE -p PASSWORD     # 非交互模式（脚本/AI 调用）
-  python creds.py get KEY -p PASSWORD           # 非交互模式
-  python creds.py export -p PASSWORD            # 非交互模式
+=== 使用方式 ===
+
+  # 查看所有 Key 名（无需密码）
+  python creds.py list
+
+  # 获取单个凭证
+  python creds.py get GITHUB_TOKEN
+  python creds.py get GITHUB_TOKEN -p "你的密码"   ← AI 自动调用
+
+  # 导出全部（供 AI 批量使用）
+  python creds.py export
+  python creds.py export -p "你的密码"
+
+=== Obsidian 使用方式 ===
+  1. 在 Obsidian 打开 credentials.md
+  2. 命令面板 → "Meld Encrypt: Decrypt in-place" → 输入密码 → 可视化查看/编辑
+  3. 编辑完成后 → "Meld Encrypt: Encrypt in-place" → 重新加密
+
+=== 凭证文件格式 ===
+  credentials.md 中加密的内容应为 JSON：
+  {
+    "GITHUB_TOKEN": "ghp_xxx",
+    "NOTION_TOKEN": "ntn_xxx",
+    "N8N_API_KEY": "eyJ...",
+    ...
+  }
 """
 
 import os
 import sys
+import re
 import json
 import base64
 import getpass
 import argparse
-import re
-import secrets as secrets_mod
 
-STORE_FILE = os.path.join(os.path.dirname(__file__), "credentials.enc.md")
+# Meld Encrypt β 格式参数（来自插件源码 v2.4.5）
+_MELD_BETA_PREFIX   = "%%\U0001f510\u03b2 "   # %%🔐β
+_MELD_BETA_SUFFIX   = "%%"
+_VECTOR_SIZE        = 16   # IV 长度（字节）
+_SALT_SIZE          = 16   # Salt 长度（字节）
+_ITERATIONS         = 210_000
+_CREDENTIALS_FILE   = os.path.join(os.path.dirname(__file__), "obs", "credentials.md")
 
-# ── 加密 / 解密 ────────────────────────────────────────────────────────────────
 
-def _derive_key(password: str, salt: bytes) -> bytes:
+# ── 解密核心 ───────────────────────────────────────────────────────────────────
+
+def _decrypt_meld_beta(b64_blob: str, password: str) -> str:
+    """解密 Meld Encrypt β 格式的 base64 blob，返回明文字符串。"""
     from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
     from cryptography.hazmat.primitives import hashes
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=600_000,
-    )
-    return kdf.derive(password.encode("utf-8"))
-
-
-def _encrypt(data: dict, password: str) -> str:
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-    salt  = secrets_mod.token_bytes(16)
-    nonce = secrets_mod.token_bytes(12)
-    key   = _derive_key(password, salt)
-    ct    = AESGCM(key).encrypt(nonce, json.dumps(data, ensure_ascii=False).encode(), None)
-    payload = {
-        "v": 1,
-        "salt":  base64.b64encode(salt).decode(),
-        "nonce": base64.b64encode(nonce).decode(),
-        "ct":    base64.b64encode(ct).decode(),
-    }
-    return base64.b64encode(json.dumps(payload).encode()).decode()
+
+    raw = base64.b64decode(b64_blob)
+    iv        = raw[:_VECTOR_SIZE]
+    salt      = raw[_VECTOR_SIZE:_VECTOR_SIZE + _SALT_SIZE]
+    ciphertext = raw[_VECTOR_SIZE + _SALT_SIZE:]
+
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA512(), length=32, salt=salt, iterations=_ITERATIONS)
+    key = kdf.derive(password.encode("utf-8"))
+    plaintext = AESGCM(key).decrypt(iv, ciphertext, None)
+    return plaintext.decode("utf-8")
 
 
-def _decrypt(encoded: str, password: str) -> dict:
-    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-    try:
-        payload = json.loads(base64.b64decode(encoded).decode())
-        salt  = base64.b64decode(payload["salt"])
-        nonce = base64.b64decode(payload["nonce"])
-        ct    = base64.b64decode(payload["ct"])
-        key   = _derive_key(password, salt)
-        plain = AESGCM(key).decrypt(nonce, ct, None)
-        return json.loads(plain.decode())
-    except Exception:
-        print("❌ 密码错误或文件已损坏", file=sys.stderr)
+def _load_credentials(password: str) -> dict:
+    """读取 credentials.md，解密并返回凭证字典。"""
+    if not os.path.exists(_CREDENTIALS_FILE):
+        print(f"❌ 找不到凭证文件：{_CREDENTIALS_FILE}", file=sys.stderr)
+        print("   请先在 Obsidian 中创建并加密 credentials.md", file=sys.stderr)
         sys.exit(1)
 
-# ── 文件读写 ───────────────────────────────────────────────────────────────────
+    content = open(_CREDENTIALS_FILE, encoding="utf-8").read()
 
-_BLOCK_RE = re.compile(r"```encrypted\n(.*?)\n```", re.DOTALL)
+    # 提取 β 格式加密块
+    pattern = re.escape(_MELD_BETA_PREFIX) + r"(.+?)" + re.escape(_MELD_BETA_SUFFIX)
+    match = re.search(pattern, content, re.DOTALL)
+    if not match:
+        print("❌ credentials.md 中未找到 Meld Encrypt β 加密块", file=sys.stderr)
+        print("   请在 Obsidian 中使用 Meld Encrypt 加密该文件", file=sys.stderr)
+        sys.exit(1)
+
+    b64_blob = match.group(1).strip()
+    try:
+        plain = _decrypt_meld_beta(b64_blob, password)
+    except Exception:
+        print("❌ 密码错误", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        return json.loads(plain)
+    except json.JSONDecodeError:
+        print("❌ 解密成功但内容不是有效 JSON，请检查 credentials.md 的格式", file=sys.stderr)
+        sys.exit(1)
 
 
-def _read_store() -> tuple[str, list[str]]:
-    """返回 (加密块内容 or '', 所有 key 名列表)"""
-    if not os.path.exists(STORE_FILE):
-        return "", []
-    content = open(STORE_FILE, encoding="utf-8").read()
-    m = _BLOCK_RE.search(content)
-    enc_block = m.group(1).strip() if m else ""
-
-    keys_m = re.search(r"<!-- KEYS:(.*?)-->", content, re.DOTALL)
-    keys = json.loads(keys_m.group(1).strip()) if keys_m else []
-    return enc_block, keys
+def _get_password(args) -> str:
+    if getattr(args, "password", None):
+        return args.password
+    return getpass.getpass("🔑 凭证库密码：")
 
 
-def _write_store(data: dict, password: str) -> None:
-    enc = _encrypt(data, password)
-    keys = sorted(data.keys())
-    content = f"""# 🔐 加密凭证库 — ai-team-system
+def _read_key_names() -> list[str]:
+    """从文件头部注释中读取 key 名称列表（无需密码）。"""
+    if not os.path.exists(_CREDENTIALS_FILE):
+        return []
+    content = open(_CREDENTIALS_FILE, encoding="utf-8").read()
+    m = re.search(r"<!-- KEYS:(.*?)-->", content, re.DOTALL)
+    if not m:
+        return []
+    try:
+        return json.loads(m.group(1).strip())
+    except Exception:
+        return []
 
-> **安全说明**：此文件内容经 AES-256-GCM 加密，密钥由 PBKDF2-SHA256（60万次迭代）派生。
-> 密文在没有密码的情况下无法读取。此文件已加入 `.gitignore`，不会上传 GitHub。
-
-## 已存储的凭证 Key（仅展示名称）
-
-<!-- KEYS:{json.dumps(keys, ensure_ascii=False)} -->
-
-{chr(10).join(f"- `{k}`" for k in keys) if keys else "_(暂无凭证)_"}
-
-## 加密数据块
-
-```encrypted
-{enc}
-```
-
----
-*使用 `python creds.py --help` 查看操作说明*
-"""
-    open(STORE_FILE, "w", encoding="utf-8").write(content)
-    print(f"✅ 凭证库已更新（共 {len(keys)} 条记录）")
 
 # ── 命令处理 ───────────────────────────────────────────────────────────────────
 
-def _get_password(args) -> str:
-    if hasattr(args, 'password') and args.password:
-        return args.password
-    return getpass.getpass("🔑 请输入凭证库密码：")
-
-
-def cmd_init(args):
-    if os.path.exists(STORE_FILE):
-        print("⚠️  凭证库已存在，跳过初始化")
-        return
-    password = _get_password(args)
-    if not (hasattr(args, 'password') and args.password):
-        confirm = getpass.getpass("🔑 再次确认密码：")
-        if password != confirm:
-            print("❌ 两次密码不一致", file=sys.stderr); sys.exit(1)
-    _write_store({}, password)
-    print("🎉 凭证库初始化完成！")
-
-
-def cmd_add(args):
-    enc, keys = _read_store()
-    if not enc:
-        print("❌ 凭证库不存在，请先运行 `python creds.py init`", file=sys.stderr); sys.exit(1)
-    password = _get_password(args)
-    data = _decrypt(enc, password)
-    data[args.key] = args.value
-    _write_store(data, password)
-    print(f"✅ 已保存 `{args.key}`")
-
-
-def cmd_get(args):
-    enc, _ = _read_store()
-    if not enc:
-        print("❌ 凭证库不存在", file=sys.stderr); sys.exit(1)
-    password = _get_password(args)
-    data = _decrypt(enc, password)
-    if args.key not in data:
-        print(f"❌ Key `{args.key}` 不存在", file=sys.stderr); sys.exit(1)
-    print(data[args.key])
-
-
 def cmd_list(args):
-    enc, keys = _read_store()
-    if not enc:
-        print("❌ 凭证库不存在", file=sys.stderr); sys.exit(1)
+    keys = _read_key_names()
     if not keys:
-        print("_(暂无凭证)_")
+        print("_(暂无凭证，或文件不存在)_")
         return
     print("📋 已存储的 Key：")
     for k in keys:
         print(f"  • {k}")
 
 
-def cmd_export(args):
-    enc, _ = _read_store()
-    if not enc:
-        print("❌ 凭证库不存在", file=sys.stderr); sys.exit(1)
+def cmd_get(args):
     password = _get_password(args)
-    data = _decrypt(enc, password)
+    data = _load_credentials(password)
+    if args.key not in data:
+        print(f"❌ Key `{args.key}` 不存在", file=sys.stderr)
+        print(f"   可用 Key：{', '.join(sorted(data.keys()))}", file=sys.stderr)
+        sys.exit(1)
+    print(data[args.key])
+
+
+def cmd_export(args):
+    password = _get_password(args)
+    data = _load_credentials(password)
     print(json.dumps(data, ensure_ascii=False, indent=2))
 
-
-def cmd_delete(args):
-    enc, _ = _read_store()
-    if not enc:
-        print("❌ 凭证库不存在", file=sys.stderr); sys.exit(1)
-    password = _get_password(args)
-    data = _decrypt(enc, password)
-    if args.key not in data:
-        print(f"❌ Key `{args.key}` 不存在", file=sys.stderr); sys.exit(1)
-    del data[args.key]
-    _write_store(data, password)
-    print(f"🗑️  已删除 `{args.key}`")
 
 # ── 入口 ───────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="加密凭证管理器")
+    parser = argparse.ArgumentParser(
+        description="凭证管理器（读取 Obsidian Meld Encrypt 加密文件）",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__
+    )
     sub = parser.add_subparsers(dest="cmd")
 
-    def _add_pw(p): p.add_argument("-p", "--password", help="密码（非交互模式）", default=None)
+    def _pw(p): p.add_argument("-p", "--password", help="密码（AI 非交互调用）", default=None)
 
-    p_init = sub.add_parser("init",   help="初始化凭证库"); _add_pw(p_init)
-    p_add  = sub.add_parser("add",    help="添加/更新凭证"); _add_pw(p_add)
-    p_add.add_argument("key"); p_add.add_argument("value")
-    p_get  = sub.add_parser("get",    help="获取单个凭证"); _add_pw(p_get)
-    p_get.add_argument("key")
-    p_list = sub.add_parser("list",   help="列出所有 Key 名"); _add_pw(p_list)
-    p_exp  = sub.add_parser("export", help="导出全部凭证（JSON）"); _add_pw(p_exp)
-    p_del  = sub.add_parser("delete", help="删除凭证"); _add_pw(p_del)
-    p_del.add_argument("key")
+    p_list = sub.add_parser("list",   help="列出所有 Key 名（无需密码）")
+    p_get  = sub.add_parser("get",    help="获取单个凭证值"); _pw(p_get);  p_get.add_argument("key")
+    p_exp  = sub.add_parser("export", help="导出全部凭证 JSON"); _pw(p_exp)
 
     args = parser.parse_args()
     if not args.cmd:
@@ -217,8 +172,7 @@ def main():
         print("❌ 缺少依赖，请运行：pip install cryptography", file=sys.stderr)
         sys.exit(1)
 
-    {"init": cmd_init, "add": cmd_add, "get": cmd_get,
-     "list": cmd_list, "export": cmd_export, "delete": cmd_delete}[args.cmd](args)
+    {"list": cmd_list, "get": cmd_get, "export": cmd_export}[args.cmd](args)
 
 
 if __name__ == "__main__":
