@@ -1,6 +1,6 @@
 # 首次使用引导词
 
-> 打开 Claude Code 并加载 ai-team-system 文件夹后，复制以下内容发送。
+> 打开 Claude Code 并加载 Synapse (ai-team-system) 文件夹后，复制以下内容发送。
 
 ---
 

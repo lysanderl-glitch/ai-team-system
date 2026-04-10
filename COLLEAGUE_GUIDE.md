@@ -1,4 +1,4 @@
-# 同事使用指南 — AI 团队协作体系
+# Synapse 使用指南
 
 > 5 分钟完成初始化，零技术背景可用。
 
@@ -6,9 +6,9 @@
 
 ## 你将获得什么
 
-- **29 个 AI 专家**随时待命：项目交付、研发、知识管理、内容运营、智囊团
-- 说出需求，系统自动分派给对应专家
-- 小事直接执行，大事智囊团分析后决策
+- **Synapse** — Janus Digital 的 AI 协作运营体系，37+ AI 专家随时待命
+- 说出需求，Lysander CEO 自动分派给对应专家团队
+- 小事直接执行，大事智囊团分析后决策，重大事项才上报
 - Obsidian 知识库自动同步 GitHub
 
 ---
@@ -18,10 +18,10 @@
 打开浏览器，访问：
 
 ```
-https://github.com/lysanderl-glitch/ai-team-system
+https://github.com/lysanderl-glitch/Synapse (ai-team-system)
 ```
 
-点击绿色 **Code** 按钮 → **Download ZIP** → 解压到任意文件夹（如 `桌面/ai-team-system`）。
+点击绿色 **Code** 按钮 → **Download ZIP** → 解压到任意文件夹（如 `桌面/Synapse (ai-team-system)`）。
 
 ---
 
@@ -29,7 +29,7 @@ https://github.com/lysanderl-glitch/ai-team-system
 
 1. 打开 **Claude Code 桌面应用**
 2. 点击 **"Open Folder"**（打开文件夹）
-3. 选择刚才解压的 `ai-team-system` 文件夹
+3. 选择刚才解压的 `Synapse (ai-team-system)` 文件夹
 4. 等待 Claude Code 加载完成（看到对话框即可）
 
 > 💡 Claude Code 会自动读取 `CLAUDE.md`，AI 团队体系立即生效。
@@ -86,7 +86,7 @@ Lysander 会回复问候语，并列出所有可用的 AI 专家团队。
 A: 访问 [claude.ai/download](https://claude.ai/download)，下载桌面版，用 Claude 账号登录。
 
 **Q: 打开文件夹后什么都没有？**  
-A: 确认选的是 `ai-team-system` 文件夹本身，而不是它的上级目录。
+A: 确认选的是 `Synapse (ai-team-system)` 文件夹本身，而不是它的上级目录。
 
 **Q: 发了消息没有 Lysander 问候？**  
 A: 重新打开文件夹，或发送：`请重新加载 CLAUDE.md 并以 Lysander 身份问候我`
@@ -98,4 +98,4 @@ A: 打开 `obs/01-team-knowledge/HR/personnel/` 对应文件，直接编辑 .md 
 
 ## 技术支持
 
-联系 Lysander 或提交 Issue：https://github.com/lysanderl-glitch/ai-team-system/issues
+联系 Lysander 或提交 Issue：https://github.com/lysanderl-glitch/Synapse (ai-team-system)/issues

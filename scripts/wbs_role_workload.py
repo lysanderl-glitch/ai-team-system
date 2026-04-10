@@ -5,104 +5,39 @@ WBS角色负载分析工具
 由 janus_pmo_auto 负责运维
 """
 import sys
-import io
 import os
 from collections import defaultdict
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
-try:
-    import openpyxl
-except ImportError:
-    print("需要安装 openpyxl: pip install openpyxl")
-    sys.exit(1)
+from wbs_data_source import get_wbs_source, get_roles_for_task
 
 
-# WBS阶段到角色的默认映射（基于janus_experts.yaml定义）
-STAGE_ROLE_MAP = {
-    "S":  ["Sales", "SA"],
-    "DA": ["PM", "DE"],
-    "DP": ["PM", "SA", "CDE"],
-    "DO": ["PM"],
-    "DC": ["PM"],
-    "DD": ["SA", "PM"],
-    "DS": ["DE"],
-    "DY": ["DE"],
-    "DB": ["CDE"],
-    "DR": ["CDE"],
-    "DI": ["CDE", "DE"],
-    "DT": ["QA", "PM", "CDE"],
-    "DU": ["PM", "CDE"],
-    "DV": ["PM", "Sales"],
-}
-
-
-def get_roles_for_task(wbs_code):
-    """根据WBS编码确定负责角色"""
-    # 匹配最长前缀
-    for prefix_len in range(len(wbs_code), 0, -1):
-        prefix = wbs_code[:prefix_len]
-        if prefix in STAGE_ROLE_MAP:
-            return STAGE_ROLE_MAP[prefix]
-    # 默认取L2前缀
-    for i in range(len(wbs_code)):
-        if wbs_code[i].isdigit():
-            prefix = wbs_code[:i]
-            if prefix in STAGE_ROLE_MAP:
-                return STAGE_ROLE_MAP[prefix]
-            break
-    return ["PM"]  # 默认PM
-
-
-def load_tasks(filepath):
-    """加载WBS任务"""
-    wb = openpyxl.load_workbook(filepath)
-    ws = wb["① WBS主表"]
+def load_tasks(filepath=None):
+    """加载WBS任务（L3+L4执行任务）"""
+    source = get_wbs_source(filepath)
+    raw_tasks = source.load_tasks()
 
     tasks = []
-    for row in ws.iter_rows(min_row=4, values_only=False):
-        wbs_code = row[0].value
-        level = row[1].value
-        name = row[2].value
-        duration = row[3].value
-
-        if wbs_code is None or level is None:
-            continue
-
-        try:
-            level_num = float(level)
-            dur = float(duration) if duration else 0
-        except (ValueError, TypeError):
-            continue
-
-        # 只统计L3/L4实际执行任务
-        if level_num >= 3:
-            roles = get_roles_for_task(wbs_code)
+    for code, t in raw_tasks.items():
+        if t["level"] >= 3:
+            roles = get_roles_for_task(code)
             tasks.append({
-                "wbs": wbs_code,
-                "level": level_num,
-                "name": str(name).strip() if name else "",
-                "duration": dur,
+                "wbs": code,
+                "level": t["level"],
+                "name": t["name"],
+                "duration": t["duration"],
                 "roles": roles,
             })
 
-    return tasks
+    return tasks, source
 
 
-def load_team_config(filepath):
-    """加载项目团队配置（Sheet③）"""
-    wb = openpyxl.load_workbook(filepath)
-    try:
-        ws = wb["③ 项目团队配置"]
-    except KeyError:
-        return {}
-
+def load_team_config(source):
+    """加载项目团队配置"""
+    config = source.load_team_config()
     team = {}
-    for row in ws.iter_rows(min_row=2, values_only=False):
-        role = row[0].value
-        person = row[1].value
-        if role and person:
-            team[str(role).strip()] = str(person).strip()
+    for item in config:
+        if item.get("role") and item.get("person"):
+            team[item["role"]] = item["person"]
     return team
 
 
@@ -140,23 +75,19 @@ def analyze_workload(tasks):
 
 
 def main():
-    default_path = os.path.join(
-        os.path.expanduser("~"),
-        "Downloads",
-        "Janusd_WBS_交付_审查版 (2).xlsx"
-    )
-    filepath = sys.argv[1] if len(sys.argv) > 1 else default_path
+    filepath = sys.argv[1] if len(sys.argv) > 1 else None
 
-    if not os.path.exists(filepath):
+    if filepath and not os.path.exists(filepath):
         print(f"文件不存在: {filepath}")
         sys.exit(1)
 
     print(f"👥 WBS角色负载分析")
-    print(f"   文件: {os.path.basename(filepath)}")
+
+    tasks, source = load_tasks(filepath)
+    print(f"   数据源: {source.get_source_name()}")
     print("=" * 70)
 
-    tasks = load_tasks(filepath)
-    team = load_team_config(filepath)
+    team = load_team_config(source)
     workload = analyze_workload(tasks)
 
     print(f"\n📊 总计 {len(tasks)} 个执行任务（L3+L4）")

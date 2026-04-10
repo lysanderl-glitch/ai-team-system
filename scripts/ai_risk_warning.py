@@ -6,36 +6,10 @@ WBS交付风险自动识别与预警脚本
 由 janus_pmo_auto 负责运维
 """
 import sys
-import io
 import os
 from collections import defaultdict
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
-try:
-    import openpyxl
-except ImportError:
-    print("需要安装 openpyxl: pip install openpyxl")
-    sys.exit(1)
-
-
-# ── 角色映射（复用 wbs_role_workload.py 的 STAGE_ROLE_MAP） ──────────────
-STAGE_ROLE_MAP = {
-    "S":  ["Sales", "SA"],
-    "DA": ["PM", "DE"],
-    "DP": ["PM", "SA", "CDE"],
-    "DO": ["PM"],
-    "DC": ["PM"],
-    "DD": ["SA", "PM"],
-    "DS": ["DE"],
-    "DY": ["DE"],
-    "DB": ["CDE"],
-    "DR": ["CDE"],
-    "DI": ["CDE", "DE"],
-    "DT": ["QA", "PM", "CDE"],
-    "DU": ["PM", "CDE"],
-    "DV": ["PM", "Sales"],
-}
+from wbs_data_source import get_wbs_source, STAGE_ROLE_MAP, get_roles_for_task
 
 # ── 并行执行流定义 ─────────────────────────────────────────────────────
 PARALLEL_FLOWS = {
@@ -49,43 +23,18 @@ PARALLEL_FLOWS = {
 
 
 # ══════════════════════════════════════════════════════════════════════
-#  数据加载与基础计算（复用 wbs_critical_path.py 模式）
+#  数据加载与基础计算
 # ══════════════════════════════════════════════════════════════════════
 
-def load_wbs_tasks(filepath):
-    """从WBS主表加载所有任务及其依赖关系"""
-    wb = openpyxl.load_workbook(filepath)
-    ws = wb["① WBS主表"]
+def load_wbs_tasks(filepath=None):
+    """从WBS数据源加载所有任务，并附加关键路径计算字段"""
+    source = get_wbs_source(filepath)
+    raw_tasks = source.load_tasks()
 
     tasks = {}
-    for row in ws.iter_rows(min_row=4, values_only=False):
-        wbs_code = row[0].value
-        level = row[1].value
-        name = row[2].value
-        duration = row[3].value
-        parallel_group = row[4].value
-        dependency = row[5].value
-
-        if wbs_code is None or level is None:
-            continue
-
-        try:
-            level_num = float(level)
-            dur = float(duration) if duration else 0
-        except (ValueError, TypeError):
-            continue
-
-        deps = []
-        if dependency:
-            deps = [d.strip() for d in str(dependency).split(",")]
-
-        tasks[wbs_code] = {
-            "wbs": wbs_code,
-            "level": level_num,
-            "name": str(name).strip() if name else "",
-            "duration": dur,
-            "parallel_group": str(parallel_group).strip() if parallel_group else None,
-            "deps": deps,
+    for code, t in raw_tasks.items():
+        tasks[code] = {
+            **t,
             "es": 0,
             "ef": 0,
             "ls": 0,
@@ -93,7 +42,7 @@ def load_wbs_tasks(filepath):
             "float": 0,
         }
 
-    return tasks
+    return tasks, source.get_source_name()
 
 
 def build_successors(tasks):
@@ -174,21 +123,6 @@ def compute_critical_path(tasks):
         if abs(tasks[code]["float"]) < 0.01 and tasks[code]["duration"] > 0
     )
     return order, successors, critical_set
-
-
-def get_roles_for_task(wbs_code):
-    """根据WBS编码确定负责角色"""
-    for prefix_len in range(len(wbs_code), 0, -1):
-        prefix = wbs_code[:prefix_len]
-        if prefix in STAGE_ROLE_MAP:
-            return STAGE_ROLE_MAP[prefix]
-    for i in range(len(wbs_code)):
-        if wbs_code[i].isdigit():
-            prefix = wbs_code[:i]
-            if prefix in STAGE_ROLE_MAP:
-                return STAGE_ROLE_MAP[prefix]
-            break
-    return ["PM"]
 
 
 def get_flow_for_task(wbs_code):
@@ -555,22 +489,17 @@ def print_report(all_risks, tasks, critical_set):
 # ══════════════════════════════════════════════════════════════════════
 
 def main():
-    default_path = os.path.join(
-        os.path.expanduser("~"),
-        "Downloads",
-        "Janusd_WBS_交付_审查版 (2).xlsx"
-    )
-    filepath = sys.argv[1] if len(sys.argv) > 1 else default_path
+    filepath = sys.argv[1] if len(sys.argv) > 1 else None
 
-    if not os.path.exists(filepath):
+    if filepath and not os.path.exists(filepath):
         print(f"文件不存在: {filepath}")
         sys.exit(1)
 
     print(f"🔍 WBS交付风险自动分析")
-    print(f"   文件: {os.path.basename(filepath)}")
 
     # 加载数据
-    tasks = load_wbs_tasks(filepath)
+    tasks, source_name = load_wbs_tasks(filepath)
+    print(f"   数据源: {source_name}")
     print(f"   加载 {len(tasks)} 个WBS任务")
 
     # 关键路径计算

@@ -14,8 +14,8 @@ type: SOP
 
 | 工具 | 用途 |
 |------|------|
-| **Claude Code** (ai-team-system) | AI 团队协作、任务执行 |
-| **Obsidian** (ai-team-system vault) | 团队知识库、工作记录、第二大脑 |
+| **Claude Code** (Synapse) | AI 团队协作、任务执行 |
+| **Obsidian** (Synapse vault) | 团队知识库、工作记录、第二大脑 |
 
 ---
 

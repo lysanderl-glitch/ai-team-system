@@ -157,6 +157,23 @@ teams:
       - 每日技术情报
     access_key: "graphify"
 
+  hr:
+    name: "HR管理团队"
+    description: "HR团队 - 负责AI Agent全生命周期管理，包含入职审批、能力评审、能力进化、退役管理，确保Agent团队持续专业化"
+    specialists:
+      - hr_director              # HR总监 - 入职审批、定期评审、组织架构管理
+      - capability_architect     # 能力架构师 - 能力标准设计、质量评级、Prompt优化
+    capabilities:
+      - Agent入职审批（Schema完整性+能力质量双检）
+      - Agent定期评审（5维度评分制）
+      - 能力描述质量管控（A/B/C分级，C级不合格）
+      - 团队编制规划与审批
+      - Agent退役流程管理
+      - 跨团队能力图谱维护
+      - 能力进化路径设计
+      - Agent Prompt/Backstory工程
+    access_key: "hr"
+
   harness_ops:
     name: "驾驭运维团队 (Harness Ops)"
     description: "Harness Ops团队 - 负责AI团队Harness体系的配置维护、代码开发、知识沉淀和质量保证。情报行动管线的专属执行团队。"
@@ -258,6 +275,30 @@ task_routing:
       - gtm_strategist
     "市场扩张":
       - gtm_strategist
+
+    # HR 管理团队关键词
+    "HR":
+      - hr
+    "人力资源":
+      - hr_director
+    "入职":
+      - hr_director
+    "退役":
+      - hr_director
+    "能力评审":
+      - hr_director
+    "能力标准":
+      - capability_architect
+    "能力设计":
+      - capability_architect
+    "Agent设计":
+      - capability_architect
+    "新增成员":
+      - hr_director
+    "团队扩编":
+      - hr_director
+    "能力提升":
+      - capability_architect
 
     # Harness Ops 驾驭运维团队关键词
     "Harness":

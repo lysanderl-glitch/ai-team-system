@@ -233,6 +233,227 @@ def get_all_teams_summary() -> List[dict]:
 
 
 # ============================================================================
+# v3.0 — Agent HR 质量审计引擎
+# 由 HR Director + Capability Architect 使用
+# ============================================================================
+
+# 强制 Schema 必填字段
+_REQUIRED_CARD_FIELDS = [
+    "specialist_id", "team", "role", "status", "type",
+    "domains", "capabilities", "experience",
+    "availability", "召唤关键词",
+]
+
+# C级（不合格）能力描述特征 — 过于笼统的活动名
+_C_LEVEL_PATTERNS = [
+    "项目管理", "知识沉淀", "质量审核", "内容创作", "数据分析",
+    "系统开发", "测试", "设计", "优化", "协调", "管理",
+    "分析", "规划", "检索", "推荐", "审核",
+]
+
+
+def audit_agent_card(specialist_id: str, team_key: str = None) -> dict:
+    """Agent 卡片质量审计
+
+    由 HR Director 使用，检查单个 Agent 卡片的合规性和质量。
+
+    Args:
+        specialist_id: Agent 标识
+        team_key: 团队标识（可选，不提供则全局搜索）
+
+    Returns:
+        审计结果：
+        - score: 总分 (0-100)
+        - schema_complete: Schema 完整性
+        - capability_grades: 每条能力的评级
+        - issues: 问题列表
+        - recommendation: 处置建议
+    """
+    # 加载卡片
+    if team_key:
+        card = load_personnel_card(specialist_id, team_key)
+    else:
+        card = get_personnel_by_specialist_id(specialist_id)
+
+    if not card:
+        return {
+            "score": 0,
+            "specialist_id": specialist_id,
+            "issues": [f"找不到 Agent 卡片: {specialist_id}"],
+            "recommendation": "卡片不存在，需要创建",
+        }
+
+    issues = []
+    scores = {}
+
+    # ── 1. Schema 完整性检查 (权重 25%) ──
+    missing_fields = []
+    for field in _REQUIRED_CARD_FIELDS:
+        if field not in card or not card[field]:
+            missing_fields.append(field)
+
+    schema_score = max(0, 100 - len(missing_fields) * 15)
+    scores["schema"] = schema_score
+    if missing_fields:
+        issues.append(f"缺失必填字段: {', '.join(missing_fields)}")
+
+    # ── 2. 能力描述质量 (权重 30%) ──
+    capabilities = card.get("capabilities", [])
+    cap_count = len(capabilities)
+
+    if cap_count < 3:
+        issues.append(f"capabilities 仅 {cap_count} 条，要求至少 4 条")
+
+    c_level_count = 0
+    capability_grades = []
+    for cap in capabilities:
+        cap_str = str(cap).strip()
+        # 检查是否为 C 级（仅活动名）
+        is_c_level = False
+        if len(cap_str) <= 6:  # 6个字以内大概率是活动名
+            is_c_level = True
+        else:
+            for pattern in _C_LEVEL_PATTERNS:
+                if cap_str == pattern:  # 完全匹配活动名
+                    is_c_level = True
+                    break
+
+        # 检查是否为 A 级（包含工具/框架名）
+        has_tool = any(c in cap_str for c in [
+            "(", ")", "pytest", "FastAPI", "Vue", "React", "Docker",
+            "SWOT", "PEST", "PRINCE2", "Agile", "Scrum",
+            "Obsidian", "Claude", "Python", "yaml", "json",
+            "基于", "框架", "模型", "引擎", "工具",
+        ])
+
+        if is_c_level:
+            grade = "C"
+            c_level_count += 1
+        elif has_tool:
+            grade = "A"
+        else:
+            grade = "B"
+
+        capability_grades.append({"capability": cap_str, "grade": grade})
+
+    if c_level_count > 0:
+        issues.append(f"{c_level_count} 条能力描述为 C 级（不合格）")
+
+    cap_quality_score = 100
+    if cap_count == 0:
+        cap_quality_score = 0
+    else:
+        a_count = sum(1 for g in capability_grades if g["grade"] == "A")
+        b_count = sum(1 for g in capability_grades if g["grade"] == "B")
+        cap_quality_score = int((a_count * 100 + b_count * 70 + c_level_count * 20) / cap_count)
+    scores["capability_quality"] = cap_quality_score
+
+    # ── 3. Domains 充实度 (权重 15%) ──
+    domains = card.get("domains", [])
+    domain_score = min(100, len(domains) * 25)  # 4条=100
+    scores["domains"] = domain_score
+    if len(domains) < 3:
+        issues.append(f"domains 仅 {len(domains)} 条，要求至少 3 条")
+
+    # ── 4. Experience 充实度 (权重 15%) ──
+    experience = card.get("experience", [])
+    exp_score = min(100, len(experience) * 40)  # 2-3条就够
+    scores["experience"] = exp_score
+    if len(experience) < 2:
+        issues.append(f"experience 仅 {len(experience)} 条，要求至少 2 条")
+
+    # ── 5. 召唤关键词 (权重 15%) ──
+    keywords = card.get("召唤关键词", [])
+    kw_score = min(100, len(keywords) * 20)  # 5条=100
+    scores["keywords"] = kw_score
+    if len(keywords) < 4:
+        issues.append(f"召唤关键词 仅 {len(keywords)} 个，要求至少 4 个")
+
+    # ── 加权总分 ──
+    total = int(
+        scores["schema"] * 0.25 +
+        scores["capability_quality"] * 0.30 +
+        scores["domains"] * 0.15 +
+        scores["experience"] * 0.15 +
+        scores["keywords"] * 0.15
+    )
+
+    # 处置建议
+    if total >= 80:
+        recommendation = "合格，保持 active"
+    elif total >= 60:
+        recommendation = "需改进，限期修订能力描述"
+    elif total >= 40:
+        recommendation = "不合格，降级为 inactive 或修订后重新评审"
+    else:
+        recommendation = "严重不合格，建议退役或完全重写卡片"
+
+    return {
+        "specialist_id": specialist_id,
+        "team": card.get("team", "unknown"),
+        "role": card.get("role", "unknown"),
+        "score": total,
+        "scores": scores,
+        "capability_grades": capability_grades,
+        "issues": issues,
+        "recommendation": recommendation,
+        "audited_at": datetime.now().isoformat(),
+    }
+
+
+def audit_all_agents() -> dict:
+    """全量 Agent 质量审计
+
+    遍历所有团队的所有 Agent，逐一审计。
+
+    Returns:
+        审计报告：
+        - total_agents: 总数
+        - average_score: 平均分
+        - by_team: 按团队分组的结果
+        - critical_issues: 严重问题列表
+        - agents_below_60: 不合格 Agent 列表
+    """
+    org = load_org_config()
+    results = []
+    team_scores = {}
+
+    for team_key, team_config in org.get("teams", {}).items():
+        specialists = team_config.get("specialists", [])
+        team_results = []
+
+        for sid in specialists:
+            audit = audit_agent_card(sid, team_key)
+            results.append(audit)
+            team_results.append(audit)
+
+        if team_results:
+            avg = sum(r["score"] for r in team_results) / len(team_results)
+            team_scores[team_key] = {
+                "name": team_config.get("name", team_key),
+                "count": len(team_results),
+                "average": round(avg, 1),
+                "below_60": [r for r in team_results if r["score"] < 60],
+            }
+
+    total = len(results)
+    avg_score = round(sum(r["score"] for r in results) / total, 1) if total else 0
+
+    return {
+        "total_agents": total,
+        "average_score": avg_score,
+        "by_team": team_scores,
+        "critical_issues": [r for r in results if r["score"] < 40],
+        "agents_below_60": [
+            {"specialist_id": r["specialist_id"], "team": r["team"],
+             "score": r["score"], "recommendation": r["recommendation"]}
+            for r in results if r["score"] < 60
+        ],
+        "audited_at": datetime.now().isoformat(),
+    }
+
+
+# ============================================================================
 # 决策检查机制 - 确保沟通决策原则被自动执行
 # ============================================================================
 

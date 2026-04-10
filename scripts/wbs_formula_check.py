@@ -5,15 +5,8 @@ WBS L4工期校验脚本
 由 janus_pmo_auto 负责运维
 """
 import sys
-import io
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
-try:
-    import openpyxl
-except ImportError:
-    print("需要安装 openpyxl: pip install openpyxl")
-    sys.exit(1)
+from wbs_data_source import get_wbs_source
 
 
 def calc_l4_effective_duration(l4_tasks):
@@ -36,9 +29,12 @@ def calc_l4_effective_duration(l4_tasks):
     return standalone_sum + group_sum
 
 
-def check_wbs_formulas(filepath):
-    wb = openpyxl.load_workbook(filepath)
-    ws = wb["① WBS主表"]
+def check_wbs_formulas(filepath=None):
+    source = get_wbs_source(filepath)
+    raw_tasks = source.load_tasks()
+
+    # 按序号排序以保持原始顺序（L3→L4父子关系依赖顺序）
+    sorted_tasks = sorted(raw_tasks.values(), key=lambda t: t.get("wbs", ""))
 
     issues = []
     current_l3 = None
@@ -59,63 +55,38 @@ def check_wbs_formulas(filepath):
                     "status": status
                 })
 
-    for row in ws.iter_rows(min_row=4, values_only=False):
-        wbs_code = row[0].value      # A列: WBS编码
-        level = row[1].value         # B列: 层级
-        name = row[2].value          # C列: 任务名称
-        duration = row[3].value      # D列: 工期
-        parallel_group = row[4].value  # E列: 并行组
-
-        if level is None or wbs_code is None:
-            continue
-
-        try:
-            level_num = float(level)
-        except (ValueError, TypeError):
-            continue
+    for t in sorted_tasks:
+        level_num = t["level"]
 
         if level_num == 3:
             _check_l3()
-            current_l3 = {"wbs": wbs_code, "name": name}
-            try:
-                l3_duration = float(duration) if duration else 0
-            except (ValueError, TypeError):
-                l3_duration = 0
+            current_l3 = {"wbs": t["wbs"], "name": t["name"]}
+            l3_duration = t["duration"]
             l4_tasks = []
 
         elif level_num == 4 and current_l3:
-            try:
-                d = float(duration) if duration else 0
-            except (ValueError, TypeError):
-                d = 0
             l4_tasks.append({
-                "duration": d,
-                "parallel_group": parallel_group.strip() if isinstance(parallel_group, str) else parallel_group
+                "duration": t["duration"],
+                "parallel_group": t["parallel_group"]
             })
 
     _check_l3()
-    return issues
+    return issues, source.get_source_name()
 
 
 def main():
     import os
-    # 默认路径，可通过参数覆盖
-    default_path = os.path.join(
-        os.path.expanduser("~"),
-        "Downloads",
-        "Janusd_WBS_交付_审查版 (2).xlsx"
-    )
-    filepath = sys.argv[1] if len(sys.argv) > 1 else default_path
+    filepath = sys.argv[1] if len(sys.argv) > 1 else None
 
-    if not os.path.exists(filepath):
+    if filepath and not os.path.exists(filepath):
         print(f"文件不存在: {filepath}")
         sys.exit(1)
 
     print(f"📋 WBS L4 SUM公式校验")
-    print(f"   文件: {os.path.basename(filepath)}")
-    print("=" * 60)
 
-    issues = check_wbs_formulas(filepath)
+    issues, source_name = check_wbs_formulas(filepath)
+    print(f"   数据源: {source_name}")
+    print("=" * 60)
 
     if not issues:
         print("✅ 所有L3任务工期与L4子任务工期之和一致，无异常。")

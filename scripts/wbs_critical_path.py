@@ -5,53 +5,21 @@ WBS关键路径自动识别脚本
 由 janus_pmo_auto 负责运维
 """
 import sys
-import io
 import os
 from collections import defaultdict
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
-try:
-    import openpyxl
-except ImportError:
-    print("需要安装 openpyxl: pip install openpyxl")
-    sys.exit(1)
+from wbs_data_source import get_wbs_source
 
 
-def load_wbs_tasks(filepath):
-    """从WBS主表加载所有任务及其依赖关系"""
-    wb = openpyxl.load_workbook(filepath)
-    ws = wb["① WBS主表"]
+def load_wbs_tasks(filepath=None):
+    """从WBS数据源加载所有任务，并附加关键路径计算字段"""
+    source = get_wbs_source(filepath)
+    raw_tasks = source.load_tasks()
 
     tasks = {}
-    for row in ws.iter_rows(min_row=4, values_only=False):
-        wbs_code = row[0].value
-        level = row[1].value
-        name = row[2].value
-        duration = row[3].value
-        parallel_group = row[4].value
-        dependency = row[5].value
-
-        if wbs_code is None or level is None:
-            continue
-
-        try:
-            level_num = float(level)
-            dur = float(duration) if duration else 0
-        except (ValueError, TypeError):
-            continue
-
-        deps = []
-        if dependency:
-            deps = [d.strip() for d in str(dependency).split(",")]
-
-        tasks[wbs_code] = {
-            "wbs": wbs_code,
-            "level": level_num,
-            "name": str(name).strip() if name else "",
-            "duration": dur,
-            "parallel_group": str(parallel_group).strip() if parallel_group else None,
-            "deps": deps,
+    for code, t in raw_tasks.items():
+        tasks[code] = {
+            **t,
             "es": 0,   # earliest start
             "ef": 0,   # earliest finish
             "ls": 0,   # latest start
@@ -59,7 +27,7 @@ def load_wbs_tasks(filepath):
             "float": 0, # total float
         }
 
-    return tasks
+    return tasks, source.get_source_name()
 
 
 def build_successors(tasks):
@@ -168,22 +136,18 @@ def identify_parallel_flows(tasks):
 
 
 def main():
-    default_path = os.path.join(
-        os.path.expanduser("~"),
-        "Downloads",
-        "Janusd_WBS_交付_审查版 (2).xlsx"
-    )
-    filepath = sys.argv[1] if len(sys.argv) > 1 else default_path
+    filepath = sys.argv[1] if len(sys.argv) > 1 else None
 
-    if not os.path.exists(filepath):
+    # 如果传了文件路径参数，检查文件存在
+    if filepath and not os.path.exists(filepath):
         print(f"文件不存在: {filepath}")
         sys.exit(1)
 
     print(f"🔍 WBS关键路径分析")
-    print(f"   文件: {os.path.basename(filepath)}")
-    print("=" * 70)
 
-    tasks = load_wbs_tasks(filepath)
+    tasks, source_name = load_wbs_tasks(filepath)
+    print(f"   数据源: {source_name}")
+    print("=" * 70)
     print(f"\n📊 加载 {len(tasks)} 个WBS任务")
 
     # 拓扑排序

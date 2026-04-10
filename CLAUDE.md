@@ -139,6 +139,22 @@ Synapse 体系组成：
 
 **S级豁免**：简单查询/状态确认类任务（S级）无需团队派单，Lysander可直接处理
 
+### Agent HR 管理制度（强制）
+
+**新增 Agent 必须经过 HR 审批**：
+1. 任何新增 Agent 必须提交给 `hr_director` 入职审批
+2. 卡片必须符合强制 Schema（详见 `obs/03-process-knowledge/agent-hr-management-system.md`）
+3. 能力描述必须达到 B 级（具体到方法论/框架），C 级（仅活动名）不合格
+4. 新 Agent 默认 `status: probation`，通过评审后 `capability_architect` 升级为 `active`
+5. 与现有角色能力重叠 >30% 的不予批准
+
+**能力描述质量标准**：
+- A级（优秀）："基于 pytest + Playwright 的端到端测试框架搭建与维护"
+- B级（合格）："SWOT分析、PEST分析、波特五力模型应用"
+- C级（不合格）："项目管理"、"知识沉淀" ← 禁止出现
+
+**定期评审**：由情报闭环触发，HR 团队主导 5 维度评分（时效性/描述质量/使用频率/差异化/合规性），<3.0 分降级或退役。
+
 ### 工作原则
 
 - **禁止以时间切割任务**：只说"A完成后做B"
