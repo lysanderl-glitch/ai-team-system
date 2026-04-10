@@ -306,25 +306,50 @@ def audit_agent_card(specialist_id: str, team_key: str = None) -> dict:
 
     c_level_count = 0
     capability_grades = []
+
+    # B级以上关键词：包含这些说明至少是方法论/框架级别
+    _b_level_indicators = [
+        "SWOT", "PEST", "PRINCE2", "Agile", "Scrum", "PMP", "ITIL", "CMMI",
+        "Kano", "Porter", "PMBoK", "ADDIE", "TDD", "BDD", "CI/CD",
+        "IoT", "BIM", "CAD", "GIS", "IFC", "MQTT", "OPC-UA", "Modbus",
+        "REST", "API", "SQL", "NoSQL", "ETL", "ML", "NLP", "RAG",
+        "WBS", "UAT", "SOP", "KPI", "OKR", "ROI", "GTM", "PMF", "SEO",
+        "ATR", "RSI", "MA", "MACD",
+        "知识图谱", "决策树", "语义网络", "图推理", "神经网络",
+        "时间序列", "回归分析", "聚类分析", "模式识别", "异常检测",
+        "敏感性分析", "利弊分析", "价值链", "波特五力",
+        "燃尽图", "甘特图", "关键路径",
+    ]
+
     for cap in capabilities:
         cap_str = str(cap).strip()
-        # 检查是否为 C 级（仅活动名）
-        is_c_level = False
-        if len(cap_str) <= 6:  # 6个字以内大概率是活动名
-            is_c_level = True
-        else:
-            for pattern in _C_LEVEL_PATTERNS:
-                if cap_str == pattern:  # 完全匹配活动名
-                    is_c_level = True
-                    break
 
-        # 检查是否为 A 级（包含工具/框架名）
+        # 先检查是否包含B级以上指标词
+        has_method = any(ind in cap_str for ind in _b_level_indicators)
+
+        # 检查是否为 A 级（包含工具/框架名+具体产出物描述，通常较长且有括号说明）
         has_tool = any(c in cap_str for c in [
             "(", ")", "pytest", "FastAPI", "Vue", "React", "Docker",
-            "SWOT", "PEST", "PRINCE2", "Agile", "Scrum",
+            "Kubernetes", "Playwright", "Selenium", "JMeter",
             "Obsidian", "Claude", "Python", "yaml", "json",
-            "基于", "框架", "模型", "引擎", "工具",
+            "Asana", "Notion", "n8n", "GitHub", "Slack",
+            "Excel", "Figma", "Canva",
+            "基于", "框架", "引擎", "工具链", "脚本",
+            "ECharts", "Element Plus", "Pinia", "Tailwind",
+            "SQLAlchemy", "FastAPI", "Baostock",
+            "generate-article", "hr_base",
         ])
+
+        # C级判断：仅活动名（短且无方法论/工具指标）
+        is_c_level = False
+        if not has_method and not has_tool:
+            if len(cap_str) <= 6:
+                is_c_level = True
+            else:
+                for pattern in _C_LEVEL_PATTERNS:
+                    if cap_str == pattern:
+                        is_c_level = True
+                        break
 
         if is_c_level:
             grade = "C"
@@ -379,14 +404,14 @@ def audit_agent_card(specialist_id: str, team_key: str = None) -> dict:
     )
 
     # 处置建议
-    if total >= 80:
+    if total >= 90:
         recommendation = "合格，保持 active"
+    elif total >= 80:
+        recommendation = "需优化，限期提升能力描述至A级"
     elif total >= 60:
-        recommendation = "需改进，限期修订能力描述"
-    elif total >= 40:
-        recommendation = "不合格，降级为 inactive 或修订后重新评审"
+        recommendation = "不合格，立即修订"
     else:
-        recommendation = "严重不合格，建议退役或完全重写卡片"
+        recommendation = "严重不合格，降级inactive或退役"
 
     return {
         "specialist_id": specialist_id,

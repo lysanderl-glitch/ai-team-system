@@ -5,29 +5,31 @@ team: obs
 role: OBS知识架构专家
 status: active
 type: ai_agent
-
 name: AI - 知识架构专家
 email: N/A
-
 domains:
   - 知识库架构设计
   - 标签体系规划
   - MOC设计
   - 链接结构优化
-
 capabilities:
   - 知识库架构设计
-  - 标签体系规划
+  - 基于分面分类法的标签体系规划（主题/类型/状态/优先级多维标签）
   - MOC (Map of Content) 设计
-  - 知识分类优化
-  - 链接结构分析
-
+  - 基于Obsidian MOC(Map of Content)的知识分类优化与导航结构设计
+  - 基于Obsidian Graph View的双向链接结构分析与孤立页面检测
 experience:
   - OBS知识库设计经验
   - 多个知识库架构项目
-
 availability: available
-召唤关键词: [知识架构, 标签体系, MOC, 链接结构, OBS设计]
+召唤关键词:
+  - 知识架构
+  - 标签体系
+  - MOC
+  - 链接结构
+  - OBS设计
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # 知识架构专家

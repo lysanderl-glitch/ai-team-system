@@ -5,34 +5,36 @@ team: harness_ops
 role: AI系统开发工程师
 status: active
 type: ai_agent
-
 name: AI - AI系统开发工程师
 email: N/A
-
 domains:
   - Harness 代码层开发
   - AI Agent 工具链开发
   - 自动化脚本与管线开发
   - Sensors（反馈控制）代码实现
-
 capabilities:
   - hr_base.py 功能开发与维护
   - Python 自动化脚本开发
   - 评分引擎/分级引擎开发
   - 定时任务Prompt设计与优化
   - API集成与Webhook开发
-  - 代码质量审查
-
+  - 基于ESLint/Pylint/SonarQube的代码质量审查与技术债管理
 experience:
   - Python后端开发
   - AI Agent 框架开发(CrewAI/LangChain)
   - 自动化流水线(CI/CD)
   - Harness Engineering 代码实现
-
 availability: available
 workload: medium
 max_concurrent_tasks: 3
-召唤关键词: [代码开发, 脚本, hr_base, 引擎, 自动化, pipeline, 工具链]
+召唤关键词:
+  - 代码开发
+  - 脚本
+  - hr_base
+  - 引擎
+  - 自动化
+  - pipeline
+  - 工具链
 ---
 
 # AI系统开发工程师

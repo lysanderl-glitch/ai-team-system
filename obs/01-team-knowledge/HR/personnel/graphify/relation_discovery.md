@@ -5,30 +5,34 @@ team: graphify
 role: 关联发现专家
 status: active
 type: ai_agent
-
 name: AI - 关联发现专家
 email: N/A
-
 domains:
   - 知识关联
   - 图谱推理
   - 隐性知识挖掘
   - 跨领域联想
-
 capabilities:
   - 知识图谱构建
-  - 隐性关联发现
-  - 跨领域知识链接
+  - 基于知识图谱(Neo4j/NetworkX)的隐性关联发现与路径推理
+  - 跨领域知识链接与语义网络分析（实体识别→关系抽取→图构建）
   - 图推理算法
-  - 语义网络分析
-
+  - 基于图算法(PageRank/社区检测)的语义网络分析
 experience:
   - 知识图谱构建经验
   - Graph Neural Network应用
   - 跨领域知识整合
-
 availability: available
-召唤关键词: [关联, 图谱, 链接, 发现, 隐性, 关系, 连接]
+召唤关键词:
+  - 关联
+  - 图谱
+  - 链接
+  - 发现
+  - 隐性
+  - 关系
+  - 连接
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # 关联发现专家

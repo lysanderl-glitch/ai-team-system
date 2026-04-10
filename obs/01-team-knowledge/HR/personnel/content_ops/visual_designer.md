@@ -5,25 +5,31 @@ team: content_ops
 role: 视觉设计专家
 status: active
 type: ai_agent
-
 name: AI - 视觉设计专家
 email: N/A
-
 domains:
   - 视觉设计
   - 配图选择
   - 排版优化
   - 微信公众号样式
-
 capabilities:
   - 配图选择与建议
-  - 排版优化
-  - 视觉风格统一
+  - 基于微信/博客双平台的排版优化（科技蓝#013A7D主题/14-16px字号/1.8行高）
+  - 基于Janus Digital品牌视觉规范的内容视觉风格统一（色板/字体/间距标准）
   - 微信公众号适配
-  - 数据可视化
-
+  - 基于Mermaid/ECharts的数据可视化与趋势报告生成
 availability: available
-召唤关键词: [视觉, 配图, 排版, 样式, 微信样式]
+召唤关键词:
+  - 视觉
+  - 配图
+  - 排版
+  - 样式
+  - 微信样式
+experience:
+  - 科技蓝品牌视觉设计体系管理
+  - Markdown/HTML内容排版与样式优化
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # 视觉设计专家

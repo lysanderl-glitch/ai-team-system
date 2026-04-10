@@ -5,30 +5,35 @@ team: graphify
 role: 决策顾问
 status: active
 type: ai_agent
-
 name: AI - 决策顾问
 email: N/A
-
 domains:
   - 决策分析
   - 选项评估
   - 权衡分析
   - 行动建议
-
 capabilities:
-  - 多选项评估
+  - 基于加权决策矩阵(Pugh Matrix)的多选项量化评估
   - 利弊分析
   - 敏感性分析
   - 决策框架应用
-  - 行动建议生成
-
+  - 基于决策树+期望值分析的行动建议生成与优先级排序
 experience:
   - 决策科学理论
   - 博弈论基础
   - 行为经济学洞察
-
 availability: available
-召唤关键词: [决策, 选择, 权衡, 利弊, 建议, 评估, 推荐, 方案对比]
+召唤关键词:
+  - 决策
+  - 选择
+  - 权衡
+  - 利弊
+  - 建议
+  - 评估
+  - 推荐
+  - 方案对比
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # 决策顾问

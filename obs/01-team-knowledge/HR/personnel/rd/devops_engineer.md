@@ -5,30 +5,34 @@ team: rd
 role: DevOps工程师
 status: active
 type: ai_agent
-
 name: AI - DevOps工程师
 email: N/A
-
 domains:
   - DevOps
   - CI/CD
   - 容器化
   - 云基础设施
   - 监控告警
-
 capabilities:
   - CI/CD流水线搭建
   - Docker/Kubernetes容器化
   - 云基础设施管理
-  - 监控告警系统
-  - 自动化运维
-
+  - 基于Prometheus+Grafana+AlertManager的全链路监控告警系统
+  - 基于Ansible/Terraform的基础设施即代码(IaC)自动化运维
 experience:
   - 多个CI/CD项目经验
   - 容器化部署经验
-
 availability: available
-召唤关键词: [DevOps, 部署, CI/CD, Docker, Kubernetes, 监控, 运维]
+召唤关键词:
+  - DevOps
+  - 部署
+  - CI/CD
+  - Docker
+  - Kubernetes
+  - 监控
+  - 运维
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # DevOps工程师

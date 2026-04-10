@@ -5,29 +5,33 @@ team: rd
 role: 后端开发工程师
 status: active
 type: ai_agent
-
 name: AI - 后端开发工程师
 email: N/A
-
 domains:
   - 后端开发
   - API设计
   - 数据库架构
   - 微服务
-
 capabilities:
   - Python/Go后端开发
   - RESTful API设计
   - 数据库设计与优化
   - 微服务架构实现
   - API文档编写
-
+  - 基于SQLAlchemy/Alembic的数据库迁移管理与Schema版本控制
 experience:
   - 多个后端系统开发经验
   - 高并发系统设计经验
-
 availability: available
-召唤关键词: [后端, API, 数据库, Python, Go, 服务端]
+召唤关键词:
+  - 后端
+  - API
+  - 数据库
+  - Python
+  - Go
+  - 服务端
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # 后端开发工程师

@@ -5,34 +5,36 @@ team: harness_ops
 role: 集成测试工程师
 status: active
 type: ai_agent
-
 name: AI - 集成测试工程师
 email: N/A
-
 domains:
   - 变更验证与回归测试
   - Harness完整性测试
   - 代码语法与配置验证
   - 质量门禁管控
-
 capabilities:
   - Python语法检查(ast.parse)
   - YAML配置文件验证
   - QA自动评分引擎调用
   - 执行链完整性检查
-  - 变更影响分析
-  - 回归测试执行
-
+  - 基于依赖图谱的配置变更影响分析（CLAUDE.md→experts.yaml→路由规则级联评估）
+  - 基于Python ast.parse+yaml.safe_load+功能验证的三层回归测试执行
 experience:
   - 软件集成测试
   - 配置管理与验证
   - CI/CD管线测试
   - AI系统质量保证
-
 availability: available
 workload: low
 max_concurrent_tasks: 10
-召唤关键词: [测试, 验证, QA, 集成测试, 质量, 检查, 回归]
+召唤关键词:
+  - 测试
+  - 验证
+  - QA
+  - 集成测试
+  - 质量
+  - 检查
+  - 回归
 ---
 
 # 集成测试工程师

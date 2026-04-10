@@ -5,23 +5,30 @@ team: content_ops
 role: HTML文章生成专家
 status: active
 type: ai_agent
-
 name: AI - HTML文章生成专家
-
 domains:
   - 本地 HTML 文章生成
   - 内容归档管理
   - 内部内容分发
   - 效果追踪
-
 capabilities:
   - 调用 generate-article.py 将 Markdown 生成本地 HTML 文章
   - 管理 obs/generated-articles/ 归档目录
   - 内容排期与分发协调
   - 内容效果数据汇总
-
 availability: available
-召唤关键词: [HTML生成, 文章导出, 文章生成, 生成报告, 内容归档, 文章化]
+召唤关键词:
+  - HTML生成
+  - 文章导出
+  - 文章生成
+  - 生成报告
+  - 内容归档
+  - 文章化
+experience:
+  - Astro静态网站生成与博客发布管理
+  - n8n自动化工作流运维（微信/博客发布链路）
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # HTML 文章生成专家

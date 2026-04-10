@@ -5,31 +5,33 @@ team: stock
 role: 股票交易系统后端开发
 status: active
 type: ai_agent
-
 name: AI - 股票交易系统后端
 email: N/A
-
 domains:
   - FastAPI开发
   - 数据库设计
   - API开发
   - 系统架构
-
 capabilities:
   - FastAPI后端开发
   - SQLAlchemy ORM
   - SQLite数据库
   - RESTful API
   - 数据处理
-
 experience:
   - 股票交易系统后端
   - FastAPI + SQLAlchemy
   - 多模块API设计
   - Baostock数据接口
-
 availability: available
-召唤关键词: [后端, FastAPI, API, 数据库, Python]
+召唤关键词:
+  - 后端
+  - FastAPI
+  - API
+  - 数据库
+  - Python
+workload: medium
+max_concurrent_tasks: 5
 ---
 
 # 股票交易系统后端开发
