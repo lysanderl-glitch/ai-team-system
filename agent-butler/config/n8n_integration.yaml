@@ -1,7 +1,8 @@
 # n8n 集成配置
-# Phase 4: 管家决策 → n8n自动执行
+# v2.0: 与执行链/决策链全面打通
+# 更新: 2026-04-10
 
-version: "1.0"
+version: "2.0"
 
 # n8n Webhook 配置
 n8n:
@@ -12,27 +13,96 @@ n8n:
 # 博客/微信发布链路为总裁个人专属，不在此配置
 # 相关 SOP 见 obs/personal/blog-wechat-publish-sop.md
 
-# 触发规则
-triggers:
+# ============================================================================
+# 执行链自动化触发规则（v2.0 新增）
+# ============================================================================
+execution_chain_triggers:
+
+  # 情报管线触发
+  daily_intelligence:
+    description: "每日情报日报完成后，触发行动管线"
+    trigger_event: "intelligence_report_generated"
+    action: "trigger_action_pipeline"
+    webhook_url: "https://n8n.lysander.bond/webhook/intelligence-action"
+    enabled: true
+
+  # 行动管线触发
+  action_completed:
+    description: "行动管线执行完成后，通知总裁"
+    trigger_event: "action_report_generated"
+    action: "notify_president"
+    webhook_url: "https://n8n.lysander.bond/webhook/action-notify"
+    notify_channels: ["slack"]
+    enabled: true
+
+  # 代码变更触发QA
+  code_change_qa:
+    description: "当Harness Ops提交代码变更时，自动触发QA审查"
+    trigger_event: "git_push"
+    condition: "files_match: agent-butler/**/*.py OR CLAUDE.md OR agent-butler/config/*.yaml"
+    action: "trigger_qa_review"
+    webhook_url: "https://n8n.lysander.bond/webhook/qa-auto-review"
+    enabled: true
+
+  # 任务状态变更通知
+  task_status_change:
+    description: "active_tasks.yaml中任务状态变更时通知"
+    trigger_event: "task_status_updated"
+    condition: "status changed to: completed OR blocked"
+    action: "notify_slack"
+    webhook_url: "https://n8n.lysander.bond/webhook/task-status"
+    notify_channels: ["slack"]
+    enabled: true
+
+# ============================================================================
+# 决策链触发规则
+# ============================================================================
+decision_triggers:
+
   # L1自动执行：直接触发n8n
   - decision_level: L1
     action: "trigger_n8n"
     webhook_url: "http://localhost:5678/webhook/butler-execute"
 
-  # L2管家批准：触发n8n，同时通知
+  # L2 Lysander审批：触发n8n，同时通知
   - decision_level: L2
     action: "trigger_n8n_notify"
     webhook_url: "http://localhost:5678/webhook/butler-approved"
-    notify_channels: ["wechat", "slack"]
+    notify_channels: ["slack"]
 
-  # L3上报用户：暂停，等待用户确认
+  # L3专家评审：组织评审，完成后自动执行
   - decision_level: L3
-    action: "wait_user_confirm"
-    notify_channels: ["wechat"]
-    wait_timeout: 7200  # 2小时超时
+    action: "expert_review_then_execute"
+    webhook_url: "http://localhost:5678/webhook/expert-review"
+    notify_channels: ["slack"]
 
+  # L4总裁决策：暂停，等待确认
+  - decision_level: L4
+    action: "wait_president_confirm"
+    notify_channels: ["slack"]
+    wait_timeout: 86400  # 24小时超时
+
+# ============================================================================
 # 任务类型到n8n工作流映射
+# ============================================================================
 workflow_mapping:
+  # 情报管线
+  "每日情报日报":
+    workflow: "daily-intelligence"
+    description: "每日AI技术情报生成"
+    schedule: "0 4 * * * (UTC) = 8am Dubai"
+
+  "情报行动管线":
+    workflow: "intelligence-action"
+    description: "情报建议评估→执行→报告"
+    schedule: "0 6 * * * (UTC) = 10am Dubai"
+
+  "任务自动恢复":
+    workflow: "task-auto-resume"
+    description: "检查并恢复未完成任务"
+    schedule: "0 2 * * * (UTC) = 6am Dubai"
+
+  # 业务流程
   "新项目需求分析":
     workflow: "delivery-project-start"
     description: "新项目启动流程"
@@ -57,15 +127,34 @@ workflow_mapping:
     workflow: "iot-data-delivery"
     description: "IoT数据交付流程"
 
+# ============================================================================
 # 通知配置
+# ============================================================================
 notifications:
+  slack:
+    enabled: true
+    # 通过 MCP Connector 直接发送
+
   wechat:
     enabled: true
-    # 使用现有webhook
+    # 通过 n8n webhook 发送
 
-  slack:
-    enabled: false
-    webhook_url: ""
+# ============================================================================
+# 自动化编排：事件链（Event Chain）
+# 当一个事件完成后，自动触发下一个
+# ============================================================================
+event_chains:
+  daily_pipeline:
+    description: "每日自动化全流程"
+    chain:
+      - event: "6:00am Dubai - 任务自动恢复Agent启动"
+        trigger: "trig_01RJJoy4v8TLj2HyHRnABKJb"
+      - event: "8:00am Dubai - 情报日报Agent启动"
+        trigger: "trig_01Lp7Q1Nn36JQAw4FEEJmKQX"
+      - event: "10:00am Dubai - 行动管线Agent启动"
+        trigger: "trig_017vgQox9JUcwvnx43ucLRPd"
+      - event: "行动管线完成 → Slack通知总裁"
+        trigger: "webhook: action-notify"
 
 # 执行记录 - 路径可通过环境变量自定义
 execution_log_dir: "${N8N_LOGS_DIR:-./logs/n8n_executions}"

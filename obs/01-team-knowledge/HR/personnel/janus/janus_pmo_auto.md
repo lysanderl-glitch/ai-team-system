@@ -65,9 +65,16 @@ Janus项目交付团队新增创新岗位，负责PMO自动化框架的运营与
 - Slack #pmo（团队通知）
 - 项目团队配置表（角色→人员映射）
 
-## 校验工具
-- `scripts/wbs_formula_check.py` — L3↔L4工期一致性校验
+## 自动化脚本工具集
+- `scripts/wbs_formula_check.py` — L3↔L4工期一致性校验（含并行组max逻辑）
 - `scripts/wbs_dependency_check.py` — 跨流依赖完整性校验
+- `scripts/wbs_critical_path.py` — 关键路径自动识别（正向/逆向推算，6并行流分析）
+- `scripts/wbs_role_workload.py` — 角色负载均衡分析（瓶颈识别+阶段-角色矩阵）
+- `scripts/project_space_init.py` — Notion项目空间自动生成（供n8n WF-01调用）
+- `scripts/asana_notion_sync.py` — Asana→Notion进度同步（供n8n WF-04/05集成）
+- `scripts/ai_deliverable_gen.py` — AI交付物自动生成（G0-G5共18模板，阶段门触发）
+- `scripts/ai_risk_warning.py` — AI风险预警（工期/依赖/资源/复杂度四维分析）
+- `scripts/pmo_knowledge_loop.py` — PMO知识库闭环（经验教训提取→分类→优化建议）
 
 ## 协作接口
 - 与 janus_pm 协同：进度报表提供、建单需求响应、WBS变更协同

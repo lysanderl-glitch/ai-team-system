@@ -1,0 +1,63 @@
+{
+  "lessons": [
+    {
+      "description": "客户需求变更频繁导致进度延期2周，建议在G2阶段增加变更管理培训",
+      "category": "schedule",
+      "category_name": "进度管理",
+      "project": "示范项目A",
+      "date": "2026-04-10",
+      "severity": "important",
+      "action": "",
+      "id": "LL-0001"
+    },
+    {
+      "description": "IoT协议测试未预留足够时间，实际需要20天而非15天，建议修改WBS标准工期",
+      "category": "schedule",
+      "category_name": "进度管理",
+      "project": "示范项目A",
+      "date": "2026-04-10",
+      "severity": "important",
+      "action": "",
+      "id": "LL-0002"
+    },
+    {
+      "description": "BIM建模外包质量不稳定，建议建立外包商评估机制",
+      "category": "quality",
+      "category_name": "质量管理",
+      "project": "示范项目A",
+      "date": "2026-04-10",
+      "severity": "important",
+      "action": "",
+      "id": "LL-0003"
+    },
+    {
+      "description": "项目周报自动化显著提升沟通效率，WF-04值得推广到所有项目",
+      "category": "communication",
+      "category_name": "沟通管理",
+      "project": "示范项目A",
+      "date": "2026-04-10",
+      "severity": "important",
+      "action": "",
+      "id": "LL-0004"
+    },
+    {
+      "description": "阶段门检查清单帮助避免了多次返工，建议增加更多业务维度检查项",
+      "category": "process",
+      "category_name": "流程优化",
+      "project": "示范项目A",
+      "date": "2026-04-10",
+      "severity": "important",
+      "action": "",
+      "id": "LL-0005"
+    }
+  ],
+  "stats": {
+    "total": 5,
+    "by_category": {
+      "schedule": 2,
+      "quality": 1,
+      "communication": 1,
+      "process": 1
+    }
+  }
+}

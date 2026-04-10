@@ -191,6 +191,7 @@
   },
   "active": "7e6f6f9ccff437b3",
   "lastOpenFiles": [
+    "01-team-knowledge/pmo_lessons_learned.json",
     "01-team-knowledge/HR/personnel/harness_ops/integration_qa.md",
     "01-team-knowledge/HR/personnel/harness_ops/knowledge_engineer.md",
     "01-team-knowledge/HR/personnel/harness_ops/ai_systems_dev.md",
@@ -225,7 +226,6 @@
     "03-process-knowledge/blog-wechat-publish-sop.md",
     "05-industry-knowledge/index.md",
     "04-decision-knowledge/index.md",
-    "02-project-knowledge/index.md",
-    "00-daily-work/index.md"
+    "02-project-knowledge/index.md"
   ]
 }
