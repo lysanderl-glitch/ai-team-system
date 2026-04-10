@@ -1,0 +1,238 @@
+{
+  "_meta": {
+    "description": "PMO Notion OAuth 工作流集合 - 替代需要 NOTION_TOKEN 的旧脚本方案",
+    "version": "1.0",
+    "created": "2026-04-10",
+    "auth_requirement": "n8n Notion OAuth2 credential（Settings → Credentials → Notion OAuth2 API → Connect）",
+    "python_scripts": [
+      "project_space_init.py（--mode payload）",
+      "asana_notion_sync.py（--mode payload）"
+    ]
+  },
+
+  "workflows": [
+
+    {
+      "name": "WF-01 项目空间初始化（OAuth版）",
+      "description": "接收新项目参数 → Python生成页面内容payload → Notion OAuth HTTP Request创建页面",
+      "trigger": "Webhook POST /webhook/wf-01-project-init",
+      "nodes": [
+        {
+          "id": "node_01_webhook",
+          "type": "n8n-nodes-base.webhook",
+          "name": "触发器: 新项目参数",
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "wf-01-project-init",
+            "responseMode": "responseNode"
+          },
+          "note": "接收参数: name, code, client, pm, type"
+        },
+        {
+          "id": "node_02_execute_python",
+          "type": "n8n-nodes-base.executeCommand",
+          "name": "Python: 生成页面Payload",
+          "parameters": {
+            "command": "cd /path/to/ai-team-system/scripts && python project_space_init.py --name \"{{ $json.name }}\" --code \"{{ $json.code }}\" --client \"{{ $json.client }}\" --pm \"{{ $json.pm }}\" --type \"{{ $json.type || '数字化交付' }}\" --mode payload",
+            "executeOnce": false
+          },
+          "note": "不需要NOTION_TOKEN。输出JSON payload供下一节点使用。"
+        },
+        {
+          "id": "node_03_parse_output",
+          "type": "n8n-nodes-base.code",
+          "name": "解析Python输出",
+          "parameters": {
+            "jsCode": "const raw = $input.first().json.stdout;\nconst parsed = JSON.parse(raw);\nif (!parsed.success) {\n  throw new Error(parsed.error || 'Python脚本执行失败');\n}\nreturn [{ json: parsed }];"
+          }
+        },
+        {
+          "id": "node_04_create_page",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Notion: 创建项目页面",
+          "parameters": {
+            "method": "POST",
+            "url": "https://api.notion.com/v1/pages",
+            "authentication": "predefinedCredentialType",
+            "nodeCredentialType": "notionApi",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                { "name": "Notion-Version", "value": "2022-06-28" }
+              ]
+            },
+            "sendBody": true,
+            "contentType": "json",
+            "body": "={{ $json.payload }}"
+          },
+          "credentials": {
+            "notionApi": { "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID", "name": "Notion OAuth2 account" }
+          },
+          "note": "使用n8n Notion OAuth2 credential，无需NOTION_TOKEN"
+        },
+        {
+          "id": "node_05_append_blocks",
+          "type": "n8n-nodes-base.splitInBatches",
+          "name": "追加剩余块（如有）",
+          "parameters": { "batchSize": 1 },
+          "note": "遍历 append_batches 数组，每项追加到已创建页面"
+        },
+        {
+          "id": "node_06_http_append",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Notion: 追加块",
+          "parameters": {
+            "method": "PATCH",
+            "url": "=https://api.notion.com/v1/blocks/{{ $('node_04_create_page').item.json.id }}/children",
+            "authentication": "predefinedCredentialType",
+            "nodeCredentialType": "notionApi",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                { "name": "Notion-Version", "value": "2022-06-28" }
+              ]
+            },
+            "sendBody": true,
+            "contentType": "json",
+            "body": "={{ $json.body }}"
+          },
+          "credentials": {
+            "notionApi": { "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID", "name": "Notion OAuth2 account" }
+          }
+        },
+        {
+          "id": "node_07_respond",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "name": "返回结果",
+          "parameters": {
+            "respondWith": "json",
+            "responseBody": "={\n  \"success\": true,\n  \"page_url\": \"{{ $('node_04_create_page').item.json.url }}\",\n  \"page_id\": \"{{ $('node_04_create_page').item.json.id }}\",\n  \"page_title\": \"{{ $('node_03_parse_output').item.json.page_title }}\"\n}"
+          }
+        }
+      ],
+      "connections": [
+        { "from": "node_01_webhook", "to": "node_02_execute_python" },
+        { "from": "node_02_execute_python", "to": "node_03_parse_output" },
+        { "from": "node_03_parse_output", "to": "node_04_create_page" },
+        { "from": "node_04_create_page", "to": "node_05_append_blocks", "condition": "={{ $json.append_batches.length > 0 }}" },
+        { "from": "node_05_append_blocks", "to": "node_06_http_append" },
+        { "from": "node_04_create_page", "to": "node_07_respond" }
+      ]
+    },
+
+    {
+      "name": "WF-04 Asana进度同步（OAuth版）",
+      "description": "Notion查询项目列表（OAuth） → Python从Asana拉取进度 → Notion OAuth HTTP Request更新",
+      "trigger": "定时触发 或 Webhook",
+      "nodes": [
+        {
+          "id": "sync_01_trigger",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "name": "定时触发（每日）",
+          "parameters": {
+            "rule": { "interval": [{ "field": "cronExpression", "expression": "0 6 * * *" }] }
+          }
+        },
+        {
+          "id": "sync_02_query_notion",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Notion: 查询交付中项目",
+          "parameters": {
+            "method": "POST",
+            "url": "https://api.notion.com/v1/databases/29aba1e3-ddcf-4e72-9680-2e19c290befc/query",
+            "authentication": "predefinedCredentialType",
+            "nodeCredentialType": "notionApi",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                { "name": "Notion-Version", "value": "2022-06-28" }
+              ]
+            },
+            "sendBody": true,
+            "contentType": "json",
+            "body": "{ \"filter\": { \"property\": \"状态\", \"select\": { \"equals\": \"交付中\" } } }"
+          },
+          "credentials": {
+            "notionApi": { "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID", "name": "Notion OAuth2 account" }
+          },
+          "note": "data_source_id: 29aba1e3 (项目注册表，新workspace)"
+        },
+        {
+          "id": "sync_03_python_asana",
+          "type": "n8n-nodes-base.executeCommand",
+          "name": "Python: Asana拉取进度+生成Payload",
+          "parameters": {
+            "command": "cd /path/to/ai-team-system/scripts && python asana_notion_sync.py --mode payload --projects-json '{{ JSON.stringify($json.results) }}'",
+            "env": {
+              "ASANA_TOKEN": "={{ $env.ASANA_TOKEN }}"
+            }
+          },
+          "note": "传入Notion项目列表JSON，脚本从Asana拉进度，输出Notion更新payload列表"
+        },
+        {
+          "id": "sync_04_parse",
+          "type": "n8n-nodes-base.code",
+          "name": "解析Python输出",
+          "parameters": {
+            "jsCode": "const raw = $input.first().json.stdout;\nconst parsed = JSON.parse(raw);\nif (!parsed.success) throw new Error(parsed.error);\n// 展开 notion_updates 数组供下一节点循环\nreturn parsed.notion_updates.map(u => ({ json: u }));"
+          }
+        },
+        {
+          "id": "sync_05_update_notion",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Notion: 更新项目进度",
+          "parameters": {
+            "method": "PATCH",
+            "url": "={{ $json.notion_api_url }}",
+            "authentication": "predefinedCredentialType",
+            "nodeCredentialType": "notionApi",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                { "name": "Notion-Version", "value": "2022-06-28" }
+              ]
+            },
+            "sendBody": true,
+            "contentType": "json",
+            "body": "={{ $json.body }}"
+          },
+          "credentials": {
+            "notionApi": { "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID", "name": "Notion OAuth2 account" }
+          }
+        }
+      ],
+      "connections": [
+        { "from": "sync_01_trigger", "to": "sync_02_query_notion" },
+        { "from": "sync_02_query_notion", "to": "sync_03_python_asana" },
+        { "from": "sync_03_python_asana", "to": "sync_04_parse" },
+        { "from": "sync_04_parse", "to": "sync_05_update_notion" }
+      ]
+    }
+  ],
+
+  "setup_guide": {
+    "step1_notion_oauth": {
+      "title": "在n8n设置Notion OAuth2 Credential",
+      "steps": [
+        "n8n → Settings → Credentials → Add Credential",
+        "搜索 'Notion' → 选 'Notion OAuth2 API'",
+        "点击 Connect → 用 lysanderl@janusd.io 账号授权",
+        "授权后记录 Credential ID，替换 JSON 中的 REPLACE_WITH_YOUR_CREDENTIAL_ID"
+      ]
+    },
+    "step2_import_workflow": {
+      "title": "导入工作流",
+      "steps": [
+        "n8n → Workflows → Import from File",
+        "选择本文件（n8n_wf_pmo_notion_oauth.json）",
+        "修改 Execute Command 节点中的 Python 路径",
+        "替换所有 REPLACE_WITH_YOUR_CREDENTIAL_ID 为实际 Credential ID",
+        "激活工作流"
+      ]
+    },
+    "step3_test": {
+      "title": "测试WF-01",
+      "test_curl": "curl -X POST https://n8n.lysander.bond/webhook/wf-01-project-init -H 'Content-Type: application/json' -d '{\"name\":\"测试项目\",\"code\":\"TEST-001\",\"client\":\"测试客户\",\"pm\":\"张三\"}'"
+    }
+  }
+}

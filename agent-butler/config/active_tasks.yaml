@@ -16,29 +16,31 @@ version: "1.0"
 
 # 活跃任务列表
 active_tasks:
-  - id: "TASK-2026-0410-002"
-    title: "PMO Notion 迁移 - 遗留: 更新Notion API Token"
-    level: "S"
+  - id: "TASK-2026-0410-003"
+    title: "PMO n8n OAuth迁移 - 在n8n配置Notion OAuth2 Credential并激活工作流"
+    level: "M"
     status: "blocked"
-    current_chain_step: "②等待总裁操作"
+    current_chain_step: "②等待总裁在n8n配置OAuth"
     assigned_teams:
       - janus
     decision_level: "L3"
     created_at: "2026-04-10"
     updated_at: "2026-04-10"
     context: |
-      主迁移任务(TASK-2026-0410-001)已完成Phase 1-5。
-      最后一步: 在新账号(lysanderl@janusd.io)创建Notion Integration,
-      获取新Token并更新 obs/credentials.md 中的 NOTION_TOKEN。
-      影响脚本: project_space_init.py / wbs_data_source.py / asana_notion_sync.py / pmo_knowledge_loop.py
+      脚本已完成改造（payload模式），不再需要NOTION_TOKEN。
+      Python脚本生成Notion API payload → n8n HTTP Request用OAuth credential执行。
+      待办: 总裁在n8n配置Notion OAuth2 Credential，导入并激活工作流。
     blockers:
-      - "需要总裁在 notion.so/profile/integrations 为新账号创建 Integration 并提供 Token"
+      - "需要总裁在n8n(n8n.lysander.bond) → Settings → Credentials → 添加Notion OAuth2 API → 用lysanderl@janusd.io账号授权"
     deliverables:
-      - "更新 obs/credentials.md 中 NOTION_TOKEN"
-      - "用新Token验证 WF-01/WF-04/WF-05 脚本可调用 Notion API"
+      - "n8n Notion OAuth2 Credential 配置完成"
+      - "导入 scripts/n8n_wf_pmo_notion_oauth.json"
+      - "WF-01 webhook测试通过"
     next_steps:
-      - "总裁登录 notion.so → Settings → Integrations → 创建新 Integration → 复制 Token"
-      - "Lysander 更新 obs/credentials.md 中的 NOTION_TOKEN"
+      - "n8n → Settings → Credentials → Add Credential → Notion OAuth2 API → Connect（用新账号授权）"
+      - "Workflows → Import → scripts/n8n_wf_pmo_notion_oauth.json"
+      - "替换workflow中的 REPLACE_WITH_YOUR_CREDENTIAL_ID"
+      - "激活WF-01，curl测试"
 
   # 示例:
   # - id: "TASK-2026-0410-001"
