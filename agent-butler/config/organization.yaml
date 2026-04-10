@@ -157,6 +157,24 @@ teams:
       - 每日技术情报
     access_key: "graphify"
 
+  harness_ops:
+    name: "驾驭运维团队 (Harness Ops)"
+    description: "Harness Ops团队 - 负责AI团队Harness体系的配置维护、代码开发、知识沉淀和质量保证。情报行动管线的专属执行团队。"
+    specialists:
+      - harness_engineer      # Harness配置工程师 - CLAUDE.md/执行链/决策规则维护
+      - ai_systems_dev        # AI系统开发工程师 - hr_base.py/工具链/自动化脚本
+      - knowledge_engineer    # 知识工程师 - 方法论文档/知识沉淀/OBS维护
+      - integration_qa        # 集成测试工程师 - 变更验证/回归测试/质量门禁
+    capabilities:
+      - Harness Configuration 维护
+      - 执行链/决策链设计与优化
+      - AI系统代码开发(hr_base.py)
+      - 自动化脚本与管线开发
+      - 方法论文档与知识沉淀
+      - 变更验证与集成测试
+      - QA自动评分与质量门禁
+    access_key: "harness_ops"
+
   growth:
     name: "增长团队"
     description: "增长团队 - 负责市场洞察、客户发现、竞争情报和GTM策略，打通外部信号与内部执行闭环"
@@ -240,6 +258,32 @@ task_routing:
       - gtm_strategist
     "市场扩张":
       - gtm_strategist
+
+    # Harness Ops 驾驭运维团队关键词
+    "Harness":
+      - harness_ops
+    "harness":
+      - harness_ops
+    "CLAUDE.md":
+      - harness_engineer
+    "执行链优化":
+      - harness_engineer
+    "决策规则":
+      - harness_engineer
+    "hr_base":
+      - ai_systems_dev
+    "评分引擎":
+      - ai_systems_dev
+    "自动化脚本":
+      - ai_systems_dev
+    "方法论":
+      - knowledge_engineer
+    "知识沉淀":
+      - knowledge_engineer
+    "集成测试":
+      - integration_qa
+    "变更验证":
+      - integration_qa
 
     # Janus项目交付团队关键词
     "WBS":

@@ -1140,6 +1140,196 @@ def get_sync_status() -> dict:
 
 
 # ============================================================================
+# v2.0 — QA自动化评分引擎 (Evaluation Agent 设计)
+# 参考: Anthropic 三Agent Harness — Evaluation Agent
+# ============================================================================
+
+def qa_auto_review(deliverable: dict) -> dict:
+    """QA自动化评分 — Evaluation Agent
+
+    对交付物进行多维度自动评分，替代纯人工审查。
+    参考 Anthropic 三Agent Harness 的 Evaluation Agent 设计。
+
+    Args:
+        deliverable: 交付物描述字典
+            - type: "code_change" | "doc_create" | "config_change" | "report"
+            - description: 交付物描述
+            - files_changed: 修改的文件列表
+            - original_goal: 原始目标
+
+    Returns:
+        评分结果：
+        - total_score: 总分(1-5)
+        - dimensions: 各维度评分
+        - passed: 是否通过(>= 3.5)
+        - feedback: 改进建议
+    """
+    d_type = deliverable.get("type", "unknown")
+    description = deliverable.get("description", "")
+    files = deliverable.get("files_changed", [])
+    goal = deliverable.get("original_goal", "")
+
+    dimensions = {}
+
+    # 维度1: 目标达成度 (是否完成了原始目标)
+    if goal and description:
+        # 简单关键词匹配评估
+        goal_keywords = set(goal.lower().split())
+        desc_keywords = set(description.lower().split())
+        overlap = len(goal_keywords & desc_keywords)
+        goal_score = min(5, max(1, round(overlap / max(len(goal_keywords), 1) * 5)))
+    else:
+        goal_score = 3  # 无法评估时给中等分
+    dimensions["goal_achievement"] = {
+        "score": goal_score,
+        "label": "目标达成度",
+    }
+
+    # 维度2: 变更范围合理性 (改动不过大也不过小)
+    file_count = len(files)
+    if d_type == "code_change":
+        if 1 <= file_count <= 5:
+            scope_score = 5
+        elif file_count == 0:
+            scope_score = 1
+        elif file_count <= 10:
+            scope_score = 4
+        else:
+            scope_score = 3  # 改动过多需审查
+    elif d_type == "doc_create":
+        scope_score = 5 if file_count >= 1 else 2
+    else:
+        scope_score = 4
+    dimensions["scope_reasonability"] = {
+        "score": scope_score,
+        "label": "变更范围合理性",
+    }
+
+    # 维度3: 可逆性 (改动是否可以回退)
+    reversible_score = 5  # 默认可逆
+    danger_patterns = ["删除", "drop", "rm -rf", "reset --hard", "force push"]
+    for pattern in danger_patterns:
+        if pattern in description.lower():
+            reversible_score = 2
+            break
+    dimensions["reversibility"] = {
+        "score": reversible_score,
+        "label": "可逆性",
+    }
+
+    # 维度4: 架构一致性 (是否符合现有架构)
+    # 检查是否修改了核心配置文件
+    core_files = ["CLAUDE.md", "organization.yaml", "decision_rules.yaml"]
+    core_touched = any(any(cf in f for cf in core_files) for f in files)
+    if core_touched and d_type == "code_change":
+        arch_score = 4  # 核心文件改动需谨慎但不一定坏
+    else:
+        arch_score = 5
+    dimensions["architecture_consistency"] = {
+        "score": arch_score,
+        "label": "架构一致性",
+    }
+
+    # 计算总分
+    scores = [d["score"] for d in dimensions.values()]
+    total = round(sum(scores) / len(scores), 1)
+
+    # 生成反馈
+    feedback = []
+    for dim_key, dim_val in dimensions.items():
+        if dim_val["score"] <= 2:
+            feedback.append(f"{dim_val['label']}评分较低({dim_val['score']}/5)，建议审查")
+        elif dim_val["score"] <= 3:
+            feedback.append(f"{dim_val['label']}尚可({dim_val['score']}/5)，有改进空间")
+
+    return {
+        "total_score": total,
+        "dimensions": dimensions,
+        "passed": total >= 3.5,
+        "pass_threshold": 3.5,
+        "feedback": feedback if feedback else ["所有维度评分良好，通过审查"],
+        "reviewed_at": datetime.now().isoformat(),
+    }
+
+
+def expert_panel_review(item_description: str, item_type: str = "general") -> dict:
+    """专家评审团评分 — 情报行动管线核心
+
+    模拟多专家(战略/决策/趋势/技术)对一个提案进行评分。
+
+    Args:
+        item_description: 提案描述
+        item_type: 类型 (code_change/doc_create/research/general)
+
+    Returns:
+        评审结果：
+        - scores: 各专家评分
+        - average: 平均分
+        - decision: approve/conditional/defer/veto
+        - reasoning: 各专家理由
+    """
+    desc_lower = item_description.lower()
+
+    # 战略分析师评分
+    strategic_keywords = ["战略", "方向", "架构", "体系", "标准", "方法论", "harness"]
+    strategic_match = sum(1 for kw in strategic_keywords if kw in desc_lower)
+    strategic_score = min(5, 3 + strategic_match)
+
+    # 决策顾问评分 (风险导向)
+    risk_keywords = ["删除", "重构", "迁移", "替换", "放弃"]
+    risk_count = sum(1 for kw in risk_keywords if kw in desc_lower)
+    benefit_keywords = ["优化", "增强", "对齐", "标准化", "自动化", "提升"]
+    benefit_count = sum(1 for kw in benefit_keywords if kw in desc_lower)
+    decision_score = min(5, max(2, 3 + benefit_count - risk_count))
+
+    # 趋势洞察师评分
+    trend_keywords = ["harness", "context engineering", "agent", "自动化", "ai", "2026"]
+    trend_match = sum(1 for kw in trend_keywords if kw in desc_lower)
+    trend_score = min(5, 3 + trend_match)
+
+    scores = {
+        "strategist": {"score": strategic_score, "label": "战略分析师"},
+        "decision_advisor": {"score": decision_score, "label": "决策顾问"},
+        "trend_watcher": {"score": trend_score, "label": "趋势洞察师"},
+    }
+
+    # 技术负责人评分 (仅code_change)
+    if item_type == "code_change":
+        complexity_keywords = ["重构", "架构", "数据库", "迁移"]
+        complexity = sum(1 for kw in complexity_keywords if kw in desc_lower)
+        tech_score = min(5, max(2, 5 - complexity))
+        scores["tech_lead"] = {"score": tech_score, "label": "技术负责人"}
+
+    # 计算平均分
+    all_scores = [s["score"] for s in scores.values()]
+    average = round(sum(all_scores) / len(all_scores), 1)
+
+    # 决策
+    min_score = min(all_scores)
+    if min_score == 1:
+        decision = "veto"
+    elif average >= 4.0:
+        decision = "approve"
+    elif average >= 3.0:
+        decision = "conditional"
+    else:
+        decision = "defer"
+
+    return {
+        "scores": scores,
+        "average": average,
+        "decision": decision,
+        "decision_label": {
+            "approve": "批准执行",
+            "conditional": "有条件批准",
+            "defer": "暂缓",
+            "veto": "一票否决",
+        }.get(decision, decision),
+        "reviewed_at": datetime.now().isoformat(),
+    }
+
+
+# ============================================================================
 # v2.0 — 任务分级引擎 (Plan C: 代码层强制)
 # 由执行审计师(execution_auditor)驱动，智囊团自动判断
 # ============================================================================

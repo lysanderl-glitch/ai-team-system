@@ -146,6 +146,10 @@ agents:
 
       【自动化工具链】
       Excel(WBS) → 建单脚本 → Asana(执行跟踪) → Slack #pmo(通知)
+      Notion(模板库+项目空间+台账DB) → MCP API → AI可操作
+      n8n(WF-01~WF-07) → 自动化工作流引擎
+      scripts/wbs_formula_check.py → L3↔L4工期校验
+      scripts/wbs_dependency_check.py → 跨流依赖校验
 
 # 专家调用入口
 access:

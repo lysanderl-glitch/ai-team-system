@@ -191,6 +191,15 @@
   },
   "active": "7e6f6f9ccff437b3",
   "lastOpenFiles": [
+    "01-team-knowledge/HR/personnel/harness_ops/integration_qa.md",
+    "01-team-knowledge/HR/personnel/harness_ops/knowledge_engineer.md",
+    "01-team-knowledge/HR/personnel/harness_ops/ai_systems_dev.md",
+    "01-team-knowledge/HR/personnel/harness_ops/harness_engineer.md",
+    "01-team-knowledge/HR/personnel/harness_ops",
+    "01-team-knowledge/HR/personnel/janus/janus_pmo_auto.md.tmp.23140.1775810404080",
+    "daily-intelligence/2026-04-10-action-report-source.md",
+    "03-process-knowledge/harness-engineering-methodology.md",
+    "03-process-knowledge/harness-engineering-methodology.md.tmp.3268.1775810022266",
     "daily-intelligence/2026-04-10-daily-ai-intelligence.html",
     "daily-intelligence/2026-04-10-report-source.md",
     "daily-intelligence/2026-04-10-report-source.md.tmp.3268.1775808525690",
@@ -202,12 +211,8 @@
     "generated-articles/index.md.tmp.24384.1775807733244",
     "03-process-knowledge/article-generation-sop.md",
     "03-process-knowledge/article-generation-sop.md.tmp.24384.1775807697754",
-    "generated-articles/2026-04-10-日常工作流-sop.html",
-    "generated-articles",
-    "03-process-knowledge/daily-workflow-sop.md.tmp.24384.1775807226792",
     "personal/README.md",
     "personal/blog-wechat-publish-sop.md",
-    "personal",
     "01-team-knowledge/HR/personnel/janus/janus_pmo_auto.md",
     "01-team-knowledge/HR/personnel/graphify/execution_auditor.md",
     "01-team-knowledge/HR/personnel/janus/janus_qa.md",
@@ -221,9 +226,6 @@
     "05-industry-knowledge/index.md",
     "04-decision-knowledge/index.md",
     "02-project-knowledge/index.md",
-    "00-daily-work/index.md",
-    "03-process-knowledge/credentials-guide.md",
-    "03-process-knowledge/work-record-template.md",
-    "03-process-knowledge/daily-workflow-sop.md"
+    "00-daily-work/index.md"
   ]
 }

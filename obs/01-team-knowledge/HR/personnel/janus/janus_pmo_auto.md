@@ -56,8 +56,18 @@ Janus项目交付团队新增创新岗位，负责PMO自动化框架的运营与
 
 ## 自动化工具链
 - Excel（WBS主文档）→ 建单脚本 → Asana（执行跟踪）
+- Notion（模板库+项目空间+进度看板）→ 通过MCP API操作
+  - 📋 JDG-INI-DAT-003 补充收资清单
+  - 📋 JDG-INI-DAT-004 空间台账
+  - 📋 JDG-INI-DAT-005 设备台账
+  - 📋 JDG-INI-DAT-006 IoT点位清单
+- n8n（自动化工作流）：WF-01初始化/WF-04周报/WF-05逾期预警/WF-07会议→任务
 - Slack #pmo（团队通知）
 - 项目团队配置表（角色→人员映射）
+
+## 校验工具
+- `scripts/wbs_formula_check.py` — L3↔L4工期一致性校验
+- `scripts/wbs_dependency_check.py` — 跨流依赖完整性校验
 
 ## 协作接口
 - 与 janus_pm 协同：进度报表提供、建单需求响应、WBS变更协同
