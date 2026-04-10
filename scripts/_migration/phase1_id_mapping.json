@@ -1,0 +1,114 @@
+{
+  "migration_phase": 1,
+  "completed_at": "2026-04-10",
+  "target_workspace": "Lysander Liu (lysanderl@janusd.io)",
+  "note": "Phase 1: 空结构重建完成。Relations(WBS自关联+Gate跨库)留Phase 3处理。",
+
+  "parent_pages": {
+    "pmo_root": {
+      "title": "📊 PMO自动化管理体系",
+      "page_id": "33e114fc-090c-812d-ad23-d802c0c71dc9",
+      "url": "https://www.notion.so/33e114fc090c812dad23d802c0c71dc9"
+    },
+    "template_library": {
+      "title": "📚 模板库",
+      "page_id": "33e114fc-090c-8135-b8cb-f574c0413fe1",
+      "url": "https://www.notion.so/33e114fc090c8135b8cbf574c0413fe1"
+    },
+    "template_01_init": {
+      "title": "01_项目启动",
+      "page_id": "33e114fc-090c-81c4-b9cc-e2d52853ceae",
+      "url": "https://www.notion.so/33e114fc090c81c4b9cce2d52853ceae"
+    }
+  },
+
+  "databases": {
+    "project_registry": {
+      "title": "📁 项目注册表",
+      "database_id": "ccb49243-a892-4691-bf0f-6adb3b1e576d",
+      "data_source_id": "29aba1e3-ddcf-4e72-9680-2e19c290befc",
+      "url": "https://www.notion.so/ccb49243a8924691bf0f6adb3b1e576d",
+      "old_database_id": "33c3e99820c781fcac6fc8a54e6e8ad6",
+      "records_to_import": 1,
+      "source_file": "_migration/registry_records.json"
+    },
+    "pmo_weekly": {
+      "title": "📊 PMO 周报",
+      "database_id": "d79d21fe-521e-46da-bc6f-3c29d69aa7dd",
+      "data_source_id": "5662cfbc-67be-47a1-a3f6-795ac4ad1dad",
+      "url": "https://www.notion.so/d79d21fe521e46dabc6f3c29d69aa7dd",
+      "old_database_id": "2c3a7590d03b482abcf1c70ecf11c852",
+      "records_to_import": 7,
+      "source_file": "_migration/weekly_records.json"
+    },
+    "overdue_alert": {
+      "title": "🚨 逾期预警日志",
+      "database_id": "2cdea1e1-0157-4030-9a5e-7801a2c009aa",
+      "data_source_id": "8997b330-753c-4e51-8aa8-b4244acdb8e6",
+      "url": "https://www.notion.so/2cdea1e1015740309a5e7801a2c009aa",
+      "old_database_id": "f5cf12cfb6b64664b5ce5fa3956b7174",
+      "records_to_import": 0,
+      "source_file": "_migration/alert_records.json"
+    },
+    "wbs": {
+      "title": "🗂️ WBS工序数据库",
+      "database_id": "c8bc3849-bb14-4b88-b6c8-28c590bad0a5",
+      "data_source_id": "8cf298a9-fee0-4194-b371-b6616e2bb6aa",
+      "url": "https://www.notion.so/c8bc3849bb144b88b6c828c590bad0a5",
+      "old_database_id": "6714567e05f5437bad4b726202ecbb6e",
+      "old_data_source_id": "d8b55188-995b-4a5f-b257-60074438fd5b",
+      "records_to_import": 115,
+      "source_file": "_migration/wbs_records.json",
+      "phase3_note": "需在Phase 3添加: 前置任务(self-relation), 父任务(self-relation), 关联阶段门检查项(cross-db relation)"
+    },
+    "stage_gate": {
+      "title": "✅ 阶段门检查清单",
+      "database_id": "55b711e8-b3ae-47fc-8477-3e1a1ae7d79f",
+      "data_source_id": "fc00f354-485e-4142-b7e5-52516354a043",
+      "url": "https://www.notion.so/55b711e8b3ae47fc84773e1a1ae7d79f",
+      "old_database_id": "8f61420ca15148c092c13f67b89f6029",
+      "old_data_source_id": "421c5639-8591-4514-ad31-23357e9d8272",
+      "records_to_import": "unknown",
+      "phase3_note": "需在Phase 3添加: 关联WBS工序(cross-db relation to WBS)"
+    },
+    "supplementary_collection": {
+      "title": "📋 JDG-INI-DAT-003 补充收资清单",
+      "database_id": "3c84ee3b-4b00-4ac0-bf3c-fac0b84259b4",
+      "data_source_id": "774cb597-f98c-467f-8d9d-e2635d2ae237",
+      "url": "https://www.notion.so/3c84ee3b4b004ac0bf3cfac0b84259b4",
+      "old_database_id": "7de4db25973c4d99854150f243488c72",
+      "records_to_import": 0
+    },
+    "space_ledger": {
+      "title": "📋 JDG-INI-DAT-004 空间台账",
+      "database_id": "61af8874-ef30-4594-99cb-5da628ce7796",
+      "data_source_id": "8f0ab6f4-891d-4a74-9409-2f0277d6b571",
+      "url": "https://www.notion.so/61af8874ef30459499cb5da628ce7796",
+      "old_database_id": "2cd46c9186524611b2fdf284de3277e8",
+      "records_to_import": 0
+    },
+    "device_ledger": {
+      "title": "📋 JDG-INI-DAT-005 设备台账",
+      "database_id": "04e37656-6efa-4336-be52-95916c8c91b9",
+      "data_source_id": "8415b95f-a888-4f5b-92e1-577bf6e1f2de",
+      "url": "https://www.notion.so/04e376566efa4336be5295916c8c91b9",
+      "old_database_id": "0029eb79c27641a98c56ff510b4df21c",
+      "records_to_import": 0
+    },
+    "iot_point_list": {
+      "title": "📋 JDG-INI-DAT-006 IoT点位清单",
+      "database_id": "68cc6403-b787-467f-af2c-6864e53761b6",
+      "data_source_id": "f8a80f50-30fe-479b-8fca-47460d648bbd",
+      "url": "https://www.notion.so/68cc6403b787467faf2c6864e53761b6",
+      "old_database_id": "046af994c58747cead4f613fd81b9005",
+      "records_to_import": 0
+    }
+  },
+
+  "next_phases": {
+    "phase2": "数据导入: WBS 115条 + 周报 7条 + 注册表 1条",
+    "phase3": "Relations重建: WBS自关联(前置任务/父任务) + Gate↔WBS跨库关联",
+    "phase4": "代码更新: 替换所有旧DB ID和API Token",
+    "phase5": "验证: WF-01/WF-04/WF-05功能验证"
+  }
+}

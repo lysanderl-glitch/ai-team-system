@@ -15,7 +15,30 @@ version: "1.0"
 # - cancelled: 已取消
 
 # 活跃任务列表
-active_tasks: []
+active_tasks:
+  - id: "TASK-2026-0410-001"
+    title: "PMO Notion 迁移 - 新Workspace重建"
+    level: "L"
+    status: "in_progress"
+    current_chain_step: "②执行中（Phase 1完成，等待Phase 2）"
+    assigned_teams:
+      - janus
+    decision_level: "L3"
+    created_at: "2026-04-10"
+    updated_at: "2026-04-10"
+    context: |
+      旧账号(Lysander Liu's Space HQ / janusd.com) → 新账号(lysanderl@janusd.io)
+      备份文件: ai-team-system/scripts/_migration/
+      ID映射: ai-team-system/scripts/_migration/phase1_id_mapping.json
+    blockers: []
+    deliverables:
+      - "Phase 1: 新workspace建空库结构 ✅ 完成"
+      - "Phase 2: 导入WBS(115条)+周报(7条)+注册表(1条)"
+      - "Phase 3: Relations重建(WBS自关联+Gate↔WBS跨库)"
+      - "Phase 4: 代码更新(旧DB ID替换+Token更新)"
+      - "Phase 5: 验证(WF-01/04/05功能测试)"
+    next_steps:
+      - "执行Phase 2: 数据导入"
   # 示例:
   # - id: "TASK-2026-0410-001"
   #   title: "重构执行链和决策链"
