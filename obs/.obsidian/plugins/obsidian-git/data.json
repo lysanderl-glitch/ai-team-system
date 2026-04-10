@@ -1,0 +1,22 @@
+{
+  "commitMessage": "vault backup: {{date}}",
+  "autoCommitMessage": "vault backup: {{date}}",
+  "commitDateFormat": "YYYY-MM-DD HH:mm:ss",
+  "autoSaveInterval": 10,
+  "autoPushInterval": 5,
+  "autoPullInterval": 30,
+  "autoPullOnBoot": true,
+  "autoCommitOnlyStaged": false,
+  "disablePush": false,
+  "pullBeforePush": true,
+  "syncMethod": "merge",
+  "mergeStrategy": "none",
+  "showStatusBar": true,
+  "showErrorNotices": true,
+  "disablePopupsForNoChanges": true,
+  "basePath": "../",
+  "differentIntervalCommitAndPush": true,
+  "showBranchStatusBar": true,
+  "showFileMenu": true,
+  "diffStyle": "split"
+}

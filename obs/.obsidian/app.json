@@ -1,0 +1,12 @@
+{
+  "legacyEditor": false,
+  "livePreview": true,
+  "defaultViewMode": "source",
+  "alwaysUpdateLinks": true,
+  "newFileLocation": "current",
+  "attachmentFolderPath": "assets",
+  "showLineNumber": false,
+  "strictLineBreaks": false,
+  "foldHeading": true,
+  "foldIndent": true
+}
