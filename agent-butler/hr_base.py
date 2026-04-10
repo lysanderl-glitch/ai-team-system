@@ -1756,14 +1756,14 @@ def decision_level_evaluate(task_description: str) -> dict:
                 "escalate_to_president": True,
             }
 
-    # ---- L3：专家评审 ----
+    # ---- L3：Lysander决策（需专家支撑的管理决策）----
     for kw in _DECISION_L3_KEYWORDS:
         if kw in task_lower:
             return {
                 "level": "L3",
-                "name": "专家评审",
-                "authority": "智囊团+领域专家 → Lysander最终批准",
-                "reasoning": f"涉及【{kw}】，需专家评审",
+                "name": "Lysander决策",
+                "authority": "Lysander CEO（基于L2专家建议）",
+                "reasoning": f"涉及【{kw}】，需专家评审后Lysander做管理决策",
                 "escalate_to_president": False,
             }
 
@@ -1777,12 +1777,12 @@ def decision_level_evaluate(task_description: str) -> dict:
             "escalate_to_president": False,
         }
 
-    # ---- L2：Lysander审批（默认）----
+    # ---- L2：专家评审（默认，先过专家再决策）----
     return {
         "level": "L2",
-        "name": "Lysander审批",
-        "authority": "Lysander CEO",
-        "reasoning": "标准任务，Lysander审批后执行",
+        "name": "专家评审",
+        "authority": "智囊团+领域专家",
+        "reasoning": "先由专家分析评估，再由Lysander决策",
         "escalate_to_president": False,
     }
 

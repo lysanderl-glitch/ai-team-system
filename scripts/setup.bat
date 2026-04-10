@@ -1,78 +1,88 @@
 @echo off
 chcp 65001 >nul
-echo ==========================================
-echo   Agent System 安装脚本 (Windows)
-echo ==========================================
+echo.
+echo ╔══════════════════════════════════════════════════╗
+echo ║       Synapse 体系安装脚本 (Windows)             ║
+echo ╚══════════════════════════════════════════════════╝
 echo.
 
-:: 步骤1: 检查基础依赖
-echo 【步骤1/3】检查基础依赖...
+set SCRIPT_DIR=%~dp0
+set ROOT_DIR=%SCRIPT_DIR%..
+
+:: ── STEP 1：检查基础依赖 ──────────────────────────────
+echo [1/3] 检查基础依赖...
 echo.
 
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo [错误] Python 未安装，请先安装 Python 3.8+
-    echo   下载地址: https://www.python.org/downloads/
+    echo [❌] Python 未安装
+    echo     请下载安装：https://www.python.org/downloads/
+    echo     安装时务必勾选 "Add Python to PATH"
     pause
     exit /b 1
 )
-for /f "tokens=*" %%i in ('python --version') do echo [OK] %%i
+for /f "tokens=*" %%i in ('python --version') do echo [✅] %%i
 
 git --version >nul 2>&1
 if errorlevel 1 (
-    echo [错误] Git 未安装，请先安装 Git
-    echo   下载地址: https://git-scm.com/downloads
-    pause
-    exit /b 1
-)
-for /f "tokens=*" %%i in ('git --version') do echo [OK] %%i
-
-claude --version >nul 2>&1
-if errorlevel 1 (
-    echo [警告] Claude Code 未安装
-    echo   安装参考: https://docs.anthropic.com/en/docs/claude-code/setup
+    echo [⚠️ ] Git 未安装（可选，用于自动更新）
+    echo     下载地址：https://git-scm.com/downloads
 ) else (
-    echo [OK] Claude Code 已安装
+    for /f "tokens=*" %%i in ('git --version') do echo [✅] %%i
 )
 
 echo.
-echo 基础依赖检查完成
+
+:: ── STEP 2：安装 Python 依赖 ──────────────────────────
+echo [2/3] 安装 Python 依赖...
 echo.
 
-:: 步骤2: 安装Python依赖
-echo 【步骤2/3】安装Python依赖...
-echo.
-
-set SCRIPT_DIR=%~dp0
-pip install -r "%SCRIPT_DIR%..\agent-butler\requirements.txt" --quiet
+pip install -r "%ROOT_DIR%\agent-butler\requirements.txt" --quiet
 if errorlevel 1 (
-    echo [错误] Python依赖安装失败
+    echo [❌] Python 依赖安装失败，请检查网络连接
     pause
     exit /b 1
 )
-echo [OK] Python依赖安装完成 (pyyaml, watchdog)
+echo [✅] 依赖安装完成 (pyyaml, watchdog, markdown, pygments)
 echo.
 
-:: 步骤3: 验证安装
-echo 【步骤3/3】验证安装...
+:: ── STEP 3：验证安装 ──────────────────────────────────
+echo [3/3] 验证安装...
 echo.
 
-cd /d "%SCRIPT_DIR%..\agent-butler"
-python -c "from hr_base import load_org_config; c=load_org_config(); print('[OK] 团队加载成功:', list(c['teams'].keys()))"
+cd /d "%ROOT_DIR%\agent-butler"
+python -c "from hr_base import load_org_config; c=load_org_config(); teams=list(c['teams'].keys()); print(f'[✅] HR知识库加载成功，团队数：{len(teams)}'); print(f'     团队：{teams}')"
 if errorlevel 1 (
-    echo [错误] hr_base 验证失败
+    echo [❌] HR知识库验证失败
     pause
     exit /b 1
 )
 
+cd /d "%ROOT_DIR%"
+python scripts\generate-article.py obs\03-process-knowledge\daily-workflow-sop.md >nul 2>&1
+if errorlevel 1 (
+    echo [⚠️ ] 文章生成脚本异常（不影响核心功能）
+) else (
+    echo [✅] 文章生成脚本正常
+)
+
 echo.
-echo ==========================================
-echo   安装完成！
-echo ==========================================
+echo ╔══════════════════════════════════════════════════╗
+echo ║            Synapse 安装完成！                    ║
+echo ╚══════════════════════════════════════════════════╝
 echo.
 echo 下一步：
-echo   1. 用 Obsidian 打开 obs\ 文件夹（作为 Vault）
-echo   2. 在 ai-team-system 目录启动 Claude Code: claude
-echo   3. 查看帮助: type README.md
+echo.
+echo   1. 打开 Obsidian → Open folder as vault
+echo      选择：%ROOT_DIR%\obs
+echo.
+echo   2. 打开 Claude Code → Open Folder
+echo      选择：%ROOT_DIR%
+echo.
+echo   3. 在 Claude Code 中发送：
+echo      "你好，请以 Lysander 身份问候我，并介绍 Synapse 团队。"
+echo.
+echo   详细指南见：COLLEAGUE_GUIDE.md
+echo   首次引导词见：FIRST_PROMPT.md
 echo.
 pause
