@@ -1139,6 +1139,402 @@ def get_sync_status() -> dict:
     return status
 
 
+# ============================================================================
+# v2.0 — 任务分级引擎 (Plan C: 代码层强制)
+# 由执行审计师(execution_auditor)驱动，智囊团自动判断
+# ============================================================================
+
+# 任务分级关键词配置（从 decision_rules.yaml 同步）
+_TASK_LEVEL_S_KEYWORDS = [
+    "查看", "查询", "状态", "列出", "显示", "获取", "确认", "同步",
+    "help", "版本", "配置",
+]
+
+_TASK_LEVEL_M_KEYWORDS = [
+    "开发", "修改", "实现", "构建", "部署", "发布", "更新", "优化", "修复",
+    "编写", "添加", "调整", "迁移",
+]
+
+_TASK_LEVEL_L_KEYWORDS = [
+    "战略", "架构重构", "新业务", "新方案", "组织调整", "流程变更",
+    "全面", "体系", "重构", "重大", "全局",
+]
+
+# 决策级别关键词（四级制 L1-L4）
+_DECISION_L4_KEYWORDS = [
+    "合同签署", "法律", "诉讼", "预算100万", "公司存续", "清算",
+]
+
+_DECISION_L3_KEYWORDS = [
+    "架构变更", "新领域", "战略调整", "组织架构", "高风险",
+    "新业务方向", "重大技术",
+]
+
+ACTIVE_TASKS_PATH = CONFIG_DIR / "active_tasks.yaml"
+
+
+def task_classify(task_description: str) -> dict:
+    """任务分级引擎 — 自动判断 S/M/L 级别
+
+    由执行审计师(execution_auditor)驱动，替代人工判断。
+
+    分级决策树：
+    1. 关键词匹配（快速通道）
+    2. 复杂度评估（长度、跨团队、涉及范围）
+    3. 风险评估（不可逆性、影响范围）
+
+    Args:
+        task_description: 任务描述
+
+    Returns:
+        分级结果：
+        - level: "S" | "M" | "L"
+        - reasoning: 判断理由
+        - execution_depth: 建议执行深度
+        - president_involvement: 总裁参与程度
+    """
+    task_lower = task_description.lower()
+    task_len = len(task_description)
+
+    # ---- 快速通道：L 级关键词匹配 ----
+    for kw in _TASK_LEVEL_L_KEYWORDS:
+        if kw in task_lower:
+            return {
+                "level": "L",
+                "reasoning": f"包含重大任务关键词【{kw}】",
+                "execution_depth": "智囊团深度分析 → 专家评审 → 执行 → QA",
+                "president_involvement": "最终验收",
+                "think_tank_required": True,
+                "expert_review_required": True,
+            }
+
+    # ---- 快速通道：S 级关键词匹配 ----
+    s_match = any(kw in task_lower for kw in _TASK_LEVEL_S_KEYWORDS)
+    l_indicators = any(kw in task_lower for kw in _TASK_LEVEL_L_KEYWORDS + _TASK_LEVEL_M_KEYWORDS)
+
+    if s_match and not l_indicators:
+        return {
+            "level": "S",
+            "reasoning": "简单查询/确认类任务",
+            "execution_depth": "Lysander直接处理",
+            "president_involvement": "仅看结果",
+            "think_tank_required": False,
+            "expert_review_required": False,
+        }
+
+    # ---- M 级关键词匹配 ----
+    for kw in _TASK_LEVEL_M_KEYWORDS:
+        if kw in task_lower:
+            # 检查是否有升级因素
+            org = load_org_config()
+            task_keywords = org.get("task_routing", {}).get("keywords", {})
+            matched_teams = set()
+            for keyword, teams in task_keywords.items():
+                if keyword in task_lower:
+                    for t in teams:
+                        if t in org.get("teams", {}):
+                            matched_teams.add(t)
+
+            # 跨3个以上团队 → 升级为 L
+            if len(matched_teams) >= 3:
+                return {
+                    "level": "L",
+                    "reasoning": f"跨{len(matched_teams)}个团队协调，升级为重大任务",
+                    "execution_depth": "智囊团深度分析 → 专家评审 → 执行 → QA",
+                    "president_involvement": "最终验收",
+                    "think_tank_required": True,
+                    "expert_review_required": True,
+                }
+
+            return {
+                "level": "M",
+                "reasoning": f"常规任务，包含关键词【{kw}】",
+                "execution_depth": "智囊团快速方案 → Lysander审批 → 执行 → QA",
+                "president_involvement": "仅看结果",
+                "think_tank_required": True,
+                "expert_review_required": False,
+            }
+
+    # ---- 复杂度兜底评估 ----
+    if task_len > 200:
+        return {
+            "level": "L",
+            "reasoning": "任务描述较长，可能涉及复杂需求",
+            "execution_depth": "智囊团深度分析 → 专家评审 → 执行 → QA",
+            "president_involvement": "最终验收",
+            "think_tank_required": True,
+            "expert_review_required": True,
+        }
+
+    # ---- 默认 M 级 ----
+    return {
+        "level": "M",
+        "reasoning": "默认为常规任务",
+        "execution_depth": "智囊团快速方案 → Lysander审批 → 执行 → QA",
+        "president_involvement": "仅看结果",
+        "think_tank_required": True,
+        "expert_review_required": False,
+    }
+
+
+def decision_level_evaluate(task_description: str) -> dict:
+    """决策级别评估 — 四级制 (L1/L2/L3/L4)
+
+    替代旧版三级制，最小化总裁参与。
+
+    Args:
+        task_description: 任务描述
+
+    Returns:
+        决策级别结果：
+        - level: "L1" | "L2" | "L3" | "L4"
+        - name: 级别名称
+        - authority: 决策者
+        - reasoning: 判断理由
+        - escalate_to_president: 是否需要上报总裁
+    """
+    task_lower = task_description.lower()
+
+    # ---- L4：上报总裁（最高优先级检查）----
+    for kw in _DECISION_L4_KEYWORDS:
+        if kw in task_lower:
+            return {
+                "level": "L4",
+                "name": "总裁决策",
+                "authority": "总裁刘子杨",
+                "reasoning": f"涉及【{kw}】，必须上报总裁",
+                "escalate_to_president": True,
+            }
+
+    # 预算检查
+    import re
+    budget_match = re.search(r'预算[^\d]*(\d+)\s*万', task_description)
+    if budget_match:
+        budget = int(budget_match.group(1))
+        if budget > 100:
+            return {
+                "level": "L4",
+                "name": "总裁决策",
+                "authority": "总裁刘子杨",
+                "reasoning": f"预算{budget}万 > 100万阈值",
+                "escalate_to_president": True,
+            }
+
+    # ---- L3：专家评审 ----
+    for kw in _DECISION_L3_KEYWORDS:
+        if kw in task_lower:
+            return {
+                "level": "L3",
+                "name": "专家评审",
+                "authority": "智囊团+领域专家 → Lysander最终批准",
+                "reasoning": f"涉及【{kw}】，需专家评审",
+                "escalate_to_president": False,
+            }
+
+    # ---- L1：自动执行 ----
+    if _is_small_problem(task_description):
+        return {
+            "level": "L1",
+            "name": "自动执行",
+            "authority": "系统自动",
+            "reasoning": "例行操作，自动执行",
+            "escalate_to_president": False,
+        }
+
+    # ---- L2：Lysander审批（默认）----
+    return {
+        "level": "L2",
+        "name": "Lysander审批",
+        "authority": "Lysander CEO",
+        "reasoning": "标准任务，Lysander审批后执行",
+        "escalate_to_president": False,
+    }
+
+
+# ============================================================================
+# v2.0 — 执行链状态管理 (Plan B+C: 跨会话持久化)
+# ============================================================================
+
+def load_active_tasks() -> dict:
+    """加载活跃任务列表（跨会话恢复）
+
+    Returns:
+        active_tasks.yaml 的内容
+    """
+    if ACTIVE_TASKS_PATH.exists():
+        with open(ACTIVE_TASKS_PATH, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f) or {}
+    return {"active_tasks": [], "completed_tasks": []}
+
+
+def save_active_tasks(data: dict):
+    """保存活跃任务列表
+
+    Args:
+        data: 完整的 active_tasks 数据
+    """
+    with open(ACTIVE_TASKS_PATH, "w", encoding="utf-8") as f:
+        yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+
+
+def create_task(title: str, level: str, context: str = "",
+                assigned_teams: list = None, deliverables: list = None) -> dict:
+    """创建新任务并写入 active_tasks.yaml
+
+    Args:
+        title: 任务标题
+        level: S/M/L 级别
+        context: 任务上下文
+        assigned_teams: 分配的团队列表
+        deliverables: 预期交付物
+
+    Returns:
+        创建的任务记录
+    """
+    data = load_active_tasks()
+
+    # 生成任务ID
+    task_count = len(data.get("active_tasks", [])) + len(data.get("completed_tasks", []))
+    today = datetime.now().strftime("%Y%m%d")
+    task_id = f"TASK-{today}-{task_count + 1:03d}"
+
+    # 自动分级和决策级别评估
+    classification = task_classify(title + " " + context)
+    decision = decision_level_evaluate(title + " " + context)
+
+    task = {
+        "id": task_id,
+        "title": title,
+        "level": level or classification["level"],
+        "status": "in_progress",
+        "current_chain_step": "①智囊团分级与方案",
+        "assigned_teams": assigned_teams or [],
+        "decision_level": decision["level"],
+        "created_at": datetime.now().isoformat(),
+        "updated_at": datetime.now().isoformat(),
+        "context": context,
+        "classification": classification,
+        "decision_evaluation": decision,
+        "blockers": [],
+        "deliverables": deliverables or [],
+        "next_steps": [],
+    }
+
+    if "active_tasks" not in data:
+        data["active_tasks"] = []
+    data["active_tasks"].append(task)
+    save_active_tasks(data)
+
+    return task
+
+
+def update_task(task_id: str, **updates) -> Optional[dict]:
+    """更新任务状态
+
+    Args:
+        task_id: 任务ID
+        **updates: 要更新的字段
+
+    Returns:
+        更新后的任务，或 None
+    """
+    data = load_active_tasks()
+
+    for task in data.get("active_tasks", []):
+        if task["id"] == task_id:
+            task.update(updates)
+            task["updated_at"] = datetime.now().isoformat()
+
+            # 如果标记为完成，移到 completed_tasks
+            if updates.get("status") == "completed":
+                data["active_tasks"].remove(task)
+                if "completed_tasks" not in data:
+                    data["completed_tasks"] = []
+                data["completed_tasks"].append(task)
+                # 只保留最近20条
+                if len(data["completed_tasks"]) > 20:
+                    data["completed_tasks"] = data["completed_tasks"][-20:]
+
+            save_active_tasks(data)
+            return task
+
+    return None
+
+
+def get_active_tasks() -> list:
+    """获取所有进行中的任务
+
+    Returns:
+        进行中任务列表
+    """
+    data = load_active_tasks()
+    return [t for t in data.get("active_tasks", [])
+            if t.get("status") in ["in_progress", "blocked", "review", "pending"]]
+
+
+def execution_chain_check() -> dict:
+    """执行链自检 — 每次回复前调用
+
+    由执行审计师驱动，检查：
+    1. 是否有未恢复的跨会话任务
+    2. 当前任务是否处于正确的执行链环节
+    3. 是否有被跳过的环节
+
+    Returns:
+        检查结果：
+        - has_active_tasks: 是否有进行中任务
+        - tasks_summary: 任务摘要
+        - warnings: 警告列表
+        - resume_needed: 是否需要恢复上下文
+    """
+    active = get_active_tasks()
+    warnings = []
+
+    if not active:
+        return {
+            "has_active_tasks": False,
+            "tasks_summary": [],
+            "warnings": [],
+            "resume_needed": False,
+        }
+
+    tasks_summary = []
+    for task in active:
+        summary = {
+            "id": task["id"],
+            "title": task["title"],
+            "level": task.get("level", "?"),
+            "status": task["status"],
+            "current_step": task.get("current_chain_step", "未知"),
+            "decision_level": task.get("decision_level", "?"),
+        }
+        tasks_summary.append(summary)
+
+        # 检查是否有阻塞项
+        if task.get("blockers"):
+            warnings.append(f"任务 {task['id']} 有阻塞项: {task['blockers']}")
+
+        # 检查是否长时间未更新
+        updated = task.get("updated_at", "")
+        if updated:
+            try:
+                last_update = datetime.fromisoformat(updated)
+                hours_since = (datetime.now() - last_update).total_seconds() / 3600
+                if hours_since > 24:
+                    warnings.append(
+                        f"任务 {task['id']} 已超过24小时未更新"
+                    )
+            except (ValueError, TypeError):
+                pass
+
+    return {
+        "has_active_tasks": True,
+        "tasks_summary": tasks_summary,
+        "warnings": warnings,
+        "resume_needed": len(active) > 0,
+    }
+
+
 import atexit
 
 # CLI执行上下文（用于执行后自动评估）
@@ -1231,7 +1627,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         print("Usage: python hr_base.py <command> [args]")
-        print("Commands:")
+        print("\nCommands:")
         print("  team <team_key>           - 显示团队HR概览")
         print("  task <task_description>    - 查找任务匹配的专家")
         print("  all                       - 显示所有团队概览")
@@ -1239,6 +1635,11 @@ if __name__ == "__main__":
         print("  sync                      - 同步所有团队配置到YAML")
         print("  sync-status               - 查看同步状态")
         print("  harness-stats             - 查看决策系统统计")
+        print("\nv2.0 新增:")
+        print("  classify <task>           - 任务分级(S/M/L)")
+        print("  decide <task>             - 决策级别评估(L1-L4)")
+        print("  chain-check               - 执行链自检")
+        print("  active-tasks              - 查看进行中任务")
         print("  feedback <task> <type>    - 记录反馈")
         sys.exit(1)
 
@@ -1377,6 +1778,53 @@ if __name__ == "__main__":
             sys.exit(1)
         record_feedback(task, feedback_type)
         print(f"\n已记录反馈: {task} -> {feedback_type}")
+
+    elif cmd == "classify" and len(sys.argv) >= 3:
+        task_desc = " ".join(sys.argv[2:])
+        result = task_classify(task_desc)
+        print(f"\n=== 任务分级 ===")
+        print(f"任务: {task_desc}")
+        print(f"级别: {result['level']}级")
+        print(f"理由: {result['reasoning']}")
+        print(f"执行深度: {result['execution_depth']}")
+        print(f"总裁参与: {result['president_involvement']}")
+        print(f"智囊团: {'需要' if result['think_tank_required'] else '不需要'}")
+        print(f"专家评审: {'需要' if result['expert_review_required'] else '不需要'}")
+
+    elif cmd == "decide" and len(sys.argv) >= 3:
+        task_desc = " ".join(sys.argv[2:])
+        result = decision_level_evaluate(task_desc)
+        print(f"\n=== 决策级别评估 ===")
+        print(f"任务: {task_desc}")
+        print(f"级别: {result['level']} ({result['name']})")
+        print(f"决策者: {result['authority']}")
+        print(f"理由: {result['reasoning']}")
+        print(f"上报总裁: {'是' if result['escalate_to_president'] else '否'}")
+
+    elif cmd == "chain-check":
+        result = execution_chain_check()
+        print(f"\n=== 执行链自检 ===")
+        print(f"进行中任务: {'有' if result['has_active_tasks'] else '无'}")
+        if result['tasks_summary']:
+            for t in result['tasks_summary']:
+                print(f"  [{t['id']}] {t['title']} | {t['level']}级 | {t['status']} | 环节: {t['current_step']}")
+        if result['warnings']:
+            print(f"\n⚠️ 警告:")
+            for w in result['warnings']:
+                print(f"  - {w}")
+        print(f"需要恢复: {'是' if result['resume_needed'] else '否'}")
+
+    elif cmd == "active-tasks":
+        tasks = get_active_tasks()
+        print(f"\n=== 进行中任务 ({len(tasks)}个) ===")
+        if not tasks:
+            print("  无进行中任务")
+        for t in tasks:
+            print(f"\n  [{t['id']}] {t['title']}")
+            print(f"    级别: {t.get('level', '?')} | 决策: {t.get('decision_level', '?')} | 状态: {t['status']}")
+            print(f"    当前环节: {t.get('current_chain_step', '未知')}")
+            if t.get('blockers'):
+                print(f"    阻塞: {t['blockers']}")
 
     else:
         print("Unknown command or missing arguments")

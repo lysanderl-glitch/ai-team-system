@@ -15,8 +15,7 @@ type: SOP
 | 工具 | 用途 |
 |------|------|
 | **Claude Code** (ai-team-system) | AI 团队协作、任务执行 |
-| **Obsidian** (ai-team-system vault) | 团队知识库、工作记录 |
-| **Obsidian** (obsidian-knowledge vault) | 个人第二大脑、博客文章 |
+| **Obsidian** (ai-team-system vault) | 团队知识库、工作记录、第二大脑 |
 
 ---
 
@@ -76,13 +75,11 @@ type: SOP
 | 决策记录、选型分析 | `04-decision-knowledge/` |
 | 行业分析、竞品、趋势 | `05-industry-knowledge/` |
 
-博客文章、个人思考 → 写入 **obsidian-knowledge** vault。
-
 ---
 
 ### 收尾
 
-- obsidian-git 每 5 分钟自动推送，无需手动操作
+- obsidian-git 每 5 分钟自动推送到 GitHub，无需手动操作
 - 如有重要凭证更新，在 Obsidian 打开 `credentials.mdenc` 维护
 
 ---

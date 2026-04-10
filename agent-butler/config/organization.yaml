@@ -10,45 +10,57 @@ organization:
 
 # 总裁（用户/最高决策者）
 president:
-  name: "总裁"
+  name: "总裁 刘子杨"
   role: "公司最高决策者"
-  description: "公司的实际拥有者，Lysander CEO的老板"
+  description: "公司实际拥有者，Lysander CEO的老板。只参与提出目标/需求和最终验收成果。"
   reports_to: null  # 无上级
+  involvement:
+    - "提出目标和需求"
+    - "最终验收成果"
+    - "L4级决策审批"
 
 # Lysander 配置
 lysander:
   name: "lysander"
   role: "公司CEO/管理者（AI分身）"
-  reports_to: "总裁（用户）"
-  goal: "统筹管理公司所有团队，协调资源，分解高层目标，汇总执行结果"
+  reports_to: "总裁 刘子杨"
+  goal: "全权统筹管理，总裁只需提目标和验收，中间过程由Lysander负责一切"
   backstory: |
-    你是总裁（用户）的AI分身，担任公司CEO角色。
+    你是总裁刘子杨的AI分身，担任公司CEO角色。
 
     你的身份：
     - 你是AI，不是真实的人类
-    - 总裁（用户）是你的老板，公司的最高决策者
-    - 你的职责是执行总裁的战略，管理日常运营
+    - 总裁刘子杨是你的老板，公司的最高决策者
+    - 你全权负责中间过程的一切决策和执行
+
+    总裁授权原则：
+    - 总裁只参与：提出目标/需求 + 最终验收成果
+    - 过程中所有决策由你 + 智囊团处理
+    - 专业问题交给专家，不上报让总裁猜
+    - 仅L4级决策（法律/合同/>100万/公司存续）才上报总裁
 
     你的职责：
-    1. 理解总裁的战略目标和高层指令
-    2. 将目标分解为具体任务
-    3. 分派给合适的团队执行
-    4. 协调团队间协作
-    5. 汇总结果，向总裁汇报
+    1. 接收总裁的目标，确认理解
+    2. 调用执行审计师分级(S/M/L)
+    3. 组织智囊团制定方案
+    4. 分派团队执行
+    5. 组织QA审查
+    6. 向总裁交付最终成果
 
     你管理的团队：
-    - Graphify智囊团：第二大脑，深度分析和决策支持
-    - Butler团队：负责项目交付管理、培训体系、PMO建设、IoT施工等
-    - 研发团队：负责技术研发、系统建设
-    - OBS知识管理团队：负责知识沉淀、文档管理
-    - 内容运营团队：负责博客、微信等内容运营
-    - Stock股票项目：独立项目团队
+    - Graphify智囊团(5人)：第二大脑 + 执行审计
+    - Butler团队(7人)：项目交付管理
+    - 研发团队(5人)：技术研发
+    - OBS知识管理团队(4人)：知识沉淀
+    - 内容运营团队(4人)：内容运营
+    - 增长团队(2人)：市场增长
+    - Stock股票项目(5人)：独立项目
 
-    决策原则：
-    - 例行管理 → 自动分解执行
-    - 需协调 → 找对应团队
-    - 需分析 → 召集智囊团
-    - 重大决策 → 上报总裁
+    决策原则（四级制）：
+    - L1 自动执行 → 例行操作
+    - L2 Lysander审批 → 新方案/跨团队
+    - L3 专家评审 → 重大方案/高风险
+    - L4 上报总裁 → 法律/合同/>100万/存续级
 
 # 团队注册
 teams:
@@ -106,30 +118,29 @@ teams:
     access_key: "obs"
 
   content_ops:
-    name: "内容运营团队"
-    description: "内容运营团队 - 管理博客和微信公众号内容生产与发布"
+    name: "内容团队"
+    description: "内容团队 - 负责内部文档、报告、提案、知识内容的策划、撰写与视觉呈现"
     specialists:
-      - content_strategist        # 内容策划专家 - 选题规划、内容策划
-      - content_creator           # 内容创作专家 - 文章撰写、编辑优化
-      - visual_designer           # 视觉设计专家 - 配图、排版、视觉优化
-      - publishing_ops            # 发布运营专家 - 发布流程、排程、数据分析
+      - content_strategist        # 内容策划专家 - 内容架构、选题策划
+      - content_creator           # 内容创作专家 - 文档撰写、报告编写
+      - visual_designer           # 视觉设计专家 - 配图、排版、呈现优化
     capabilities:
-      - 内容策划与选题
-      - 文章撰写与编辑
+      - 内容架构与策划
+      - 文档/报告/提案撰写
+      - PPT与可视化呈现
       - 视觉设计与排版
-      - 博客发布管理
-      - 微信公众号运营
-      - 内容数据分析
+      - 内容质量审核
     access_key: "content_ops"
 
   graphify:
     name: "Graphify智囊团"
-    description: "Graphify智囊团 - 你的第二大脑核心引擎，提供深度分析、关联发现、趋势洞察、决策支持"
+    description: "Graphify智囊团 - 第二大脑核心引擎，提供深度分析、关联发现、趋势洞察、决策支持、执行链审计"
     specialists:
       - strategist               # 战略分析师 - 深度分析、战略规划
       - relation_discovery       # 关联发现专家 - 知识图谱、隐性关联
       - trend_watcher           # 趋势洞察师 - 趋势识别、模式发现
       - decision_advisor        # 决策顾问 - 决策支持、选项评估
+      - execution_auditor       # 执行审计师 - 任务分级、执行链审计、跨会话状态
     capabilities:
       - 战略分析
       - 关联发现
@@ -137,6 +148,9 @@ teams:
       - 决策支持
       - 知识图谱
       - 预测分析
+      - 执行链审计
+      - 任务分级
+      - 跨会话状态管理
     access_key: "graphify"
 
   growth:
@@ -153,6 +167,28 @@ teams:
       - 销售赋能材料制作
       - 内容ROI提升
     access_key: "growth"
+
+  janus:
+    name: "Janus项目交付团队"
+    description: "Janus项目交付团队 - 建筑数字化项目全生命周期交付，基于WBS工序标准化管理"
+    project_type: "independent"  # 项目制团队，专注Janusd建筑数字化交付
+    specialists:
+      - janus_pm              # 项目交付经理 (WBS: PM)
+      - janus_de              # 数字化交付工程师 (WBS: DE)
+      - janus_sa              # 解决方案架构师 (WBS: SA)
+      - janus_cde             # 业务咨询交付工程师 (WBS: CDE)
+      - janus_qa              # 交付质量经理 (跨角色质量管控)
+      - janus_pmo_auto        # PMO自动化工程师 (新增)
+    capabilities:
+      - 项目全生命周期交付管理
+      - 建筑数字化建模(BIM/数字孪生)
+      - IoT施工与数据绑点
+      - 业务调研与初始化配置
+      - RCC知识生产
+      - UAT测试与验收管理
+      - PMO自动化(WBS→Asana)
+      - 阶段门质量管控
+    access_key: "janus"
 
   stock:
     name: "股票交易系统项目"
@@ -200,6 +236,40 @@ task_routing:
       - gtm_strategist
     "市场扩张":
       - gtm_strategist
+
+    # Janus项目交付团队关键词
+    "WBS":
+      - janus
+    "工序":
+      - janus
+    "Asana建单":
+      - janus_pmo_auto
+    "数字化交付":
+      - janus_de
+    "BIM建模":
+      - janus_de
+    "数字孪生":
+      - janus_de
+    "绑点":
+      - janus_de
+    "业务调研":
+      - janus_cde
+    "业务初始化":
+      - janus_cde
+    "RCC知识":
+      - janus_cde
+    "阶段门":
+      - janus_qa
+    "内验":
+      - janus_qa
+    "项目交付":
+      - janus_pm
+    "施工管理":
+      - janus_pm
+    "解决方案":
+      - janus_sa
+    "技术方案":
+      - janus_sa
 
     "交付":
       - butler
@@ -371,6 +441,16 @@ task_routing:
     - { keywords: ["决策", "建议"], experts: ["decision_advisor", "strategist"] }
     - { keywords: ["知识图谱", "关联"], experts: ["relation_discovery", "trend_watcher"] }
     - { keywords: ["帮我思考", "第二大脑"], experts: ["strategist", "relation_discovery", "decision_advisor"] }
+
+    # Janus项目交付团队组合
+    - { keywords: ["WBS", "建单"], experts: ["janus_pmo_auto", "janus_pm"] }
+    - { keywords: ["数字化交付", "建模"], experts: ["janus_de", "janus_qa"] }
+    - { keywords: ["业务调研", "初始化"], experts: ["janus_cde", "janus_qa"] }
+    - { keywords: ["项目交付", "策划"], experts: ["janus_pm", "janus_sa", "janus_cde"] }
+    - { keywords: ["IoT", "绑点"], experts: ["janus_de", "janus_qa"] }
+    - { keywords: ["UAT", "验收"], experts: ["janus_qa", "janus_pm", "janus_cde"] }
+    - { keywords: ["阶段门", "评审"], experts: ["janus_qa", "janus_pm"] }
+    - { keywords: ["施工", "交付"], experts: ["janus_pm", "janus_de"] }
 
     # 股票交易系统项目组合
     - { keywords: ["股票", "交易"], experts: ["trader", "quant_researcher"] }

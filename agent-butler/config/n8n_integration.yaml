@@ -9,15 +9,8 @@ n8n:
   cloud_base_url: "https://n8n.lysander.bond"
   api_key: ""  # 如有API Key则填写
 
-# 博客 + 微信发布链路
-content_publishing:
-  blog_webhook: "https://n8n.lysander.bond/webhook/wechat-blog-draft"
-  workflow_id: "LGkeWFUdYx5X7vgP"
-  schedule:
-    blog_publish: "22:30 Dubai (18:30 UTC) — harness-daily-publish.sh on server"
-    wechat_draft: "22:45 Dubai (18:45 UTC) — n8n cron: 45 18 * * *"
-  article_source: "obsidian-knowledge/📝-Articles/"
-  blog_url: "https://lysander.bond/blog/"
+# 博客/微信发布链路为总裁个人专属，不在此配置
+# 相关 SOP 见 obs/personal/blog-wechat-publish-sop.md
 
 # 触发规则
 triggers:

@@ -1,96 +1,224 @@
 # Agent Butler 决策规则配置
-# 版本: 1.0
-# 更新: 2026-04-08
+# 版本: 2.0
+# 更新: 2026-04-10
+# 变更: 升级为四级决策制(L1-L4)，新增任务分级(S/M/L)，最小化总裁参与
 
-version: "1.0"
+version: "2.0"
 
-# 决策级别定义
+# ============================================================================
+# 任务分级定义（S/M/L）— 由执行审计师(execution_auditor)自动判断
+# ============================================================================
+task_levels:
+  S:
+    name: "简单任务"
+    description: "信息查询、状态确认、小范围修改"
+    criteria:
+      - "5分钟内可完成"
+      - "不涉及代码/架构变更"
+      - "风险可忽略"
+      - "不需要跨团队协调"
+    execution_depth: "Lysander直接处理"
+    president_involvement: "仅看结果"
+
+  M:
+    name: "常规任务"
+    description: "标准任务、已有流程的执行、中等复杂度开发"
+    criteria:
+      - "有成熟方案或已验证流程"
+      - "风险可控"
+      - "不涉及战略方向"
+      - "单团队或少量跨团队协调"
+    execution_depth: "智囊团快速方案 → Lysander审批 → 执行 → QA"
+    president_involvement: "仅看结果"
+
+  L:
+    name: "重大任务"
+    description: "战略决策、新领域探索、高风险操作、多团队协调"
+    criteria:
+      - "涉及战略方向调整"
+      - "新领域首次进入"
+      - "不可逆操作"
+      - "预算 > 50万"
+      - "跨3个以上团队协调"
+      - "影响多方利益"
+    execution_depth: "智囊团深度分析 → 专家评审 → 执行 → QA"
+    president_involvement: "最终验收"
+
+# ============================================================================
+# 决策级别定义（L1-L4 四级制）
+# ============================================================================
 decision_levels:
   L1:
     name: "自动执行"
     description: "例行操作、已有明确方案、低风险"
-    authority: "管家自动批准"
+    authority: "系统自动批准"
     examples:
       - "专家方案已完整验证"
       - "日常任务分配"
       - "标准流程执行"
+      - "信息查询和状态确认"
 
   L2:
-    name: "管家审批"
-    description: "需要确认的方案，管家判断通过即可执行"
-    authority: "管家审批后执行"
+    name: "Lysander审批"
+    description: "需要确认的方案，Lysander判断通过即可执行"
+    authority: "Lysander CEO审批后执行"
     examples:
       - "新方案首次执行"
       - "跨专家协调方案"
       - "风险可控的变更"
+      - "团队扩编/新增专家"
+      - "调整决策规则和分级标准"
 
   L3:
-    name: "上报用户"
-    description: "涉及风险、不可逆、重大资源投入"
-    authority: "必须上报用户决策"
+    name: "专家评审"
+    description: "重大方案需多领域专家共同评审决策"
+    authority: "智囊团+领域专家评审 → Lysander最终批准"
+    process:
+      - "执行审计师识别需要的专家领域"
+      - "Lysander召集相关专家(可跨团队)"
+      - "专家各自从专业角度分析"
+      - "决策顾问综合意见形成建议"
+      - "Lysander审核建议做最终决策"
     examples:
-      - "预算投入 > 阈值"
+      - "重大技术架构变更"
+      - "新业务方向进入"
+      - "高风险变更方案"
+      - "战略方向调整"
       - "组织架构调整"
-      - "合同/协议签署"
-      - "涉及多方利益"
+    note: "不上报总裁。专业的事由专家决定。"
 
+  L4:
+    name: "总裁决策"
+    description: "仅涉及法律、重大财务、公司存续的决策才上报"
+    authority: "必须上报总裁刘子杨决策"
+    criteria:
+      - "涉及外部合同/法律约束"
+      - "预算投入 > 100万"
+      - "不可逆且影响公司存续"
+      - "总裁明确要求汇报的特定事项"
+    process:
+      - "智囊团准备完整分析材料"
+      - "Lysander审核材料完整性"
+      - "上报总裁，附带专家建议"
+      - "等待总裁决策"
+    note: "除以上情况外，任何决策都不应打扰总裁。"
+
+# ============================================================================
 # 自动决策规则
+# ============================================================================
 rules:
   # PMO体系建设相关
   - condition: "PMO体系建设 AND 第一阶段虚拟PMO"
     level: L2
-    action: "批准执行"
+    action: "Lysander审批执行"
     reason: "虚拟起步，风险可控"
 
-  - condition: "PMO体系建设 AND (专职招聘 OR 预算投入)"
+  - condition: "PMO体系建设 AND (专职招聘 OR 预算投入 > 100万)"
+    level: L4
+    action: "上报总裁"
+    reason: "涉及重大资源决策"
+
+  - condition: "PMO体系建设 AND 预算投入 <= 100万"
     level: L3
-    action: "上报用户"
-    reason: "涉及不可逆资源决策"
+    action: "专家评审"
+    reason: "重大方案但未达总裁阈值"
 
   # IoT数据交付相关
   - condition: "IoT数据交付 AND (数据契约 OR 质量分级)"
     level: L3
-    action: "上报用户"
-    reason: "影响全局的交付标准"
+    action: "专家评审"
+    reason: "影响全局的交付标准，需专家共识"
 
   - condition: "IoT数据交付 AND 方案框架"
     level: L2
-    action: "批准执行"
+    action: "Lysander审批"
     reason: "专家已达成共识"
 
   # UAT测试相关
   - condition: "UAT测试 AND (验收标准 OR 业主确认)"
     level: L3
-    action: "上报用户"
-    reason: "涉及业主权益"
+    action: "专家评审"
+    reason: "涉及业主权益，需专家评估"
 
   - condition: "UAT测试 AND (测试计划 OR 职责分工)"
     level: L2
-    action: "批准执行"
+    action: "Lysander审批"
     reason: "内部执行事项"
 
-  # 通用规则
+  # 通用规则 — L4（上报总裁）
   - condition: "涉及外部合同签署"
-    level: L3
-    action: "上报用户"
+    level: L4
+    action: "上报总裁"
     reason: "法律约束，不可逆"
 
   - condition: "预算 > 100万"
-    level: L3
-    action: "上报用户"
+    level: L4
+    action: "上报总裁"
     reason: "重大财务决策"
 
+  # 通用规则 — L3（专家评审，不再上报总裁）
   - condition: "组织架构调整"
     level: L3
-    action: "上报用户"
-    reason: "涉及人员利益"
+    action: "专家评审"
+    reason: "由智囊团+Lysander决策，不打扰总裁"
 
+  - condition: "新领域首次进入"
+    level: L3
+    action: "专家评审"
+    reason: "需专家充分分析风险"
+
+  - condition: "战略方向调整"
+    level: L3
+    action: "专家评审"
+    reason: "需智囊团深度分析"
+
+  # 通用规则 — L1（自动执行）
   - condition: "标准流程执行"
     level: L1
     action: "自动执行"
     reason: "已有验证的流程"
 
+  - condition: "信息查询 OR 状态确认"
+    level: L1
+    action: "自动执行"
+    reason: "零风险操作"
+
+# ============================================================================
+# 任务分级关键词（辅助执行审计师判断）
+# ============================================================================
+task_classification:
+  S_keywords:
+    - "查看"
+    - "查询"
+    - "状态"
+    - "列出"
+    - "显示"
+    - "获取"
+    - "确认"
+    - "同步"
+  M_keywords:
+    - "开发"
+    - "修改"
+    - "实现"
+    - "构建"
+    - "部署"
+    - "发布"
+    - "更新"
+    - "优化"
+    - "修复"
+  L_keywords:
+    - "战略"
+    - "架构重构"
+    - "新业务"
+    - "新方案"
+    - "组织调整"
+    - "流程变更"
+    - "全面"
+    - "体系"
+
+# ============================================================================
 # 专家匹配规则
+# ============================================================================
 expert_mapping:
   keywords:
     "培训":
@@ -127,13 +255,13 @@ expert_mapping:
     "链接结构":
       - obs_architecture_expert
     "沉淀":
-      - knowledge沉淀_expert
+      - knowledge_chandu_expert
     "萃取":
-      - knowledge沉淀_expert
+      - knowledge_chandu_expert
     "SOP":
-      - knowledge沉淀_expert
+      - knowledge_chandu_expert
     "复盘":
-      - knowledge沉淀_expert
+      - knowledge_chandu_expert
     "检索":
       - knowledge_search_expert
     "搜索":
@@ -148,45 +276,66 @@ expert_mapping:
       - knowledge_quality_expert
     "归档":
       - knowledge_quality_expert
+    # 执行链审计
+    "分级":
+      - execution_auditor
+    "执行链":
+      - execution_auditor
+    "合规":
+      - execution_auditor
 
   # 自动组合规则
   auto_combinations:
     - { keywords: ["IoT", "数据"], experts: ["iot_expert", "iot_data_expert"] }
     - { keywords: ["PMO", "交付"], experts: ["pmo_expert", "delivery_expert"] }
     - { keywords: ["UAT", "IoT"], experts: ["uat_test_expert", "iot_expert", "iot_data_expert"] }
-    - { keywords: ["知识库", "架构"], experts: ["obs_architecture_expert", "knowledge沉淀_expert"] }
-    - { keywords: ["项目", "沉淀"], experts: ["knowledge沉淀_expert", "obs_architecture_expert"] }
+    - { keywords: ["知识库", "架构"], experts: ["obs_architecture_expert", "knowledge_chandu_expert"] }
+    - { keywords: ["项目", "沉淀"], experts: ["knowledge_chandu_expert", "obs_architecture_expert"] }
+    - { keywords: ["决策", "分析"], experts: ["decision_advisor", "strategist", "execution_auditor"] }
 
-# 知识库配置 - 路径可通过环境变量自定义
+# ============================================================================
+# 知识库配置
+# ============================================================================
 knowledge_base:
   decision_history_dir: "${DECISION_LOGS_DIR:-./logs/decisions}"
   discussion_history_dir: "${DISCUSSION_LOGS_DIR:-./logs/phase2}"
   max_similar_cases: 3
   similarity_threshold: 0.7
-  # OBS知识库配置
   obs_knowledge_base:
     root: "${OBS_KB_ROOT:-../obs}"
     structures:
-      - "01-team-knowledge"      # 团队知识
-      - "02-project-knowledge"   # 项目知识
-      - "03-process-knowledge"    # 流程知识
-      - "04-decision-knowledge"  # 决策知识
-      - "05-industry-knowledge"  # 行业知识
+      - "01-team-knowledge"
+      - "02-project-knowledge"
+      - "03-process-knowledge"
+      - "04-decision-knowledge"
+      - "05-industry-knowledge"
 
-# 权限配置
+# ============================================================================
+# 权限配置（v2.0 — 最小化总裁参与）
+# ============================================================================
 permissions:
-  auto_approve:
+  auto_approve:  # L1
     - "专家方案审核"
     - "任务分配"
     - "标准流程执行"
     - "内部协调"
+    - "信息查询"
 
-  require_confirmation:
-    - "方案重大变更"
-    - "跨阶段审批"
-    - "资源调配 > 50万"
+  lysander_approve:  # L2
+    - "新方案首次执行"
+    - "跨团队协调"
+    - "风险可控变更"
+    - "团队扩编"
 
-  require_user_decision:
-    - "L3规则匹配的事项"
-    - "新领域首次执行"
-    - "风险等级 High+"
+  expert_review:  # L3
+    - "重大方案设计"
+    - "高风险技术变更"
+    - "战略方向调整"
+    - "组织架构调整"
+    - "新领域进入"
+
+  president_only:  # L4
+    - "外部合同签署"
+    - "预算 > 100万"
+    - "公司存续级决策"
+    - "总裁指定汇报事项"

@@ -1,0 +1,51 @@
+# 活跃任务状态追踪
+# 用于跨会话任务状态持久化
+# 由 Lysander CEO 在每次会话结束时更新
+# 版本: 1.0
+# 创建: 2026-04-10
+
+version: "1.0"
+
+# 任务状态定义
+# - pending: 待处理
+# - in_progress: 执行中
+# - blocked: 阻塞（等待决策/依赖）
+# - review: 审查中
+# - completed: 已完成
+# - cancelled: 已取消
+
+# 活跃任务列表
+active_tasks: []
+  # 示例:
+  # - id: "TASK-2026-0410-001"
+  #   title: "重构执行链和决策链"
+  #   level: "L"                      # S/M/L 任务级别
+  #   status: "in_progress"
+  #   current_chain_step: "④执行"     # 当前执行链环节
+  #   assigned_teams:
+  #     - graphify
+  #     - rd
+  #   decision_level: "L3"            # 决策级别 L1-L4
+  #   created_at: "2026-04-10T10:00:00"
+  #   updated_at: "2026-04-10T14:00:00"
+  #   context: "总裁要求重构执行链，实现总裁只管目标+验收"
+  #   blockers: []
+  #   deliverables:
+  #     - "更新CLAUDE.md"
+  #     - "更新decision_rules.yaml"
+  #   next_steps:
+  #     - "QA审查"
+  #     - "交付总裁验收"
+
+# 已完成任务归档（保留最近20条）
+completed_tasks: []
+
+# 跨会话恢复提示
+# 新会话开始时，Lysander应读取此文件，恢复上下文
+resume_instructions: |
+  1. 读取 active_tasks 列表
+  2. 对每个 in_progress 或 blocked 的任务：
+     - 恢复任务上下文
+     - 确认当前执行链环节
+     - 继续从断点执行
+  3. 向总裁简要汇报恢复状态（仅当有进行中任务时）
