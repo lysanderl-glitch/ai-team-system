@@ -139,6 +139,21 @@ teams:
       - 预测分析
     access_key: "graphify"
 
+  growth:
+    name: "增长团队"
+    description: "增长团队 - 负责市场洞察、客户发现、竞争情报和GTM策略，打通外部信号与内部执行闭环"
+    specialists:
+      - customer_insights_manager    # 客户洞察经理 - 客户调研、需求验证、PMF分析
+      - gtm_strategist               # GTM策略师 - 竞品跟踪、销售赋能、市场定位
+    capabilities:
+      - 客户需求调研与验证
+      - 市场反馈汇总分析
+      - 竞品跟踪与竞争定位
+      - GTM策略设计
+      - 销售赋能材料制作
+      - 内容ROI提升
+    access_key: "growth"
+
   stock:
     name: "股票交易系统项目"
     description: "股票交易系统项目（趋势智选）- A股趋势交易指导系统，基于《炒股的智慧》策略"
@@ -162,6 +177,30 @@ teams:
 task_routing:
   # 关键词匹配到团队
   keywords:
+    # 增长团队关键词
+    "客户反馈":
+      - growth
+    "市场调研":
+      - growth
+    "用户需求":
+      - customer_insights_manager
+    "产品验证":
+      - customer_insights_manager
+    "PMF":
+      - customer_insights_manager
+    "GTM":
+      - gtm_strategist
+    "市场策略":
+      - gtm_strategist
+    "竞品分析":
+      - gtm_strategist
+    "销售赋能":
+      - gtm_strategist
+    "竞争定位":
+      - gtm_strategist
+    "市场扩张":
+      - gtm_strategist
+
     "交付":
       - butler
     "项目":

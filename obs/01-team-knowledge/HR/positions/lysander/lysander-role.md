@@ -17,7 +17,7 @@ required_capabilities:
   - 资源协调(4)
   - 团队管理(4)
 
-reports_to: 用户（公司所有者）
+reports_to: 总裁 刘子杨（公司所有者）
 
 collaborates_with:
   - Butler团队

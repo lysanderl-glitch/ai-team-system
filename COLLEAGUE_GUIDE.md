@@ -1,130 +1,100 @@
-# 同事使用指南 — AI团队协作体系
+# 同事使用指南 — AI 团队协作体系
 
-> 本指南帮助你在 5 分钟内完成初始化，开始使用 AI 团队协作体系。
-
----
-
-## 一、你将获得什么
-
-- **29 个 AI 专家**随时待命，覆盖交付/研发/知识管理/内容运营/智囊团/股票项目
-- **自动任务路由**：说出需求，系统自动分派给对应专家团队
-- **决策体系**：小事直接执行，大事上报决策，不乱来
-- **Obsidian 第二大脑**：团队知识结构化沉淀
+> 5 分钟完成初始化，零技术背景可用。
 
 ---
 
-## 二、前提条件
+## 你将获得什么
 
-| 工具 | 用途 | 下载 |
-|------|------|------|
-| **Python 3.8+** | 驱动 HR 知识库 | python.org |
-| **Git** | 拉取代码 | git-scm.com |
-| **Claude Code** | AI 对话入口 | 参考下方说明 |
-| **Obsidian**（可选） | 查看/编辑人员卡片 | obsidian.md |
-
-### 安装 Claude Code
-
-```bash
-npm install -g @anthropic-ai/claude-code
-```
-
-安装后需要用 Anthropic 账号登录（首次运行 `claude` 会引导）。
+- **29 个 AI 专家**随时待命：项目交付、研发、知识管理、内容运营、智囊团
+- 说出需求，系统自动分派给对应专家
+- 小事直接执行，大事智囊团分析后决策
+- Obsidian 知识库自动同步 GitHub
 
 ---
 
-## 三、快速初始化（一次性）
+## 第一步：下载代码
 
-### 第 1 步：获取代码
+打开浏览器，访问：
 
-```bash
-git clone https://github.com/lysanderl-glitch/ai-team-system.git
-cd ai-team-system
+```
+https://github.com/lysanderl-glitch/ai-team-system
 ```
 
-### 第 2 步：安装依赖
-
-**Windows 双击运行：**
-```
-scripts\setup.bat
-```
-
-**或手动安装：**
-```bash
-pip install pyyaml watchdog
-```
-
-### 第 3 步：验证
-
-```bash
-cd agent-butler
-python -c "from hr_base import load_org_config; c=load_org_config(); print('OK - Teams:', list(c['teams'].keys()))"
-```
-
-输出 `OK - Teams: ['butler', 'rd', 'obs', ...]` 即成功。
-
-### 第 4 步：（可选）用 Obsidian 打开知识库
-
-打开 Obsidian → 选择 **"Open folder as vault"** → 选择仓库内的 `obs\` 文件夹。
-
-即可看到所有 AI 团队人员卡片，可直接浏览和编辑。
+点击绿色 **Code** 按钮 → **Download ZIP** → 解压到任意文件夹（如 `桌面/ai-team-system`）。
 
 ---
 
-## 四、开始使用
+## 第二步：打开 Claude Code
 
-在 `ai-team-system` 目录启动 Claude Code：
+1. 打开 **Claude Code 桌面应用**
+2. 点击 **"Open Folder"**（打开文件夹）
+3. 选择刚才解压的 `ai-team-system` 文件夹
+4. 等待 Claude Code 加载完成（看到对话框即可）
 
-```bash
-claude
-```
-
-Claude Code 会自动加载 `CLAUDE.md`，激活完整的 AI 团队体系。
+> 💡 Claude Code 会自动读取 `CLAUDE.md`，AI 团队体系立即生效。
 
 ---
 
-## 五、对话示例
+## 第三步：发送开场语（复制粘贴）
+
+将以下内容**直接粘贴**到对话框发送：
+
+```
+你好，请你按照 CLAUDE.md 中的执行链规范，以 Lysander 身份问候我，
+并告诉我你当前加载的团队成员有哪些。
+```
+
+Lysander 会回复问候语，并列出所有可用的 AI 专家团队。
+
+---
+
+## 第四步：开始工作
+
+直接说出你的需求，系统会自动分派：
 
 | 你说 | 系统行为 |
 |------|----------|
-| `lysander 帮我做一个数字化交付方案` | 路由到 Butler 团队 |
-| `lysander 分析一下这个技术架构` | 召集 Graphify 智囊团 |
-| `lysander 研发团队状态如何` | 调取 RD 团队摘要 |
-| `lysander 需要沉淀本次项目知识` | 路由到 OBS 知识管理团队 |
-| `lysander 帮我写一篇博客` | 路由到 Content_ops 内容运营团队 |
+| `lysander 帮我做一个项目交付方案` | → Butler 团队 |
+| `lysander 帮我分析这个技术架构` | → Graphify 智囊团 |
+| `lysander 帮我写一篇技术博客` | → 内容运营团队 |
+| `lysander 需要沉淀本次项目经验` | → OBS 知识管理团队 |
+| `lysander 分析下当前市场竞争态势` | → 增长团队 |
+
+**注意**：每次对话开头带 `lysander`，系统会识别这是对 AI CEO 发出的指令。
 
 ---
 
-## 六、团队一览
+## 团队一览
 
-| 团队 | 人数 | 核心职责 |
-|------|------|----------|
-| **Butler** | 7 人 | 项目交付、IoT、PMO、UAT |
-| **RD 研发** | 5 人 | 系统开发、架构、DevOps |
-| **OBS 知识管理** | 4 人 | 知识沉淀、检索、质量审核 |
-| **Graphify 智囊团** | 4 人 | 战略分析、决策支持、趋势洞察 |
-| **Content_ops 内容运营** | 4 人 | 博客写作、微信运营、视觉设计 |
-| **Stock 股票项目** | 5 人 | 量化策略、交易系统 |
-
----
-
-## 七、常见问题
-
-**Q: `python` 命令找不到？**  
-A: 确认 Python 安装时勾选了"Add to PATH"，或使用 `python3`。
-
-**Q: `claude` 命令找不到？**  
-A: 重新打开终端，或执行 `npm install -g @anthropic-ai/claude-code`。
-
-**Q: 想修改某个 AI 专家的能力？**  
-A: 编辑 `obs/01-team-knowledge/HR/personnel/{团队}/{专家}.md`，或在 Obsidian 中直接修改。
-
-**Q: 想新增一个 AI 专家？**  
-A: 参考 `SETUP.md` → "添加新团队成员" 章节。
+| 团队 | 核心职责 |
+|------|----------|
+| **Butler** | 项目交付、IoT施工、PMO、UAT测试 |
+| **RD 研发** | 系统开发、架构设计、DevOps |
+| **OBS 知识管理** | 知识沉淀、检索、质量审核 |
+| **Graphify 智囊团** | 战略分析、决策支持、趋势洞察 |
+| **内容运营** | 博客写作、微信运营、视觉设计 |
+| **增长团队** | 客户洞察、GTM策略、竞品分析 |
+| **Stock 股票项目** | 量化策略、A股交易系统 |
 
 ---
 
-## 八、技术支持
+## 常见问题
 
-- 查看架构文档：`docs/ARCHITECTURE.md`
-- 查看决策体系：`docs/DECISION_SYSTEM.md`
-- 查看 GitHub Issues
+**Q: Claude Code 怎么下载？**  
+A: 访问 [claude.ai/download](https://claude.ai/download)，下载桌面版，用 Claude 账号登录。
+
+**Q: 打开文件夹后什么都没有？**  
+A: 确认选的是 `ai-team-system` 文件夹本身，而不是它的上级目录。
+
+**Q: 发了消息没有 Lysander 问候？**  
+A: 重新打开文件夹，或发送：`请重新加载 CLAUDE.md 并以 Lysander 身份问候我`
+
+**Q: 想更换 AI 专家的能力怎么做？**  
+A: 打开 `obs/01-team-knowledge/HR/personnel/` 对应文件，直接编辑 .md 文件即可。
+
+---
+
+## 技术支持
+
+联系 Lysander 或提交 Issue：https://github.com/lysanderl-glitch/ai-team-system/issues
