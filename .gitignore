@@ -26,6 +26,9 @@ hr_watcher.log
 *.tmp
 *.bak
 
+# Evaluation / third-party source (isolated review only)
+_eval/
+
 # 加密凭证库 — 绝不上传 GitHub
 credentials.enc.md
 obs/credentials.md
