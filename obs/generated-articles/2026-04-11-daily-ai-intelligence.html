@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我用一场对话搭建了49人AI团队 — Harness Engineering 实战手记 — 2026-04-11</title>
+  <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.8; color: #1A1A2E;
+    background: #F7F8FA;
+    -webkit-font-smoothing: antialiased;
+}
+
+.report-wrapper {
+    max-width: 880px; margin: 0 auto; padding: 32px 20px 80px;
+}
+
+/* ── Hero Header (Dark, janusd.com style) ─────────────────────────────── */
+.report-header {
+    background: #0A1628;
+    padding: 48px 40px 40px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+}
+.report-header::before {
+    content: "";
+    position: absolute; top: 0; right: 0;
+    width: 320px; height: 100%;
+    background: linear-gradient(135deg, transparent 30%, rgba(2,141,220,0.08) 100%);
+    pointer-events: none;
+}
+.report-header::after {
+    content: "";
+    position: absolute; bottom: 0; left: 40px; right: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #FCAD2A, #028CDC, transparent);
+    border-radius: 2px;
+}
+.header-top {
+    display: flex; align-items: center; margin-bottom: 24px;
+    position: relative; z-index: 1;
+}
+.header-brand {
+    font-size: 13px; font-weight: 500; color: #8E95A7;
+    letter-spacing: 2px; text-transform: uppercase;
+}
+.report-title {
+    font-size: 28px; font-weight: 700; color: #FFFFFF;
+    line-height: 1.3; margin-bottom: 12px;
+    position: relative; z-index: 1;
+}
+.report-subtitle {
+    font-size: 14px; color: #8E95A7; margin-bottom: 20px;
+    position: relative; z-index: 1;
+}
+.header-meta {
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    position: relative; z-index: 1;
+}
+.meta-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 5px 14px; border-radius: 20px;
+    font-size: 12px; color: rgba(255,255,255,0.7);
+    font-weight: 500;
+}
+.meta-tag.gold { border-color: rgba(252,173,42,0.3); color: #FCAD2A; }
+
+/* ── Content Area ─────────────────────────────────────────────────────── */
+.report-content {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #E2E6EE;
+}
+
+/* ── Typography ───────────────────────────────────────────────────────── */
+h1 {
+    font-size: 24px; font-weight: 700; color: #1A1A2E;
+    margin: 40px 0 16px; line-height: 1.3;
+}
+h2 {
+    font-size: 19px; font-weight: 600; color: #013A7D;
+    margin: 36px 0 14px; padding-bottom: 10px;
+    border-bottom: 2px solid #FCAD2A;
+    display: inline-block;
+}
+h2::after {
+    content: ""; display: block;
+}
+h3 {
+    font-size: 16px; font-weight: 600; color: #1A1A2E;
+    margin: 28px 0 10px;
+}
+h4 {
+    font-size: 14px; font-weight: 600; color: #5A6072;
+    margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+p {
+    font-size: 15px; line-height: 1.8; margin: 12px 0;
+    color: #1A1A2E;
+}
+a {
+    color: #028CDC; text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+a:hover { border-bottom-color: #028CDC; }
+strong { color: #013A7D; font-weight: 600; }
+em { color: #FCAD2A; font-style: normal; font-weight: 500; }
+
+/* ── Blockquote (Executive Summary) ───────────────────────────────────── */
+blockquote {
+    background: linear-gradient(135deg, rgba(1,58,125,0.04), rgba(2,141,220,0.04));
+    border-left: 3px solid #FCAD2A;
+    padding: 20px 24px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 15px; line-height: 1.9;
+    color: #1A1A2E;
+}
+blockquote p { margin: 0; }
+
+/* ── Code ─────────────────────────────────────────────────────────────── */
+code {
+    font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+    background: rgba(1,58,125,0.06); color: #013A7D;
+    padding: 2px 7px; border-radius: 4px; font-size: 13px;
+    font-weight: 500;
+}
+pre {
+    background: #0D1B2A; color: #E0E6F0;
+    padding: 20px 24px; border-radius: 10px; overflow-x: auto;
+    margin: 20px 0; font-size: 13px; line-height: 1.7;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+pre code {
+    background: transparent; color: inherit;
+    padding: 0; border-radius: 0; font-size: inherit;
+}
+
+/* ── Lists ────────────────────────────────────────────────────────────── */
+ul, ol { padding-left: 24px; margin: 12px 0; }
+li {
+    margin: 8px 0; line-height: 1.7;
+    color: #1A1A2E;
+}
+li::marker { color: #FCAD2A; }
+
+/* ── Tables ───────────────────────────────────────────────────────────── */
+table {
+    width: 100%; border-collapse: collapse;
+    margin: 20px 0; font-size: 14px;
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid #E2E6EE;
+}
+th {
+    background: #013A7D; color: #FFFFFF;
+    padding: 12px 16px; font-weight: 600;
+    text-align: left; font-size: 13px;
+    letter-spacing: 0.3px;
+}
+td {
+    padding: 11px 16px; border-bottom: 1px solid #E2E6EE;
+    color: #1A1A2E;
+}
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: #F7F8FA; }
+
+/* ── Horizontal Rule ──────────────────────────────────────────────────── */
+hr {
+    border: none; height: 1px;
+    background: #E2E6EE;
+    margin: 32px 0;
+}
+
+/* ── Priority Tags ────────────────────────────────────────────────────── */
+.priority-high {
+    display: inline-block; background: #FCAD2A; color: #0A1628;
+    padding: 3px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+}
+.priority-medium {
+    display: inline-block; background: #028CDC; color: #FFFFFF;
+    padding: 3px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+}
+.priority-low {
+    display: inline-block; background: rgba(1,58,125,0.1); color: #013A7D;
+    padding: 3px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+}
+
+/* ── Images ───────────────────────────────────────────────────────────── */
+img {
+    max-width: 100%; border-radius: 8px; margin: 16px 0;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+.report-footer {
+    margin-top: 40px; padding: 24px 40px;
+    background: #0A1628; border-radius: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+}
+.footer-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500;
+}
+.footer-brand .gold { color: #FCAD2A; }
+.footer-info {
+    font-size: 12px; color: rgba(255,255,255,0.35);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .report-wrapper { padding: 16px 12px 60px; }
+    .report-header { padding: 32px 24px 28px; }
+    .report-content { padding: 24px 20px; }
+    .report-title { font-size: 22px; }
+    .report-footer { padding: 20px 24px; flex-direction: column; text-align: center; }
+}
+
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #F8F8F2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ED007E; background-color: #1E0010 } /* Error */
+.codehilite .esc { color: #F8F8F2 } /* Escape */
+.codehilite .g { color: #F8F8F2 } /* Generic */
+.codehilite .k { color: #66D9EF } /* Keyword */
+.codehilite .l { color: #AE81FF } /* Literal */
+.codehilite .n { color: #F8F8F2 } /* Name */
+.codehilite .o { color: #FF4689 } /* Operator */
+.codehilite .x { color: #F8F8F2 } /* Other */
+.codehilite .p { color: #F8F8F2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #FF4689 } /* Generic.Deleted */
+.codehilite .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #F8F8F2 } /* Generic.Error */
+.codehilite .gh { color: #F8F8F2 } /* Generic.Heading */
+.codehilite .gi { color: #A6E22E } /* Generic.Inserted */
+.codehilite .go { color: #66D9EF } /* Generic.Output */
+.codehilite .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #F8F8F2 } /* Generic.Traceback */
+.codehilite .kc { color: #66D9EF } /* Keyword.Constant */
+.codehilite .kd { color: #66D9EF } /* Keyword.Declaration */
+.codehilite .kn { color: #FF4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66D9EF } /* Keyword.Pseudo */
+.codehilite .kr { color: #66D9EF } /* Keyword.Reserved */
+.codehilite .kt { color: #66D9EF } /* Keyword.Type */
+.codehilite .ld { color: #E6DB74 } /* Literal.Date */
+.codehilite .m { color: #AE81FF } /* Literal.Number */
+.codehilite .s { color: #E6DB74 } /* Literal.String */
+.codehilite .na { color: #A6E22E } /* Name.Attribute */
+.codehilite .nb { color: #F8F8F2 } /* Name.Builtin */
+.codehilite .nc { color: #A6E22E } /* Name.Class */
+.codehilite .no { color: #66D9EF } /* Name.Constant */
+.codehilite .nd { color: #A6E22E } /* Name.Decorator */
+.codehilite .ni { color: #F8F8F2 } /* Name.Entity */
+.codehilite .ne { color: #A6E22E } /* Name.Exception */
+.codehilite .nf { color: #A6E22E } /* Name.Function */
+.codehilite .nl { color: #F8F8F2 } /* Name.Label */
+.codehilite .nn { color: #F8F8F2 } /* Name.Namespace */
+.codehilite .nx { color: #A6E22E } /* Name.Other */
+.codehilite .py { color: #F8F8F2 } /* Name.Property */
+.codehilite .nt { color: #FF4689 } /* Name.Tag */
+.codehilite .nv { color: #F8F8F2 } /* Name.Variable */
+.codehilite .ow { color: #FF4689 } /* Operator.Word */
+.codehilite .pm { color: #F8F8F2 } /* Punctuation.Marker */
+.codehilite .w { color: #F8F8F2 } /* Text.Whitespace */
+.codehilite .mb { color: #AE81FF } /* Literal.Number.Bin */
+.codehilite .mf { color: #AE81FF } /* Literal.Number.Float */
+.codehilite .mh { color: #AE81FF } /* Literal.Number.Hex */
+.codehilite .mi { color: #AE81FF } /* Literal.Number.Integer */
+.codehilite .mo { color: #AE81FF } /* Literal.Number.Oct */
+.codehilite .sa { color: #E6DB74 } /* Literal.String.Affix */
+.codehilite .sb { color: #E6DB74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #E6DB74 } /* Literal.String.Char */
+.codehilite .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #E6DB74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #E6DB74 } /* Literal.String.Double */
+.codehilite .se { color: #AE81FF } /* Literal.String.Escape */
+.codehilite .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #E6DB74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #E6DB74 } /* Literal.String.Other */
+.codehilite .sr { color: #E6DB74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #E6DB74 } /* Literal.String.Single */
+.codehilite .ss { color: #E6DB74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #A6E22E } /* Name.Function.Magic */
+.codehilite .vc { color: #F8F8F2 } /* Name.Variable.Class */
+.codehilite .vg { color: #F8F8F2 } /* Name.Variable.Global */
+.codehilite .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */
+  </style>
+</head>
+<body>
+<div class="report-wrapper">
+
+<header class="report-header">
+  <div class="header-top">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="28" height="36" style="vertical-align: middle; margin-right: 10px;">
+  <path d="M24.39 0.09C25.4-0.32 26.42 0.73 26.42 2.18V41.44C26.42 42.89 25.4 43.93 24.39 43.52L9.71 39.63L18.24 38.6C18.75 38.52 19.21 38.25 19.55 37.83C19.89 37.41 20.08 36.87 20.08 36.32V7.32C20.07 6.76 19.89 6.23 19.55 5.81C19.21 5.4 18.74 5.12 18.24 5.05L9.63 4L24.39 0.09Z" fill="white"/>
+  <path d="M2.45 38.84L16.61 37.33C17.12 37.25 17.58 37 17.92 36.6C18.26 36.21 18.45 35.7 18.45 35.18V8.42C18.45 7.9 18.26 7.39 17.92 7C17.58 6.61 17.12 6.36 16.61 6.29L2.45 4.77C2.15 4.72 1.84 4.75 1.55 4.83C1.25 4.92 0.98 5.07 0.75 5.27C0.52 5.47 0.33 5.72 0.2 6C0.07 6.29 0 6.59 0 6.9V36.69C0 37 0.07 37.31 0.2 37.59C0.32 37.88 0.51 38.13 0.74 38.33C0.98 38.53 1.25 38.69 1.54 38.77C1.84 38.86 2.15 38.88 2.45 38.84Z" fill="#FCAD2A"/>
+  <path d="M31.87 7.93L28.1 7.52V36.09L31.87 35.71V7.93Z" fill="#013A7D"/>
+  <path d="M33.13 8.05V35.57C34.11 35.36 34.81 34.8 34.81 34.06V9.55C34.81 8.81 34.11 8.26 33.13 8.05Z" fill="#028CDC"/>
+</svg>
+    <span class="header-brand">Synapse &middot; Daily Intelligence</span>
+  </div>
+  <h1 class="report-title">我用一场对话搭建了49人AI团队 — Harness Engineering 实战手记</h1>
+  <p class="report-subtitle">Lysander CEO + Graphify Think Tank</p>
+  <div class="header-meta">
+    <span class="meta-tag gold">2026-04-11</span>
+    <span class="meta-tag">Harness Engineering</span><span class="meta-tag">Synapse</span><span class="meta-tag">AI Agent</span><span class="meta-tag">Claude Code</span>
+  </div>
+</header>
+
+<div class="report-content">
+<h2>引子</h2>
+<p>2026年4月10日，我和我的AI CEO "Lysander" 进行了一场长达数小时的对话。对话结束时，我们从零搭建了一套包含10个专业团队、49个AI Agent的完整运营体系。</p>
+<p>这不是概念验证，不是Demo。这是一个正在持续运行的生产系统 — 每天自动生成AI情报日报，自动评估和执行行动建议，每周自动审计全员能力评分。</p>
+<p>本文记录这个过程中最有价值的实践经验。</p>
+<h2>什么是 Harness Engineering</h2>
+<p>Martin Fowler 和 Red Hat 在2026年初确认了一个行业共识：AI Agent 的可靠性不取决于模型本身，而取决于你为它构建的"驾驭系统"。</p>
+<div class="codehilite"><pre><span></span><code>Agent = Model + Harness
+</code></pre></div>
+
+<p><strong>Model</strong>（模型）：Claude、GPT、Gemini — 人人可用，不是壁垒。</p>
+<p><strong>Harness</strong>（驾驭系统）：环境、约束、反馈、组织 — 这才是让AI可靠工作的关键。</p>
+<p>我的理解是：模型就像一个极其聪明但没有纪律的天才。Harness就是给这个天才设定的工作规范、汇报流程、质量标准和绩效考核。</p>
+<h2>实践一：Guides + Sensors 双保险</h2>
+<p>Harness有两个核心机制：</p>
+<p><strong>Guides（前馈控制）</strong>：在AI行动之前，引导它做正确的事。</p>
+<p>在我的系统中，<code>CLAUDE.md</code>就是最重要的Guide — 它定义了角色、流程、决策规则。AI每次启动都会读取这个文件，就像员工每天上班先看工作手册。</p>
+<p><strong>Sensors（反馈控制）</strong>：在AI行动之后，检查它是否做对了。</p>
+<p>我在实践中发现了一个关键教训 — 光有Guides不够。我的AI CEO反复跳过"团队派单"环节，自己一个人干完所有活。规则写在文档里，但没有机制检查它是否遵守了。</p>
+<p><strong>解决方案</strong>：我加入了"强制团队派单制度" — AI在执行任何工作之前，必须先输出"谁做什么"的派单表。这不是建议，是强制检查点。同时增加了"执行审计师"角色，在事后验证派单是否存在。</p>
+<p>这就是Harness Engineering的精髓：<strong>体系不靠"下次注意"，靠制度强制。</strong></p>
+<h2>实践二：四级决策体系</h2>
+<p>我发现一个反直觉的设计：CEO不应该排在专家前面做决策。</p>
+<p>最初的设计是：L1自动 → L2 CEO → L3专家 → L4总裁</p>
+<p>我纠正为：L1自动 → <strong>L2专家</strong> → <strong>L3 CEO</strong> → L4总裁</p>
+<p>逻辑很简单：专业问题应该先过专家，管理者再基于专家建议做决策。CEO拍脑袋不如专家分析。这个原则同样适用于AI系统 — 让AI管理者基于AI专家的分析来决策，而不是直接判断。</p>
+<h2>实践三：Agent 也需要HR管理</h2>
+<p>这是最出人意料的发现。</p>
+<p>我的49个AI Agent中，有8个评分为0分 — 它们被创建时没有任何能力标准，甚至连基本的档案格式都不统一。</p>
+<p>于是我建立了完整的AI人力资源管理体系：</p>
+<ul>
+<li><strong>强制Schema</strong>：每个Agent必须有标准化的档案，缺项不得上岗</li>
+<li><strong>能力分级</strong>：A/B/C三级评定，C级（只写"项目管理"这样的空泛描述）不合格</li>
+<li><strong>入职审批</strong>：HR Director 8项检查清单</li>
+<li><strong>定期审计</strong>：每周一自动运行全员评分</li>
+<li><strong>进化机制</strong>：当行业出现新技术时，自动更新相关Agent的能力描述</li>
+</ul>
+<p>结果：全员平均分从64.1提升到93.8，不合格人数从11降到0。</p>
+<h2>实践四：情报闭环 — AI自己学习和进化</h2>
+<p>最让我满意的设计是"情报闭环管线"：</p>
+<div class="codehilite"><pre><span></span><code>每天8am：AI自动搜索行业前沿 → 筛选3-5条有价值的发现 → 生成情报日报
+每天10am：AI自动评估日报建议 → 4专家评分 → 批准后自动执行 → 生成成果报告
+</code></pre></div>
+
+<p>这意味着这个AI团队每天都在学习新技术、评估是否有用、然后自己动手落地。我只在Slack上收到最终结果通知。</p>
+<h2>给同行的建议</h2>
+<ol>
+<li>
+<p><strong>先定义角色，再谈技术</strong>。我的第一步是明确"谁是老板、谁是CEO、谁是执行者"，而不是讨论用什么模型。</p>
+</li>
+<li>
+<p><strong>不要相信"AI会自觉遵守规则"</strong>。一定要有Sensor（反馈机制），不能只靠Guide（前馈指令）。</p>
+</li>
+<li>
+<p><strong>专家先于管理者</strong>。无论是人类组织还是AI组织，专业判断应该排在管理决策前面。</p>
+</li>
+<li>
+<p><strong>Agent的质量标准比数量重要</strong>。49个90分的Agent远比100个60分的Agent有价值。</p>
+</li>
+<li>
+<p><strong>让AI团队自己进化</strong>。不要手动管理每个Agent的能力更新，建立自动化的情报→评估→执行闭环。</p>
+</li>
+</ol>
+<h2>Synapse</h2>
+<p>我把这套体系命名为 <strong>Synapse</strong>（突触）— 神经元之间传递信号的关键节点。</p>
+<p>知识 ←突触→ 决策 ←突触→ 执行</p>
+<p>一个词，讲完了整个体系的本质。</p>
+<hr />
+<p><em>刘子杨 / Janus Digital / 2026年4月</em><br />
+<em>体系基于 Claude Code + Harness Engineering + Obsidian 构建</em></p>
+</div>
+
+<footer class="report-footer">
+  <div class="footer-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 44" width="28" height="36" style="vertical-align: middle; margin-right: 10px;">
+  <path d="M24.39 0.09C25.4-0.32 26.42 0.73 26.42 2.18V41.44C26.42 42.89 25.4 43.93 24.39 43.52L9.71 39.63L18.24 38.6C18.75 38.52 19.21 38.25 19.55 37.83C19.89 37.41 20.08 36.87 20.08 36.32V7.32C20.07 6.76 19.89 6.23 19.55 5.81C19.21 5.4 18.74 5.12 18.24 5.05L9.63 4L24.39 0.09Z" fill="white"/>
+  <path d="M2.45 38.84L16.61 37.33C17.12 37.25 17.58 37 17.92 36.6C18.26 36.21 18.45 35.7 18.45 35.18V8.42C18.45 7.9 18.26 7.39 17.92 7C17.58 6.61 17.12 6.36 16.61 6.29L2.45 4.77C2.15 4.72 1.84 4.75 1.55 4.83C1.25 4.92 0.98 5.07 0.75 5.27C0.52 5.47 0.33 5.72 0.2 6C0.07 6.29 0 6.59 0 6.9V36.69C0 37 0.07 37.31 0.2 37.59C0.32 37.88 0.51 38.13 0.74 38.33C0.98 38.53 1.25 38.69 1.54 38.77C1.84 38.86 2.15 38.88 2.45 38.84Z" fill="#FCAD2A"/>
+  <path d="M31.87 7.93L28.1 7.52V36.09L31.87 35.71V7.93Z" fill="#013A7D"/>
+  <path d="M33.13 8.05V35.57C34.11 35.36 34.81 34.8 34.81 34.06V9.55C34.81 8.81 34.11 8.26 33.13 8.05Z" fill="#028CDC"/>
+</svg>
+    <span><span class="gold">Synapse</span> &middot; Janus Digital &middot; Lysander AI Team</span>
+  </div>
+  <div class="footer-info">
+    Generated 2026-04-11 07:56 &middot; Reviewed by Graphify Think Tank
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
