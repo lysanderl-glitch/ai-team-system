@@ -44,6 +44,27 @@ execution_chain_triggers:
     webhook_url: "https://n8n.lysander.bond/webhook/qa-auto-review"
     enabled: true
 
+  # 每日复盘 + 博客生成管线
+  daily_retro_blog:
+    description: "每日21:43自动执行复盘+博客生成"
+    trigger_event: "cron"
+    schedule: "43 21 * * *"
+    action: "run_retro_and_blog"
+    pipeline:
+      - step: retro
+        skill: "/retro session"
+        output: "obs/06-daily-reports/YYYY-MM-DD-daily-retro.html"
+      - step: blog
+        skill: "/daily-blog auto"
+        output: "obs/05-industry-knowledge/blog/YYYY-MM-DD-*.md"
+      - step: generate_html
+        command: "python scripts/generate-article.py {blog_md_path}"
+        output: "obs/generated-articles/YYYY-MM-DD-*.html"
+      - step: notify
+        action: "notify_president"
+        channels: ["slack"]
+    enabled: true
+
   # 任务状态变更通知
   task_status_change:
     description: "active_tasks.yaml中任务状态变更时通知"
