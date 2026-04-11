@@ -126,6 +126,7 @@ teams:
       - visual_designer           # 视觉设计专家 - 样式模板、排版优化
       - publishing_ops            # HTML生成专家 - 调用 generate-article.py 生成本地 HTML
       - training_designer          # 培训课程设计师 - 课程体系/Workshop/认证设计
+      - ai_visual_creator          # AI视觉创作师 - 漫画/插画/信息图/品牌化视觉资产
     capabilities:
       - 知识内容提炼与结构化
       - Markdown 文章撰写
@@ -133,6 +134,8 @@ teams:
       - 科技蓝主题样式输出
       - 内部内容归档与分发
       - 培训课程体系设计（ADDIE模型）
+      - AI驱动的品牌化插画/漫画创作
+      - 场景化视觉叙事设计
       - 实操工作坊方案设计
     access_key: "content_ops"
 
