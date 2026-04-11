@@ -19,6 +19,10 @@ capabilities:
   - 微服务架构实现
   - API文档编写
   - 基于SQLAlchemy/Alembic的数据库迁移管理与Schema版本控制
+  - SQL安全自审（参数化查询强制/TOCTOU竞态检测/N+1查询识别/ORM直接写入拦截）
+  - 并发安全编码（原子WHERE+UPDATE状态迁移/唯一索引+重试的find-or-create/异步同步混用检测）
+  - Investigate根因调试法（数据流追踪→假设检验→三次失败即停止，禁止盲修）
+  - Artifact驱动开发（技术方案文档→代码实现→Review报告→测试报告，产物自动传递下游）
 experience:
   - 多个后端系统开发经验
   - 高并发系统设计经验

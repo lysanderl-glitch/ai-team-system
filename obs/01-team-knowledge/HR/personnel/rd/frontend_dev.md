@@ -18,6 +18,10 @@ capabilities:
   - 响应式UI设计
   - 前端性能优化（代码分割/懒加载/虚拟列表/Web Vitals指标达标）
   - 基于Vue3/React的可复用组件库开发（Storybook文档化/单元测试覆盖）
+  - 设计审计方法论（7维度审查：信息架构/交互状态/用户旅程/AI Slop检测/设计系统一致性/响应式适配/无障碍）
+  - 设计转代码流水线（设计稿→生产HTML，响应式文本回流/框架自动检测React|Vue|Svelte/零依赖输出）
+  - 原子提交设计修复（每个CSS/UI修改单独commit，完全可bisect，附修复前后截图对比）
+  - 前端安全审查（XSS防护：dangerouslySetInnerHTML/v-html审计，用户输入渲染拦截）
 experience:
   - 多个Web应用开发经验
   - 现代化前端架构经验
