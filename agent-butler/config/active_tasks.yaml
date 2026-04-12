@@ -1,158 +1,86 @@
-# 活跃任务状态追踪
-# 用于跨会话任务状态持久化
-# 由 Lysander CEO 在每次会话结束时更新
-# 版本: 1.0
-# 创建: 2026-04-10
+# Synapse Active Tasks — 跨会话状态
+# 更新时间: 2026-04-12
 
-version: "2.0"
-
-# 任务状态定义
-# - pending: 待处理
-# - in_progress: 执行中
-# - blocked: 阻塞（等待决策/依赖）
-# - review: 审查中
-# - completed: 已完成
-# - cancelled: 已取消
-# === v2.0 新增：主动驱动状态 ===
-# - pending_followup: 待跟进（到期后Lysander主动询问总裁）
-# - pending_start: 待启动（方案就绪，等总裁确认后执行）
-# - pending_confirmation: 待确认（需要总裁决策的悬置项）
-# - scheduled: 已排期（确定执行时间但尚未开始）
-
-# 活跃任务列表
-active_tasks:
-  - id: "TASK-2026-0410-003"
-    title: "PMO n8n OAuth迁移 - 在n8n配置Notion OAuth2 Credential并激活工作流"
-    level: "M"
-    status: "blocked"
-    current_chain_step: "②等待总裁在n8n配置OAuth"
-    assigned_teams:
-      - janus
-    decision_level: "L3"
-    created_at: "2026-04-10"
-    updated_at: "2026-04-10"
+tasks:
+  - id: domain-registration
+    title: "注册 synapsehd.com + synapsehd.cn 并提交实名认证"
+    status: pending
+    scheduled: "2026-04-13 19:00 Dubai"
+    priority: P0
+    owner: 总裁 + Lysander
     context: |
-      脚本已完成改造（payload模式），不再需要NOTION_TOKEN。
-      Python脚本生成Notion API payload → n8n HTTP Request用OAuth credential执行。
-      待办: 总裁在n8n配置Notion OAuth2 Credential，导入并激活工作流。
-    blockers:
-      - "需要总裁在n8n(n8n.lysander.bond) → Settings → Credentials → 添加Notion OAuth2 API → 用lysanderl@janusd.io账号授权"
-    deliverables:
-      - "n8n Notion OAuth2 Credential 配置完成"
-      - "导入 scripts/n8n_wf_pmo_notion_oauth.json"
-      - "WF-01 webhook测试通过"
+      域名选择已确定：synapsehd.com（HD=黄帝，源自黄帝内经隐喻）
+      注册商：火山引擎（域名+服务器+备案同一平台）
+      总裁需准备：营业执照扫描件 + 法人身份证正反面
+      注册后提交实名认证，等3个工作日可提交ICP备案
+      同步注册 synapsehd.cn（¥29品牌保护）
     next_steps:
-      - "n8n → Settings → Credentials → Add Credential → Notion OAuth2 API → Connect（用新账号授权）"
-      - "Workflows → Import → scripts/n8n_wf_pmo_notion_oauth.json"
-      - "替换workflow中的 REPLACE_WITH_YOUR_CREDENTIAL_ID"
-      - "激活WF-01，curl测试"
+      - 火山引擎搜索确认域名可注册
+      - 注册域名（建议3年）
+      - 提交实名认证
+      - 约04-16可提交ICP备案
 
-  - id: "TASK-2026-0412-001"
-    title: "微信公众号文章自动抓取方案"
-    level: "M"
-    status: "pending_followup"
-    current_chain_step: "方案已归档，待总裁确认启动"
-    assigned_teams:
-      - rd
-    decision_level: "L2"
-    created_at: "2026-04-12"
-    updated_at: "2026-04-12"
+  - id: dual-site-architecture
+    title: "境内外双站架构 Phase 1-4"
+    status: blocked
+    blocked_by: domain-registration
+    priority: P1
+    owner: Lysander + RD团队
     context: |
-      方案：Docker部署We-MP-RSS到服务器，对接n8n+Claude做公众号内容摘要。
-      文档：obs/02-project-knowledge/wechat-article-scraper-plan.md
-      总裁指示：先归档，下周三下午再决定是否执行。
-    follow_up:
-      date: "2026-04-16"
-      time: "14:00"
-      action: "ask_president"
-      message: "RD团队上周归档的微信公众号抓取方案，今天是约定的跟进日。方案是Docker部署We-MP-RSS到服务器，预计2小时完成。是否启动执行？"
-      assigned_team: "rd"
-      channel: "both"
-    blockers: []
-    deliverables:
-      - "We-MP-RSS Docker部署"
-      - "n8n+Claude内容摘要工作流"
-      - "Slack/微信推送"
-    next_steps:
-      - "等待4月16日总裁确认"
+      战略方案已完成，Graphify智囊团已交付完整分析报告。
+      架构：单仓库双配置（astro.config.intl.mjs + astro.config.cn.mjs）
+      国际站：lysander.bond（腾讯云新加坡）
+      国内站：synapsehd.com（火山引擎）
+      Phase 1: ICP备案+国内站开发（并行）
+      Phase 2: 上线部署
+      Phase 3: 运营体系（监控/SEO/公众号自动化）
+      Phase 4: 品牌演进
 
-  # 示例:
-  # - id: "TASK-2026-0410-001"
-  #   title: "重构执行链和决策链"
-  #   level: "L"                      # S/M/L 任务级别
-  #   status: "in_progress"
-  #   current_chain_step: "④执行"     # 当前执行链环节
-  #   assigned_teams:
-  #     - graphify
-  #     - rd
-  #   decision_level: "L3"            # 决策级别 L1-L4
-  #   created_at: "2026-04-10T10:00:00"
-  #   updated_at: "2026-04-10T14:00:00"
-  #   context: "总裁要求重构执行链，实现总裁只管目标+验收"
-  #   blockers: []
-  #   deliverables:
-  #     - "更新CLAUDE.md"
-  #     - "更新decision_rules.yaml"
-  #   next_steps:
-  #     - "QA审查"
-  #     - "交付总裁验收"
-
-# 已完成任务归档（保留最近20条）
-completed_tasks:
-  - id: "TASK-2026-0412-001"
-    title: "SPE 个人任务管理体系 — 全4阶段开发+验收+使用指引"
-    level: "L"
-    status: "completed"
-    completed_at: "2026-04-12"
+  - id: nginx-security-fix
+    title: "lysander.bond Nginx 安全修复"
+    status: completed
+    completed_date: "2026-04-12"
     summary: |
-      Synapse Personal Engine (SPE) v1.0 全部完成。
-      Phase 1: 基础框架 — personal_tasks.yaml + /capture + /plan-day + 决策日志
-      Phase 2: 日历集成 — /time-block + calendar_config.yaml + 颜色编码
-      Phase 3: 自动化 — SessionEnd Hook + 日历同步Agent + 日终复盘Agent
-      Phase 4: 智能化 — 行为观察 + OKR追踪 + /weekly-review + 决策质量分析
-      使用指引: spe-user-guide.html (深色主题，7章，模拟验证通过)
-      分阶段验收: P1(4.8) P2(5.0) P3(4.8) P4(4.8) 整体(4.8/5.0)
-      17项交付物全部通过QA质量门禁。
+      已完成：Google Fonts自托管（42个woff2文件，24个HTML替换）、
+      6项安全响应头、server_tokens隐藏、HTTP/2启用、OCSP Stapling配置。
+      备份位置：/tmp/nginx-fix-backup-20260412192207/
+      注意：下次 astro build 部署会覆盖 dist/，需在源码中同步字体配置。
 
-  - id: "TASK-2026-0412-002"
-    title: "gstack 战略评估 + Synapse 体系升级 + 博客发布管线拉通"
-    level: "L"
-    status: "completed"
-    completed_at: "2026-04-12"
+  - id: intelligence-pipeline-fix
+    title: "情报行动管线修复"
+    status: completed
+    completed_date: "2026-04-12"
     summary: |
-      1. gstack 战略评估：16维度对比，选定方案Z双轮驱动
-      2. 13个 Synapse Slash Commands 创建（8管理+5研发）
-      3. RD团队5人 Agent 卡片升级（+23项gstack方法论能力）
-      4. 博客发布管线拉通：从旧obsidian-knowledge迁移到lysander-bond CI/CD
-      5. 博客文章上线：https://lysander.bond/blog/gstack-team-empowerment
-      6. CLAUDE.md 新增 CEO 执行禁区 + 个人化配置区
-      7. /daily-blog Skill + 发布SOP 更新适配 lysander-bond
-    deliverables:
-      - ".claude/skills/ (13个Skills)"
-      - "obs/04-decision-knowledge/gstack-strategic-evaluation-2026-04-11.md"
-      - "obs/06-daily-reports/2026-04-11-daily-retro.html"
-      - "lysander-bond/src/pages/blog/gstack-team-empowerment.astro"
+      根因：scripts/generate-illustrations.py 硬编码 API Key
+      → GitHub Push Protection 拦截 → Obsidian 推送静默失败14小时。
+      已修复：API Key替换为环境变量、git历史清除、推送恢复。
+      远程Agent Prompt已更新：添加pip install markdown依赖安装步骤。
 
-  - id: "TASK-2026-0410-001"
-    title: "PMO Notion 迁移 - 新Workspace重建"
-    level: "L"
-    status: "completed"
-    completed_at: "2026-04-10"
+  - id: ceo-guard
+    title: "CEO Guard 执行链防护机制"
+    status: completed
+    completed_date: "2026-04-12"
     summary: |
-      旧账号(janusd.com) → 新账号(lysanderl@janusd.io) 全5阶段完成。
-      Phase 1: 9个数据库空结构建立
-      Phase 2: WBS 115条 + 周报 7条 + 注册表 1条 导入
-      Phase 3: WBS自关联(父/子/前置/后续任务) + Gate↔WBS跨库关联
-      Phase 4: 3个脚本旧DB ID替换完成
-      Phase 5: 结构验证通过
-      遗留: NOTION_TOKEN需总裁更换新账号Token(见TASK-2026-0410-002)
+      三层防护已部署：
+      1. CLAUDE.md P0约束强化（23行→98行，含违规模式识别表）
+      2. PreToolUse Hook（提醒+审计）
+      3. PostToolUse 审计日志
+      需重启会话生效。
+      配置文件：ai-team-system/.claude/settings.json
 
-# 跨会话恢复提示
-# 新会话开始时，Lysander应读取此文件，恢复上下文
-resume_instructions: |
-  1. 读取 active_tasks 列表
-  2. 对每个 in_progress 或 blocked 的任务：
-     - 恢复任务上下文
-     - 确认当前执行链环节
-     - 继续从断点执行
-  3. 向总裁简要汇报恢复状态（仅当有进行中任务时）
+  - id: wechat-appeal
+    title: "lysander.bond 微信封禁申诉"
+    status: pending
+    priority: P2
+    owner: Lysander
+    context: |
+      微信封禁根因：无ICP备案 + .bond低信誉TLD（算法自动封禁）
+      synapsehd.com备案完成后可根本解决国内访问问题
+      lysander.bond申诉可尝试但成功率低（20-30%）
+      申诉入口：https://urlsec.qq.com/complain.html
+
+notes:
+  - "SSH配置已修复BOM问题，可通过 ssh lysander-server 访问服务器"
+  - "Obsidian Git推送已恢复正常（API Key已从历史清除）"
+  - "synapsehd.com 域名含义：HD=黄帝，源自《黄帝内经》，中西方信号系统隐喻"
+  - "usesynapse.com 2026-04-15到期，可关注是否释放抢注"
