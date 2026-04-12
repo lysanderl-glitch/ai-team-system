@@ -1,0 +1,61 @@
+# Google Calendar 集成配置（SPE Phase 2）
+# 版本: 1.0
+# 创建: 2026-04-12
+
+version: "1.0"
+
+# 时区配置
+timezone: "Asia/Dubai"
+work_hours:
+  start: "08:00"
+  end: "20:00"
+
+# 颜色编码体系
+color_coding:
+  deep_work:
+    colorId: "7"
+    color_name: "Peacock"
+    prefix: "🔒"
+    keywords: ["focus", "深度", "专注", "deep work"]
+  meeting_prep:
+    colorId: "9"
+    color_name: "Blueberry"
+    prefix: "📋"
+    keywords: ["会议", "准备", "review", "评审"]
+  normal_task:
+    colorId: "5"
+    color_name: "Banana"
+    prefix: "✅"
+    keywords: []  # 默认
+  deadline:
+    colorId: "11"
+    color_name: "Tomato"
+    prefix: "⚠️"
+    keywords: ["deadline", "截止", "紧急", "urgent"]
+  personal:
+    colorId: "2"
+    color_name: "Sage"
+    prefix: "📚"
+    keywords: ["学习", "阅读", "个人", "personal"]
+  major_task:
+    colorId: "6"
+    color_name: "Tangerine"
+    prefix: "🔴"
+    keywords: ["L级", "重大", "战略"]
+
+# 精力分配规则（用于任务-时段匹配）
+energy_rules:
+  peak_hours: "08:00-12:00"      # 高精力 → 深度工作、关键决策
+  collaboration: "13:00-15:00"   # 中精力 → 会议、协作
+  routine: "15:00-18:00"         # 常规 → M级任务
+  wind_down: "18:00-20:00"       # 低精力 → S级轻量任务、复盘
+
+# 提醒设置
+default_reminders:
+  - method: "popup"
+    minutes: 10
+deadline_reminders:
+  - method: "popup"
+    minutes: 1440    # 提前1天
+  - method: "popup"
+    minutes: 60      # 提前1小时

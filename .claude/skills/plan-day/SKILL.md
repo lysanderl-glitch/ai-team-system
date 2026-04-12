@@ -228,9 +228,51 @@ TZ="Asia/Dubai" date +%Y-%m-%d
 
 ---
 
+## Step 6: 时间块创建建议（可选交互）
+
+**personal_assistant 执行：**
+
+在呈现完日程概览后，向总裁提供交互选项：
+
+> 是否需要为以上推荐的任务创建日历时间块？
+> - 输入 `yes` 或 `确认` → 为所有 🔴 big_rocks 自动创建时间块
+> - 输入任务编号（如 `1,3`）→ 只为指定任务创建
+> - 输入 `no` 或 `不用` → 跳过
+
+如果总裁确认，调用 `mcp__claude_ai_Google_Calendar__gcal_create_event` 为每个选中的任务创建事件：
+- 使用 Step 3 中匹配的时段
+- 使用颜色编码体系（参考 /time-block Skill 的颜色规则）：
+
+| colorId | 颜色 | 用途 | summary 前缀 |
+|---------|------|------|--------------|
+| 7 | Peacock 蓝绿 | 深度工作/Focus Time | 🔒 |
+| 9 | Blueberry 蓝 | 会议相关准备 | 📋 |
+| 5 | Banana 黄 | 待办/普通任务 | ✅ |
+| 11 | Tomato 红 | Deadline/紧急 | ⚠️ |
+| 2 | Sage 绿 | 个人/学习 | 📚 |
+| 6 | Tangerine 橙 | L级重大任务 | 🔴 |
+
+- summary 格式：`{前缀} 任务标题`
+- description 包含：任务来源、级别、关键步骤
+- reminders: popup 提前 10 分钟
+- sendUpdates: "none"
+
+创建完成后输出确认清单：
+
+```
+📅 已创建时间块：
+  ✓ 09:00-10:00 🔒 深度工作: 审阅Janus方案 (colorId:7)
+  ✓ 15:00-15:30 ✅ 处理邮件回复 (colorId:5)
+```
+
+如果 Google Calendar MCP 不可用，提示"日历写入服务不可用，已跳过时间块创建"，不中断整体流程。
+
+---
+
 ## 执行约束
 
 - 本 Skill 由 personal_assistant 主执行，strategist 负责分析层
 - 输出语言：中文
-- 不主动创建日历事件或 Slack 消息（只读不写）
-- 除更新 personal_tasks.yaml 外，不修改任何其他文件
+- Step 1-5 为只读操作（读取日历、任务等信息源）
+- Step 6 为可选写入操作：仅在总裁明确确认后才创建日历事件
+- 除更新 personal_tasks.yaml 和创建日历事件（经确认）外，不修改任何其他文件
