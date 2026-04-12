@@ -41,14 +41,17 @@ if [ -f "$SETTINGS_FILE" ]; then
 
     # 检查是否有 node（用于 JSON 合并）
     if command -v node &> /dev/null; then
+        # 将 MSYS/Git Bash 路径转为 Windows 路径供 node 使用
+        WIN_SETTINGS=$(cygpath -w "$SETTINGS_FILE" 2>/dev/null || echo "$SETTINGS_FILE")
+        WIN_TEMPLATE=$(cygpath -w "$HOOK_TEMPLATE" 2>/dev/null || echo "$HOOK_TEMPLATE")
         node -e "
 const fs = require('fs');
-const existing = JSON.parse(fs.readFileSync('$SETTINGS_FILE', 'utf8'));
-const hooks = JSON.parse(fs.readFileSync('$HOOK_TEMPLATE', 'utf8'));
+const existing = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+const hooks = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const merged = { ...existing, hooks: hooks.hooks };
-fs.writeFileSync('$SETTINGS_FILE', JSON.stringify(merged, null, 2) + '\n');
+fs.writeFileSync(process.argv[1], JSON.stringify(merged, null, 2) + '\n');
 console.log('[OK] 配置已合并');
-"
+" "$WIN_SETTINGS" "$WIN_TEMPLATE"
     else
         echo "[WARN] node 不可用，将直接覆盖 hooks 配置"
         cp "$HOOK_TEMPLATE" "$SETTINGS_FILE"

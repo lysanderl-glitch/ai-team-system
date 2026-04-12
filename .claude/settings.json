@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"[CEO-GUARD] Lysander CEO 执行禁区已激活。任何 Bash/Edit/Write 工具调用必须通过 Agent/Skill 工具派单给团队成员执行。Lysander 主对话中直接调用 Bash/Edit/Write 将被视为违规。\"}}'",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"[CEO-GUARD] Lysander CEO 执行禁区已激活。Lysander 主对话中禁止直接调用 Bash/Edit/Write 工具。所有执行操作必须通过 Agent/Skill 工具派单给团队成员。违规模式（直接执行/贴标签冒充/先斩后奏/伪派单）将被记录到审计日志。\"}}'",
             "timeout": 5,
             "statusMessage": "CEO Guard 初始化..."
           }
@@ -18,8 +18,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "PROJECT_DIR=\"/c/Users/lysanderl_janusd/Claude Code/ai-team-system\"; LOG_DIR=\"$PROJECT_DIR/logs\"; mkdir -p \"$LOG_DIR\"; INPUT=$(cat); TOOL=$(echo \"$INPUT\" | jq -r '.tool_name // \"unknown\"' 2>/dev/null); SESSION=$(echo \"$INPUT\" | jq -r '.session_id // \"unknown\"' 2>/dev/null); case \"$TOOL\" in Bash) CMD=$(echo \"$INPUT\" | jq -r '.tool_input.command // \"\"' 2>/dev/null | head -c 200); SUMMARY=\"$CMD\" ;; Edit) FP=$(echo \"$INPUT\" | jq -r '.tool_input.file_path // \"\"' 2>/dev/null); SUMMARY=\"Edit: $FP\" ;; Write) FP=$(echo \"$INPUT\" | jq -r '.tool_input.file_path // \"\"' 2>/dev/null); SUMMARY=\"Write: $FP\" ;; *) SUMMARY=\"$TOOL\" ;; esac; echo \"[$(date '+%Y-%m-%d %H:%M:%S')] PRE session=$SESSION tool=$TOOL summary=\\\"$SUMMARY\\\"\" >> \"$LOG_DIR/ceo-guard-audit.log\"; echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"[CEO-GUARD-REMINDER] 你正在调用执行工具。如果你是 Lysander CEO 主对话，请确认：1) 已输出团队派单表 2) 当前操作标注了执行者身份（如 harness_engineer 执行）。如果你是子 Agent 团队成员，请忽略此提醒。\"}}'",
-            "timeout": 5,
+            "command": "node \"/c/Users/lysanderl_janusd/Claude Code/ai-team-system/scripts/ceo-guard-pre.js\" 2>/dev/null || echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"[CEO-GUARD] 审计脚本异常，但提醒仍然有效：Lysander CEO 主对话禁止直接调用 Bash/Edit/Write。\"}}'",
+            "timeout": 10,
             "statusMessage": "CEO Guard 审计..."
           }
         ]
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "PROJECT_DIR=\"/c/Users/lysanderl_janusd/Claude Code/ai-team-system\"; LOG_DIR=\"$PROJECT_DIR/logs\"; mkdir -p \"$LOG_DIR\"; INPUT=$(cat); TOOL=$(echo \"$INPUT\" | jq -r '.tool_name // \"unknown\"' 2>/dev/null); SESSION=$(echo \"$INPUT\" | jq -r '.session_id // \"unknown\"' 2>/dev/null); echo \"[$(date '+%Y-%m-%d %H:%M:%S')] POST session=$SESSION tool=$TOOL\" >> \"$LOG_DIR/ceo-guard-audit.log\"; echo '{\"suppressOutput\": true}'",
+            "command": "node \"/c/Users/lysanderl_janusd/Claude Code/ai-team-system/scripts/ceo-guard-post.js\" 2>/dev/null || true",
             "timeout": 5,
             "async": true
           }
