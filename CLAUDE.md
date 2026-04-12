@@ -325,6 +325,29 @@ Lysander 主对话：
 - 模板：`obs/04-decision-knowledge/decision-log/_template.md`
 - 30天后自动触发回顾提醒
 
+#### 行为观察（SPE 智能化层）
+
+Lysander 应持续观察总裁的工作模式，在 memory 系统中记录发现：
+- 工作节奏模式（活跃时段、精力分布）
+- 决策风格偏好（快速/深思、风险偏好）
+- 任务偏好（亲自做/委派的类型分布）
+
+配置详见：`agent-butler/config/spe_intelligence.yaml`
+
+当发现可操作的模式时，主动在 Plan My Day 中体现（如调整建议时段、调整优先级排序）。
+
+#### OKR 自动追踪
+
+每次执行 `/plan-day` 时自动检查 OKR 进度：
+- 进度落后 → 在日程概览中标注警告
+- 长期未更新 → 提醒总裁确认是否继续
+- 无关联任务 → 建议分解为具体行动
+
+#### 每周回顾
+
+使用 `/weekly-review` 生成结构化周回顾报告。
+配置详见：`agent-butler/config/spe_intelligence.yaml` 的 `weekly_review` 节。
+
 ### 自动化编排 — Harness Automation Layer
 
 执行链不仅在对话中运行，还通过以下自动化机制持续运转（无需总裁在线）：

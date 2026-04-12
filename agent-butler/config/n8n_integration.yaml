@@ -177,5 +177,31 @@ event_chains:
       - event: "行动管线完成 → Slack通知总裁"
         trigger: "webhook: action-notify"
 
+# ============================================================================
+# SPE 定时 Agent（Phase 3 新增）
+# ============================================================================
+scheduled_agents:
+
+  # SPE 日历同步 Agent（Phase 3 新增）
+  calendar_sync_agent:
+    description: "每日早晨读取日历+任务，生成今日规划，Slack推送"
+    trigger_event: "cron"
+    schedule: "15 2 * * *"  # UTC 2:15 = Dubai 6:15am
+    prompt_file: "agent-butler/config/calendar-sync-prompt.md"
+    enabled: true
+    requires_mcp:
+      - google_calendar
+      - slack
+
+  # SPE 日终复盘 Agent（Phase 3 新增）
+  daily_review_agent:
+    description: "每日晚间对比计划vs实际，生成复盘摘要"
+    trigger_event: "cron"
+    schedule: "0 16 * * *"  # UTC 16:00 = Dubai 8:00pm
+    prompt_file: "agent-butler/config/daily-review-prompt.md"
+    enabled: true
+    requires_mcp:
+      - google_calendar
+
 # 执行记录 - 路径可通过环境变量自定义
 execution_log_dir: "${N8N_LOGS_DIR:-./logs/n8n_executions}"

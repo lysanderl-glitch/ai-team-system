@@ -1,0 +1,124 @@
+# SPE Intelligence Layer — 智能化配置
+# 版本: 1.0
+# 创建: 2026-04-12
+
+version: "1.0"
+
+# ===== 行为观察规则 =====
+# Lysander 通过这些规则观察总裁的工作模式，形成自适应建议
+behavior_observation:
+  # 观察维度
+  dimensions:
+    - name: "工作节奏"
+      description: "总裁通常何时活跃、何时深度工作、何时处理琐事"
+      signals:
+        - "会话开始时间 → 判断工作起始时段"
+        - "高频交互时段 → 识别精力高峰"
+        - "短会话 vs 长会话 → 判断工作模式切换"
+      store_in: "memory/user_work_rhythm.md"
+
+    - name: "决策模式"
+      description: "总裁做决策时的偏好和风格"
+      signals:
+        - "快速决策 vs 深思熟虑 → 识别决策风格"
+        - "常选方案类型 → 风险偏好（保守/激进）"
+        - "推翻建议的频率 → 信任度校准"
+      store_in: "memory/user_decision_style.md"
+
+    - name: "任务偏好"
+      description: "总裁倾向于亲自做什么、委派什么"
+      signals:
+        - "哪些类型任务总裁选择亲自做 → 个人兴趣/能力图谱"
+        - "哪些类型任务总裁总是委派 → 委派偏好"
+        - "inbox 中哪些 items 被 dismissed → 不重要的事项类型"
+      store_in: "memory/user_task_preferences.md"
+
+    - name: "沟通偏好"
+      description: "总裁喜欢什么样的汇报和交互方式"
+      signals:
+        - "详细报告 vs 简短摘要 → 信息密度偏好"
+        - "是否跳过中间过程 → 过程参与度"
+        - "追问的领域 → 关注焦点"
+      store_in: "memory/user_communication_style.md"
+
+  # 观察触发时机
+  triggers:
+    - "每次会话结束时，回顾交互模式"
+    - "每周回顾时，分析一周行为趋势"
+    - "发现新模式时，立即记录到 memory"
+
+  # 自适应行为
+  adaptations:
+    - pattern: "总裁连续3天未处理决策队列"
+      action: "主动提醒并提供决策简报"
+    - pattern: "总裁经常在晚间活跃"
+      action: "调整 Plan My Day 的建议时段，增加晚间工作块"
+    - pattern: "总裁频繁跳过某类 inbox 项"
+      action: "降低该类项的优先级，或建议自动 dismiss"
+    - pattern: "总裁对某类任务总是快速决策"
+      action: "该类任务降级为 L1 自动执行"
+
+# ===== OKR 自动追踪 =====
+okr_tracking:
+  # 追踪频率
+  check_frequency: "daily"  # Plan My Day 时自动检查
+
+  # 进度计算规则
+  progress_rules:
+    - kr_type: "count"       # 如"发布10篇博客"
+      method: "count completed items matching kr description"
+    - kr_type: "percentage"  # 如"完成率达到80%"
+      method: "calculate from task completion data"
+    - kr_type: "milestone"   # 如"完成系统上线"
+      method: "binary check from active_tasks status"
+
+  # 预警规则
+  alerts:
+    - condition: "kr progress < expected at current date"
+      severity: "warning"
+      message: "OKR '{kr}' 进度落后，当前 {actual}%，预期 {expected}%"
+    - condition: "kr not updated for 7+ days"
+      severity: "info"
+      message: "OKR '{kr}' 已 {days} 天未更新，是否仍在进行？"
+    - condition: "objective has no active tasks linked"
+      severity: "warning"
+      message: "目标 '{objective}' 没有关联的活跃任务，可能需要分解"
+
+# ===== 决策质量分析 =====
+decision_quality:
+  # 回顾触发
+  review_trigger: "30 days after decision date"
+
+  # 回顾内容
+  review_template:
+    questions:
+      - "预期结果是否实现？(1-5分)"
+      - "是否有未预见的副作用？"
+      - "如果重来会做不同选择吗？"
+      - "获得了什么经验教训？"
+
+  # 质量指标聚合
+  quality_metrics:
+    - name: "决策准确率"
+      formula: "score >= 4 的决策数 / 总决策数"
+    - name: "领域分布"
+      formula: "按决策类型分组统计"
+    - name: "偏差模式"
+      formula: "score < 3 的决策是否集中在某类"
+
+# ===== 每周回顾模板 =====
+weekly_review:
+  # 自动生成内容
+  sections:
+    - name: "本周成就"
+      source: "completed_tasks from active_tasks.yaml + personal_tasks.yaml"
+    - name: "OKR 进度"
+      source: "personal_tasks.yaml personal_okrs"
+    - name: "决策回顾"
+      source: "obs/04-decision-knowledge/decision-log/ 本周新增"
+    - name: "时间分配"
+      source: "Google Calendar 本周事件统计"
+    - name: "下周焦点"
+      source: "AI 基于 OKR 缺口 + 未完成任务推荐"
+    - name: "行为模式洞察"
+      source: "本周观察到的新行为模式"
