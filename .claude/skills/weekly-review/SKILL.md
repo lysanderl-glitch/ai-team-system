@@ -66,6 +66,9 @@ argument-hint: "[this-week|last-week|YYYY-Wnn]"
 - `memory/user_task_preferences.md`
 - `memory/user_communication_style.md`
 
+如果 memory 行为观察文件尚未创建（SPE 初期正常现象），跳过此数据源。
+在报告的"行为洞察"区块中标注："行为观察数据尚在积累中，将在使用一段时间后自动生成洞察。"
+
 提取本周新增的观察记录。
 
 ## Step 3: 分析与生成报告
@@ -80,7 +83,7 @@ argument-hint: "[this-week|last-week|YYYY-Wnn]"
 3. **决策回顾** — 本周新增决策摘要 + 到期回顾提醒
 4. **时间分配** — 会议 / 深度工作 / 空闲 百分比
 5. **行为模式洞察** — 本周发现的新行为模式
-6. **下周焦点推荐** — 基于 OKR 缺口 + 未完成任务 + 行为洞察，推荐 3-5 个焦点
+6. **下周焦点建议** — 基于 OKR 缺口 + 未完成任务 + 行为洞察，推荐 3-5 个焦点
 
 ## Step 4: 输出格式
 

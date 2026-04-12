@@ -33,12 +33,14 @@ argument-hint: "[task description] [duration: 30m/1h/2h] [date: today/tomorrow/Y
 | 6 | Tangerine 橙 | L级重大任务 | 🔴 |
 
 **选择规则：**
-- 包含 "focus"/"深度"/"专注" → colorId 7
-- 包含 "deadline"/"截止"/"紧急" → colorId 11
-- 包含 "会议"/"准备"/"review" → colorId 9
-- 包含 "学习"/"阅读"/"个人" → colorId 2
+- 包含 "focus"/"深度"/"专注"/"deep work" → colorId 7
+- 包含 "deadline"/"截止"/"紧急"/"urgent" → colorId 11
+- 包含 "会议"/"准备"/"review"/"评审"/"审阅"/"审查"/"检查" → colorId 9
+- 包含 "学习"/"阅读"/"个人"/"personal" → colorId 2
 - L级任务 → colorId 6
 - 默认 → colorId 5
+
+完整关键词列表参见 `agent-butler/config/calendar_config.yaml` 的 `color_coding` 节。
 
 ---
 

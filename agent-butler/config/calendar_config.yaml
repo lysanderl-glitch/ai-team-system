@@ -21,7 +21,7 @@ color_coding:
     colorId: "9"
     color_name: "Blueberry"
     prefix: "📋"
-    keywords: ["会议", "准备", "review", "评审"]
+    keywords: ["会议", "准备", "review", "评审", "审阅", "审查", "检查"]
   normal_task:
     colorId: "5"
     color_name: "Banana"

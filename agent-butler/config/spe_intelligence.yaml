@@ -118,7 +118,7 @@ weekly_review:
       source: "obs/04-decision-knowledge/decision-log/ 本周新增"
     - name: "时间分配"
       source: "Google Calendar 本周事件统计"
-    - name: "下周焦点"
+    - name: "下周焦点建议"
       source: "AI 基于 OKR 缺口 + 未完成任务推荐"
     - name: "行为模式洞察"
       source: "本周观察到的新行为模式"
