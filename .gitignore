@@ -21,6 +21,8 @@ Thumbs.db
 # Logs
 *.log
 hr_watcher.log
+logs/*.log
+!logs/.gitkeep
 
 # Temporary files
 *.tmp
