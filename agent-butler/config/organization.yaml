@@ -52,7 +52,7 @@ lysander:
     - Butler团队(7人)：项目交付管理
     - 研发团队(5人)：技术研发
     - OBS知识管理团队(4人)：知识沉淀
-    - 内容运营团队(4人)：内容运营
+    - 内容运营团队(8人)：内容运营
     - 增长团队(2人)：市场增长
     - Stock股票项目(5人)：独立项目
 
@@ -127,6 +127,8 @@ teams:
       - publishing_ops            # HTML生成专家 - 调用 generate-article.py 生成本地 HTML
       - training_designer          # 培训课程设计师 - 课程体系/Workshop/认证设计
       - ai_visual_creator          # AI视觉创作师 - 漫画/插画/信息图/品牌化视觉资产
+      - video_scriptwriter         # 视频脚本编剧 - 分镜脚本/叙事框架/TTS文案
+      - video_producer             # 视频制作人 - 录屏/剪辑/配音/后期全流程
     capabilities:
       - 知识内容提炼与结构化
       - Markdown 文章撰写
@@ -137,6 +139,12 @@ teams:
       - AI驱动的品牌化插画/漫画创作
       - 场景化视觉叙事设计
       - 实操工作坊方案设计
+      - 视频分镜脚本创作（Hook-Problem-Solution叙事框架）
+      - 技术文档口语化改写与AI TTS适配
+      - CLI/终端环境屏幕录制与演示编排（OBS Studio）
+      - 多轨视频剪辑与后期制作（CapCut/剪映）
+      - AI配音集成与音画同步（Fish Audio/ElevenLabs）
+      - 教程类视频视觉提示系统设计
     access_key: "content_ops"
 
   graphify:
@@ -312,6 +320,20 @@ task_routing:
       - hr_director
     "能力提升":
       - capability_architect
+
+    # 视频内容关键词
+    "视频":
+      - content_ops
+    "脚本":
+      - video_scriptwriter
+    "录屏":
+      - video_producer
+    "剪辑":
+      - video_producer
+    "配音":
+      - video_producer
+    "教程视频":
+      - content_ops
 
     # Harness Ops 驾驭运维团队关键词
     "Harness":
@@ -526,6 +548,10 @@ task_routing:
 
     # 知识检索组合
     - { keywords: ["检索", "质量"], experts: ["knowledge_search_expert", "knowledge_quality_expert"] }
+
+    # 视频内容组合
+    - { keywords: ["视频", "教程"], experts: ["video_scriptwriter", "video_producer", "training_designer"] }
+    - { keywords: ["视频", "脚本"], experts: ["video_scriptwriter", "content_strategist"] }
 
     # IoT数据交付相关
     - { keywords: ["IoT", "数据"], experts: ["iot_expert", "iot_data_expert"] }
