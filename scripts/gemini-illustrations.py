@@ -4,9 +4,10 @@
 from google import genai
 from google.genai import types
 from pathlib import Path
+import os
 import time
 
-API_KEY = "os.environ.get("GEMINI_API_KEY", "")"
+API_KEY = os.environ.get("GEMINI_API_KEY", "")
 OUTPUT_DIR = Path(__file__).parent.parent / "lysander-bond-rebuild" / "public" / "illustrations"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
