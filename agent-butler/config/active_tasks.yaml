@@ -4,7 +4,7 @@
 # 版本: 1.0
 # 创建: 2026-04-10
 
-version: "1.0"
+version: "2.0"
 
 # 任务状态定义
 # - pending: 待处理
@@ -13,6 +13,11 @@ version: "1.0"
 # - review: 审查中
 # - completed: 已完成
 # - cancelled: 已取消
+# === v2.0 新增：主动驱动状态 ===
+# - pending_followup: 待跟进（到期后Lysander主动询问总裁）
+# - pending_start: 待启动（方案就绪，等总裁确认后执行）
+# - pending_confirmation: 待确认（需要总裁决策的悬置项）
+# - scheduled: 已排期（确定执行时间但尚未开始）
 
 # 活跃任务列表
 active_tasks:
@@ -41,6 +46,35 @@ active_tasks:
       - "Workflows → Import → scripts/n8n_wf_pmo_notion_oauth.json"
       - "替换workflow中的 REPLACE_WITH_YOUR_CREDENTIAL_ID"
       - "激活WF-01，curl测试"
+
+  - id: "TASK-2026-0412-001"
+    title: "微信公众号文章自动抓取方案"
+    level: "M"
+    status: "pending_followup"
+    current_chain_step: "方案已归档，待总裁确认启动"
+    assigned_teams:
+      - rd
+    decision_level: "L2"
+    created_at: "2026-04-12"
+    updated_at: "2026-04-12"
+    context: |
+      方案：Docker部署We-MP-RSS到服务器，对接n8n+Claude做公众号内容摘要。
+      文档：obs/02-project-knowledge/wechat-article-scraper-plan.md
+      总裁指示：先归档，下周三下午再决定是否执行。
+    follow_up:
+      date: "2026-04-16"
+      time: "14:00"
+      action: "ask_president"
+      message: "RD团队上周归档的微信公众号抓取方案，今天是约定的跟进日。方案是Docker部署We-MP-RSS到服务器，预计2小时完成。是否启动执行？"
+      assigned_team: "rd"
+      channel: "both"
+    blockers: []
+    deliverables:
+      - "We-MP-RSS Docker部署"
+      - "n8n+Claude内容摘要工作流"
+      - "Slack/微信推送"
+    next_steps:
+      - "等待4月16日总裁确认"
 
   # 示例:
   # - id: "TASK-2026-0410-001"

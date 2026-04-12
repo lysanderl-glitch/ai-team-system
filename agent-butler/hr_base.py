@@ -1908,6 +1908,92 @@ def get_active_tasks() -> list:
             if t.get("status") in ["in_progress", "blocked", "review", "pending"]]
 
 
+def check_followups() -> dict:
+    """检查到期的跟进任务 — Agent 主动驱动核心
+
+    扫描 active_tasks.yaml 中所有 pending_followup / pending_start /
+    pending_confirmation 状态的任务，检查 follow_up.date 是否到期。
+
+    Returns:
+        跟进检查结果：
+        - has_followups: 是否有到期项
+        - due_today: 今天到期的跟进列表
+        - due_tomorrow: 明天到期的
+        - overdue: 已过期未处理的
+        - summary_message: Lysander 可直接使用的汇报文本
+    """
+    data = load_active_tasks()
+    today = datetime.now().date()
+    tomorrow = today + __import__('datetime').timedelta(days=1)
+
+    due_today = []
+    due_tomorrow = []
+    overdue = []
+
+    followup_statuses = ["pending_followup", "pending_start",
+                         "pending_confirmation", "scheduled"]
+
+    for task in data.get("active_tasks", []):
+        if task.get("status") not in followup_statuses:
+            continue
+
+        follow_up = task.get("follow_up", {})
+        if not follow_up or not follow_up.get("date"):
+            continue
+
+        try:
+            fu_date = datetime.strptime(str(follow_up["date"]), "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            continue
+
+        item = {
+            "id": task.get("id", ""),
+            "title": task.get("title", ""),
+            "status": task.get("status", ""),
+            "team": follow_up.get("assigned_team", task.get("assigned_teams", ["unknown"])[0] if task.get("assigned_teams") else "unknown"),
+            "message": follow_up.get("message", ""),
+            "action": follow_up.get("action", ""),
+            "date": str(fu_date),
+            "context": task.get("context", ""),
+        }
+
+        if fu_date < today:
+            overdue.append(item)
+        elif fu_date == today:
+            due_today.append(item)
+        elif fu_date == tomorrow:
+            due_tomorrow.append(item)
+
+    # 生成 Lysander 可直接使用的汇报文本
+    lines = []
+    if overdue:
+        lines.append("⚠️ 已过期未处理：")
+        for item in overdue:
+            lines.append(f"  [{item['team'].upper()}] {item['title']}（原定 {item['date']}）")
+            if item['message']:
+                lines.append(f"    → {item['message']}")
+    if due_today:
+        lines.append("📋 今日待跟进：")
+        for item in due_today:
+            lines.append(f"  [{item['team'].upper()}] {item['title']}")
+            if item['message']:
+                lines.append(f"    → {item['message']}")
+    if due_tomorrow:
+        lines.append("⏰ 明日到期：")
+        for item in due_tomorrow:
+            lines.append(f"  [{item['team'].upper()}] {item['title']}")
+
+    return {
+        "has_followups": len(overdue) + len(due_today) + len(due_tomorrow) > 0,
+        "overdue": overdue,
+        "due_today": due_today,
+        "due_tomorrow": due_tomorrow,
+        "total": len(overdue) + len(due_today) + len(due_tomorrow),
+        "summary_message": "\n".join(lines) if lines else "无待跟进事项。",
+        "checked_at": datetime.now().isoformat(),
+    }
+
+
 def execution_chain_check() -> dict:
     """执行链自检 — 每次回复前调用
 
