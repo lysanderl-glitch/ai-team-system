@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPE 使用指引 — Synapse Personal Engine</title>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+a { color: #0ea5e9; text-decoration: none; transition: color .2s; }
+a:hover { color: #38bdf8; }
+
+/* ===== Top Banner ===== */
+.top-banner {
+  background: linear-gradient(90deg, #0ea5e9 0%, #14b8a6 100%);
+  color: #fff;
+  text-align: center;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Layout ===== */
+.layout { display: flex; min-height: 100vh; }
+
+/* ===== Sidebar Nav ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: #1e293b;
+  border-right: 1px solid #334155;
+  overflow-y: auto;
+  z-index: 100;
+  padding-top: 30px;
+  transition: transform .3s ease;
+}
+.sidebar-brand {
+  padding: 20px 24px 12px;
+  border-bottom: 1px solid #334155;
+  margin-bottom: 8px;
+}
+.sidebar-brand h2 {
+  font-size: 1rem;
+  color: #0ea5e9;
+  letter-spacing: 1px;
+}
+.sidebar-brand p {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+.nav-list { list-style: none; padding: 0 12px; }
+.nav-list li { margin: 2px 0; }
+.nav-list a {
+  display: block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #94a3b8;
+  transition: all .2s;
+}
+.nav-list a:hover,
+.nav-list a.active {
+  background: rgba(14, 165, 233, 0.1);
+  color: #0ea5e9;
+}
+.nav-list .nav-sub {
+  padding-left: 20px;
+  font-size: 0.82rem;
+}
+
+/* Mobile nav toggle */
+.nav-toggle {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 200;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #0ea5e9;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== Main Content ===== */
+.main {
+  margin-left: 280px;
+  flex: 1;
+  min-width: 0;
+}
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+/* ===== Hero / Cover ===== */
+.hero {
+  text-align: center;
+  padding: 60px 0 48px;
+  border-bottom: 1px solid #1e293b;
+  margin-bottom: 48px;
+}
+.hero-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  color: #fff;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.hero .subtitle {
+  font-size: 1.15rem;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* ===== Section Headings ===== */
+.section { margin-bottom: 56px; }
+h2.section-title {
+  font-size: 1.5rem;
+  color: #f1f5f9;
+  border-left: 4px solid #0ea5e9;
+  padding-left: 16px;
+  margin-bottom: 28px;
+}
+h3.sub-title {
+  font-size: 1.15rem;
+  color: #e2e8f0;
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e293b;
+}
+h4.minor-title {
+  font-size: 1rem;
+  color: #cbd5e1;
+  margin: 24px 0 12px;
+}
+
+/* ===== Paragraph ===== */
+p { margin-bottom: 14px; color: #cbd5e1; }
+.highlight { color: #0ea5e9; font-weight: 600; }
+.text-teal { color: #14b8a6; }
+
+/* ===== Cards ===== */
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  transition: border-color .2s;
+}
+.card:hover { border-color: #0ea5e9; }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.card-icon.blue { background: rgba(14,165,233,0.15); }
+.card-icon.teal { background: rgba(20,184,166,0.15); }
+.card-icon.amber { background: rgba(245,158,11,0.15); }
+.card-icon.purple { background: rgba(168,85,247,0.15); }
+.card-icon.rose { background: rgba(244,63,94,0.15); }
+.card-icon.green { background: rgba(34,197,94,0.15); }
+.card-title {
+  font-size: 1.15rem;
+  color: #f1f5f9;
+}
+.card-desc { font-size: 0.92rem; color: #94a3b8; }
+
+/* Small info cards grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.mini-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  transition: border-color .2s, transform .2s;
+}
+.mini-card:hover { border-color: #14b8a6; transform: translateY(-2px); }
+.mini-card .icon { font-size: 2rem; margin-bottom: 10px; }
+.mini-card .label { font-size: 0.92rem; color: #e2e8f0; font-weight: 600; }
+.mini-card .desc { font-size: 0.8rem; color: #64748b; margin-top: 6px; }
+
+/* ===== Code Blocks ===== */
+.code-block {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 14px 0 18px;
+  overflow-x: auto;
+  font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+.code-block .comment { color: #64748b; }
+.code-block .keyword { color: #c084fc; }
+.code-block .string { color: #34d399; }
+.code-block .cmd { color: #0ea5e9; }
+.code-block .flag { color: #f59e0b; }
+.code-block .output { color: #94a3b8; font-style: italic; }
+
+code {
+  background: rgba(14,165,233,0.12);
+  color: #0ea5e9;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: "Cascadia Code", "Fira Code", monospace;
+  font-size: 0.88em;
+}
+
+/* ===== Tables ===== */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+th {
+  background: #1e293b;
+  color: #0ea5e9;
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  border-bottom: 2px solid #334155;
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #1e293b;
+  color: #cbd5e1;
+}
+tr:nth-child(even) td { background: rgba(30,41,59,0.5); }
+
+/* ===== Architecture Diagram ===== */
+.arch-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 24px 0;
+  align-items: center;
+}
+.arch-layer {
+  width: 100%;
+  max-width: 600px;
+  border: 2px solid #334155;
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-align: center;
+  position: relative;
+  background: #1e293b;
+  transition: border-color .3s;
+}
+.arch-layer:hover { border-color: #0ea5e9; }
+.arch-layer .layer-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.arch-layer .layer-desc {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.arch-arrow {
+  font-size: 1.5rem;
+  color: #0ea5e9;
+  line-height: 1;
+  padding: 4px 0;
+}
+.layer-capture { border-color: #14b8a6; }
+.layer-capture .layer-name { color: #14b8a6; }
+.layer-process { border-color: #0ea5e9; }
+.layer-process .layer-name { color: #0ea5e9; }
+.layer-execute { border-color: #f59e0b; }
+.layer-execute .layer-name { color: #f59e0b; }
+.layer-review { border-color: #c084fc; }
+.layer-review .layer-name { color: #c084fc; }
+
+/* ===== Timeline ===== */
+.timeline {
+  position: relative;
+  padding-left: 36px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #0ea5e9, #14b8a6, #c084fc);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+  padding-left: 20px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  border: 2px solid #1e293b;
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.2);
+}
+.timeline-item.auto::before { background: #14b8a6; box-shadow: 0 0 0 3px rgba(20,184,166,0.2); }
+.timeline-item.review::before { background: #c084fc; box-shadow: 0 0 0 3px rgba(192,132,252,0.2); }
+.timeline-time {
+  font-size: 0.82rem;
+  color: #0ea5e9;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.timeline-item.auto .timeline-time { color: #14b8a6; }
+.timeline-item.review .timeline-time { color: #c084fc; }
+.timeline-content {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+.timeline-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 600;
+}
+.tag-auto { background: rgba(20,184,166,0.15); color: #14b8a6; }
+.tag-manual { background: rgba(14,165,233,0.15); color: #0ea5e9; }
+
+/* ===== Color Swatches ===== */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.color-swatch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 12px 14px;
+  border: 1px solid #334155;
+}
+.swatch-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.swatch-label { font-size: 0.82rem; color: #e2e8f0; }
+.swatch-desc { font-size: 0.72rem; color: #64748b; }
+
+/* ===== FAQ ===== */
+.faq-item {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+  transition: background .2s;
+  user-select: none;
+}
+.faq-q:hover { background: rgba(14,165,233,0.05); }
+.faq-q .arrow {
+  transition: transform .2s;
+  color: #0ea5e9;
+  flex-shrink: 0;
+}
+.faq-q.open .arrow { transform: rotate(90deg); }
+.faq-a {
+  display: none;
+  padding: 0 20px 16px 44px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+.faq-a.show { display: block; }
+
+/* ===== Output Example Block ===== */
+.output-block {
+  background: #0f172a;
+  border-left: 3px solid #14b8a6;
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 14px 0;
+  font-family: "Cascadia Code", "Fira Code", monospace;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #94a3b8;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* ===== Tip / Note Box ===== */
+.tip-box {
+  background: rgba(14,165,233,0.08);
+  border-left: 3px solid #0ea5e9;
+  border-radius: 0 8px 8px 0;
+  padding: 14px 20px;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+.tip-box .tip-label { color: #0ea5e9; font-weight: 700; margin-bottom: 4px; }
+.tip-box.warn { background: rgba(245,158,11,0.08); border-color: #f59e0b; }
+.tip-box.warn .tip-label { color: #f59e0b; }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid #1e293b;
+  color: #475569;
+  font-size: 0.82rem;
+}
+.footer .brand { color: #0ea5e9; font-weight: 600; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 30px rgba(0,0,0,0.5); }
+  .nav-toggle { display: flex; }
+  .main { margin-left: 0; }
+  .content { padding: 24px 16px 60px; }
+  .hero { padding: 40px 0 32px; }
+  .hero h1 { font-size: 1.6rem; }
+  .hero-meta { flex-direction: column; gap: 8px; }
+  .card { padding: 20px; }
+  .arch-layer { padding: 14px 16px; }
+}
+@media (max-width: 480px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .color-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Banner -->
+<div class="top-banner">📡 本文档由 Synapse AI 团队自动生成 — knowledge_engineer</div>
+
+<!-- Mobile Nav Toggle -->
+<button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">☰</button>
+
+<div class="layout">
+
+<!-- ===== Sidebar ===== -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h2>⚡ SYNAPSE</h2>
+    <p>Personal Engine 使用指引</p>
+  </div>
+  <ul class="nav-list">
+    <li><a href="#cover">🏠 封面</a></li>
+    <li><a href="#ch1">📖 一、体系概览</a></li>
+    <li class="nav-sub"><a href="#ch1-arch">架构图</a></li>
+    <li class="nav-sub"><a href="#ch1-channels">四大捕获渠道</a></li>
+    <li class="nav-sub"><a href="#ch1-relation">SPE 与 Synapse</a></li>
+    <li><a href="#ch2">⌨️ 二、四个核心命令</a></li>
+    <li class="nav-sub"><a href="#cmd-capture">/capture</a></li>
+    <li class="nav-sub"><a href="#cmd-planday">/plan-day</a></li>
+    <li class="nav-sub"><a href="#cmd-timeblock">/time-block</a></li>
+    <li class="nav-sub"><a href="#cmd-weekly">/weekly-review</a></li>
+    <li><a href="#ch3">🤖 三、自动化机制</a></li>
+    <li class="nav-sub"><a href="#ch3-hook">SessionEnd Hook</a></li>
+    <li class="nav-sub"><a href="#ch3-agents">每日自动 Agent</a></li>
+    <li class="nav-sub"><a href="#ch3-config">配置步骤</a></li>
+    <li><a href="#ch4">📁 四、数据文件说明</a></li>
+    <li><a href="#ch5">🌅 五、典型工作日</a></li>
+    <li><a href="#ch6">🧠 六、智能化特性</a></li>
+    <li><a href="#ch7">❓ 七、常见问题</a></li>
+  </ul>
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main">
+<div class="content">
+
+<!-- ===== COVER ===== -->
+<section class="hero" id="cover">
+  <div class="hero-badge">SYNAPSE PERSONAL ENGINE</div>
+  <h1>SPE 使用指引</h1>
+  <p class="subtitle">总裁个人效率管理系统 v1.0</p>
+  <div class="hero-meta">
+    <span>📅 2026-04-12</span>
+    <span>📦 Phase 1-4 全部交付</span>
+    <span>🏢 Janus Digital</span>
+  </div>
+  <p style="color:#64748b; font-size:0.85rem; margin-top:24px; max-width:560px; margin-left:auto; margin-right:auto;">
+    SPE 是 Synapse 体系的个人任务管理模块，为总裁提供从任务捕获、日程规划、时间管理到每周回顾的完整闭环。四大捕获渠道 + 四个核心命令 + 自动化 Agent，让每一件事都不遗漏。
+  </p>
+</section>
+
+<!-- ===== CHAPTER 1: 体系概览 ===== -->
+<section class="section" id="ch1">
+  <h2 class="section-title">一、体系概览</h2>
+
+  <p>
+    <strong>Synapse Personal Engine (SPE)</strong> 是 Synapse AI 协作体系中专注于<span class="highlight">总裁个人效率管理</span>的模块。它将分散在各处的待办、想法、日程、决策汇聚到统一入口，通过 AI 自动分流、智能规划、定时复盘，实现<span class="text-teal">零遗漏、低打扰、高产出</span>的个人管理闭环。
+  </p>
+
+  <h3 class="sub-title" id="ch1-arch">体系架构</h3>
+  <p>SPE 采用四层架构，信息从捕获到回顾形成完整循环：</p>
+
+  <div class="arch-diagram">
+    <div class="arch-layer layer-capture">
+      <div class="layer-name">📥 捕获层 — Capture</div>
+      <div class="layer-desc">CLI / Web / Slack / Calendar — 四大渠道零遗漏收集</div>
+    </div>
+    <div class="arch-arrow">⬇</div>
+    <div class="arch-layer layer-process">
+      <div class="layer-name">🔄 处理层 — Process</div>
+      <div class="layer-desc">AI 自动分流：决策 / 委派 / 个人执行 / 参考归档</div>
+    </div>
+    <div class="arch-arrow">⬇</div>
+    <div class="arch-layer layer-execute">
+      <div class="layer-name">⚡ 执行层 — Execute</div>
+      <div class="layer-desc">Plan My Day 日程规划 + Time Block 时间块管理</div>
+    </div>
+    <div class="arch-arrow">⬇</div>
+    <div class="arch-layer layer-review">
+      <div class="layer-name">🔮 回顾层 — Review</div>
+      <div class="layer-desc">日终复盘 + 每周回顾 + OKR 追踪 + 行为洞察</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title" id="ch1-channels">四大捕获渠道</h3>
+  <div class="card-grid">
+    <div class="mini-card">
+      <div class="icon">💻</div>
+      <div class="label">Claude Code CLI</div>
+      <div class="desc"><code>/capture</code> 命令 + SessionEnd Hook 自动提取</div>
+    </div>
+    <div class="mini-card">
+      <div class="icon">🌐</div>
+      <div class="label">Claude APP / Web</div>
+      <div class="desc">CLAUDE.md 指令驱动，Git 同步到本地</div>
+    </div>
+    <div class="mini-card">
+      <div class="icon">💬</div>
+      <div class="label">Slack</div>
+      <div class="desc">Plan My Day 时通过 MCP 实时拉取消息</div>
+    </div>
+    <div class="mini-card">
+      <div class="icon">📅</div>
+      <div class="label">Google Calendar</div>
+      <div class="desc">Plan My Day 时通过 MCP 实时读取日程</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title" id="ch1-relation">SPE 与 Synapse 的关系</h3>
+  <p>
+    Synapse 体系的核心是<strong>团队协作管理</strong>：44 位 Multi-Agent 成员在 Lysander CEO 统筹下完成各类任务。而 <strong>SPE</strong> 补全了体系中<span class="highlight">个人管理维度</span>的缺失——总裁自身的待办、日程、决策、OKR 也需要系统化管理。
+  </p>
+  <p>
+    SPE 与 Synapse 主体系无缝集成：捕获的任务可分流为团队任务（通过 <code>/dispatch</code> 派单）或个人任务（保留在 SPE 中）；决策日志与 Synapse 四级决策体系共用；每周回顾自动关联团队产出数据。
+  </p>
+</section>
+
+<!-- ===== CHAPTER 2: 四个核心命令 ===== -->
+<section class="section" id="ch2">
+  <h2 class="section-title">二、日常使用 — 四个核心命令</h2>
+
+  <!-- /capture -->
+  <div class="card" id="cmd-capture">
+    <div class="card-header">
+      <div class="card-icon teal">📋</div>
+      <div>
+        <div class="card-title"><code>/capture</code> — 快速捕获</div>
+        <div class="card-desc">随时随地将想法、待办、行动项收入收件箱</div>
+      </div>
+    </div>
+
+    <h4 class="minor-title">语法</h4>
+    <div class="code-block">
+<span class="cmd">/capture</span> <span class="string">[描述]</span>          <span class="comment"># 手动捕获一条任务</span>
+<span class="cmd">/capture</span> <span class="flag">auto</span>              <span class="comment"># 自动从当前对话中提取行动项</span>
+    </div>
+
+    <h4 class="minor-title">两种模式</h4>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>模式</th><th>说明</th><th>适用场景</th></tr></thead>
+      <tbody>
+        <tr><td><strong>手动模式</strong></td><td>直接输入描述，立即写入收件箱</td><td>脑中闪过一个想法、开会时记录行动项</td></tr>
+        <tr><td><strong>自动模式</strong></td><td>AI 扫描当前对话，提取未捕获的行动项</td><td>长对话结束前，确保没有遗漏</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h4 class="minor-title">使用示例</h4>
+
+    <p><strong>示例 1</strong> — 记录一条待办：</p>
+    <div class="code-block"><span class="cmd">/capture</span> <span class="string">给王总回邮件确认合同细节</span></div>
+    <div class="output-block">✅ 已捕获到收件箱：「给王总回邮件确认合同细节」
+ID: CAP-2026-0412-001 | 来源: claude_cli</div>
+
+    <p><strong>示例 2</strong> — 记录一个研究任务：</p>
+    <div class="code-block"><span class="cmd">/capture</span> <span class="string">研究竞品定价策略</span></div>
+    <div class="output-block">✅ 已捕获到收件箱：「研究竞品定价策略」
+ID: CAP-2026-0412-002 | 来源: claude_cli</div>
+
+    <p><strong>示例 3</strong> — 会话结束前自动提取：</p>
+    <div class="code-block"><span class="cmd">/capture</span> <span class="flag">auto</span></div>
+    <div class="output-block">🔍 扫描当前对话，提取行动项...
+
+发现 2 条新行动项：
+  1. 「更新投标文件中的报价表」 → 已捕获
+  2. 「确认供应商交货时间」 → 已捕获
+
+📋 收件箱当前共 5 条待处理项</div>
+
+    <div class="tip-box">
+      <div class="tip-label">💡 建议</div>
+      <p>养成习惯：每次会话结束前执行一次 <code>/capture auto</code>，确保对话中的行动项不遗漏。如果你已配置 SessionEnd Hook，这一步会在关闭会话时自动完成。</p>
+    </div>
+  </div>
+
+  <!-- /plan-day -->
+  <div class="card" id="cmd-planday">
+    <div class="card-header">
+      <div class="card-icon blue">🌅</div>
+      <div>
+        <div class="card-title"><code>/plan-day</code> — 每日规划</div>
+        <div class="card-desc">综合四大信息源，生成今日焦点计划</div>
+      </div>
+    </div>
+
+    <h4 class="minor-title">语法</h4>
+    <div class="code-block">
+<span class="cmd">/plan-day</span>                    <span class="comment"># 默认规划今天</span>
+<span class="cmd">/plan-day</span> <span class="flag">today</span>              <span class="comment"># 规划今天</span>
+<span class="cmd">/plan-day</span> <span class="flag">tomorrow</span>           <span class="comment"># 规划明天</span>
+<span class="cmd">/plan-day</span> <span class="flag">2026-04-15</span>         <span class="comment"># 规划指定日期</span>
+    </div>
+
+    <h4 class="minor-title">执行流程</h4>
+    <p><code>/plan-day</code> 自动执行以下 6 个步骤：</p>
+    <ol style="padding-left:20px; color:#cbd5e1; margin:12px 0;">
+      <li>📅 读取 Google Calendar 日程</li>
+      <li>📋 读取 personal_tasks.yaml 收件箱 + 进行中任务</li>
+      <li>💬 拉取 Slack 未读消息中的待办项</li>
+      <li>🎯 检查 OKR 进度，标注落后项</li>
+      <li>📊 综合生成日程概览报告</li>
+      <li>⏰ <em>（可选）</em> 为 Big Rocks 创建 Google Calendar 时间块</li>
+    </ol>
+
+    <h4 class="minor-title">预期输出示例</h4>
+    <div class="output-block">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📅  2026-04-12（周日）日程概览
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📆 今日日程（Google Calendar）
+  09:00-10:00  团队周会
+  14:00-15:00  客户演示会议
+  16:00-16:30  1:1 with 技术负责人
+
+🔒 建议时间块
+  10:00-12:00  深度工作 — 审阅 Janus 项目方案
+  15:00-16:00  处理收件箱 + 决策队列
+
+🎯 Big Rocks（今日最重要的事）
+  1. 审阅 Janus 项目交付方案 [来源: active_tasks]
+  2. 确认竞品分析报告 [来源: inbox]
+
+📬 收件箱分流（4 条待处理）
+  → 决策: 「n8n OAuth 迁移方案选择」
+  → 委派: 「更新官网价格页面」→ 建议派单 Growth 团队
+  → 个人: 「给王总回邮件」
+  → 参考: 「竞品定价策略研究」→ 归档到 OBS
+
+⚠️ OKR 进度提醒
+  「每周发布1篇博客」— 本周尚未发布，进度落后
+
+❓ 等待决策（1 项）
+  「n8n OAuth 迁移方案选择」
+    方案A: 直接 OAuth  |  方案B: 代理模式
+    截止: 2026-04-13
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+是否为 Big Rocks 创建 Google Calendar 时间块？(Y/N)</div>
+
+    <div class="tip-box">
+      <div class="tip-label">💡 建议</div>
+      <p>每天早晨第一件事执行 <code>/plan-day</code>，花两分钟确认今日焦点。如果你已配置 6:15am 日历同步 Agent，Slack 上会提前收到规划草稿，此时只需确认即可。</p>
+    </div>
+  </div>
+
+  <!-- /time-block -->
+  <div class="card" id="cmd-timeblock">
+    <div class="card-header">
+      <div class="card-icon amber">⏰</div>
+      <div>
+        <div class="card-title"><code>/time-block</code> — 时间块创建</div>
+        <div class="card-desc">为任务在 Google Calendar 上创建专属时间块</div>
+      </div>
+    </div>
+
+    <h4 class="minor-title">语法</h4>
+    <div class="code-block">
+<span class="cmd">/time-block</span> <span class="string">"任务描述"</span> <span class="flag">时长</span> <span class="flag">[日期]</span>
+<span class="comment"># 时长: 30m / 1h / 2h / 3h</span>
+<span class="comment"># 日期: today / tomorrow / YYYY-MM-DD（默认 today）</span>
+
+<span class="cmd">/time-block</span> <span class="flag">focus</span> <span class="flag">时长</span>                <span class="comment"># 深度工作时段</span>
+<span class="cmd">/time-block</span> <span class="flag">deadline</span> <span class="string">"描述"</span> <span class="flag">YYYY-MM-DD</span>  <span class="comment"># Deadline 提醒</span>
+    </div>
+
+    <h4 class="minor-title">使用示例</h4>
+
+    <p><strong>示例 1</strong> — 为明天创建审阅任务：</p>
+    <div class="code-block"><span class="cmd">/time-block</span> <span class="string">"审阅Janus方案"</span> <span class="flag">2h</span> <span class="flag">tomorrow</span></div>
+    <div class="output-block">✅ 已创建时间块：
+  📋 审阅Janus方案
+  ⏰ 2026-04-13 10:00-12:00（自动匹配高精力时段）
+  🎨 Banana（黄色）— 常规任务
+  🔔 提醒：提前 10 分钟</div>
+
+    <p><strong>示例 2</strong> — 创建深度工作时段：</p>
+    <div class="code-block"><span class="cmd">/time-block</span> <span class="flag">focus</span> <span class="flag">2h</span></div>
+    <div class="output-block">✅ 已创建深度工作块：
+  🔒 深度工作 — Focus Time
+  ⏰ 2026-04-12 10:00-12:00（高精力时段）
+  🎨 Peacock（青色）— 深度工作
+  🔔 提醒：提前 10 分钟</div>
+
+    <p><strong>示例 3</strong> — 创建 Deadline 提醒：</p>
+    <div class="code-block"><span class="cmd">/time-block</span> <span class="flag">deadline</span> <span class="string">"合同截止"</span> <span class="flag">2026-04-20</span></div>
+    <div class="output-block">✅ 已创建 Deadline 提醒：
+  ⚠️ Deadline: 合同截止
+  📅 2026-04-20（全天事件）
+  🎨 Tomato（红色）— 截止日期
+  🔔 提醒：提前 1 天 + 提前 1 小时</div>
+
+    <h4 class="minor-title">颜色编码体系</h4>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="swatch-dot" style="background:#0d9488;"></div>
+        <div>
+          <div class="swatch-label">🔒 Peacock 青色</div>
+          <div class="swatch-desc">深度工作 / Focus</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-dot" style="background:#6366f1;"></div>
+        <div>
+          <div class="swatch-label">📋 Blueberry 蓝紫</div>
+          <div class="swatch-desc">会议 / 评审准备</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-dot" style="background:#eab308;"></div>
+        <div>
+          <div class="swatch-label">✅ Banana 黄色</div>
+          <div class="swatch-desc">常规任务</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-dot" style="background:#ef4444;"></div>
+        <div>
+          <div class="swatch-label">⚠️ Tomato 红色</div>
+          <div class="swatch-desc">Deadline / 紧急</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-dot" style="background:#84cc16;"></div>
+        <div>
+          <div class="swatch-label">📚 Sage 绿色</div>
+          <div class="swatch-desc">学习 / 个人发展</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-dot" style="background:#f97316;"></div>
+        <div>
+          <div class="swatch-label">🔴 Tangerine 橙色</div>
+          <div class="swatch-desc">L级重大任务</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-label">💡 智能匹配</div>
+      <p>时间块会根据 <code>calendar_config.yaml</code> 中的精力分配规则自动匹配最佳时段：高精力时段（08:00-12:00）分配深度工作，协作时段（13:00-15:00）分配会议，常规时段（15:00-18:00）分配 M 级任务。</p>
+    </div>
+  </div>
+
+  <!-- /weekly-review -->
+  <div class="card" id="cmd-weekly">
+    <div class="card-header">
+      <div class="card-icon purple">📊</div>
+      <div>
+        <div class="card-title"><code>/weekly-review</code> — 每周回顾</div>
+        <div class="card-desc">生成结构化周回顾报告，含成就、OKR 进度、决策回顾</div>
+      </div>
+    </div>
+
+    <h4 class="minor-title">语法</h4>
+    <div class="code-block">
+<span class="cmd">/weekly-review</span>                <span class="comment"># 默认回顾本周</span>
+<span class="cmd">/weekly-review</span> <span class="flag">this-week</span>     <span class="comment"># 回顾本周</span>
+<span class="cmd">/weekly-review</span> <span class="flag">last-week</span>     <span class="comment"># 回顾上周</span>
+<span class="cmd">/weekly-review</span> <span class="flag">2026-W15</span>      <span class="comment"># 回顾指定周</span>
+    </div>
+
+    <h4 class="minor-title">预期输出示例</h4>
+    <div class="output-block">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊  2026-W16 每周回顾报告
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏆 本周成就
+  ✅ 完成 SPE Phase 1-4 全部开发并交付
+  ✅ 情报日报系统上线运行
+  ✅ 3 个远程定时 Agent 配置完成
+
+📈 OKR 进度 (2026-Q2)
+  目标 1: [待设定] — 请在下周 Plan Day 时确认季度 OKR
+
+📝 决策回顾
+  本周新增决策: 2 项
+  • D-2026-0412-001: SPE 体系方案选型 [L3, 已决策]
+  • D-2026-0412-002: SessionEnd Hook 方案 [L2, 已决策]
+
+⏱️ 时间分配
+  深度工作: 12h (35%)
+  会议协作: 6h (18%)
+  常规任务: 10h (29%)
+  学习成长: 4h (12%)
+  其他: 2h (6%)
+
+🔮 下周焦点建议
+  1. 设定 Q2 个人 OKR
+  2. 验证 SPE 自动化 Agent 稳定性
+  3. 完成遗留的供应商方案评审
+
+🧠 行为模式洞察
+  • 本周高频交互集中在 9:00-12:00，精力高峰匹配良好
+  • 3 条 inbox 项被 dismiss，均为低优先级参考类信息
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+
+    <div class="tip-box">
+      <div class="tip-label">💡 建议</div>
+      <p>每周五下午花 10 分钟执行 <code>/weekly-review</code>，回顾本周成果并确认下周焦点。这是 SPE 回顾层的核心动作。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 3: 自动化机制 ===== -->
+<section class="section" id="ch3">
+  <h2 class="section-title">三、自动化机制</h2>
+
+  <p>SPE 的自动化层让系统在你不在线时也持续运转，减少手动操作，最大化效率。</p>
+
+  <!-- SessionEnd Hook -->
+  <h3 class="sub-title" id="ch3-hook">3.1 SessionEnd Hook — 会话结束自动捕获</h3>
+
+  <p>
+    当你关闭 Claude Code 会话时，<code>capture_session_tasks.py</code> 脚本自动运行，从对话记录中提取未捕获的行动项，写入 <code>personal_tasks.yaml</code> 收件箱。
+  </p>
+
+  <h4 class="minor-title">工作原理</h4>
+  <ol style="padding-left:20px; color:#cbd5e1; margin:12px 0;">
+    <li>Claude Code 会话结束时触发 SessionEnd hook</li>
+    <li>脚本从 stdin 接收 JSON 输入（含对话记录路径和会话 ID）</li>
+    <li>读取 JSONL 格式的对话记录</li>
+    <li>用关键词匹配提取候选行动项（中文/英文关键词 + checkbox 模式）</li>
+    <li>与已有条目去重后，新项追加到 inbox</li>
+    <li>自动 git commit 保存变更</li>
+  </ol>
+
+  <h4 class="minor-title">匹配的关键词</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>语言</th><th>关键词</th></tr></thead>
+    <tbody>
+      <tr><td>中文</td><td>需要、记一下、回头、待办、后续、跟进、别忘了、提醒我</td></tr>
+      <tr><td>英文</td><td>TODO、action item、follow up、remind me、need to</td></tr>
+      <tr><td>特殊</td><td><code>- [ ]</code> 开头的 checkbox 行</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4 class="minor-title">配置方法</h4>
+  <p>将以下配置加入 Claude Code 的 <code>settings.json</code>（全局 <code>~/.claude/settings.json</code> 或项目级 <code>&lt;project&gt;/.claude/settings.json</code>）：</p>
+  <div class="code-block">
+{
+  <span class="string">"hooks"</span>: {
+    <span class="string">"SessionEnd"</span>: [
+      {
+        <span class="string">"matcher"</span>: <span class="string">""</span>,
+        <span class="string">"hooks"</span>: [
+          {
+            <span class="string">"type"</span>: <span class="string">"command"</span>,
+            <span class="string">"command"</span>: <span class="string">"PYTHONUTF8=1 python3 \"/c/Users/lysanderl_janusd/Claude Code/ai-team-system/scripts/capture_session_tasks.py\""</span>,
+            <span class="string">"timeout"</span>: <span class="keyword">30000</span>
+          }
+        ]
+      }
+    ]
+  }
+}
+  </div>
+
+  <div class="tip-box warn">
+    <div class="tip-label">⚠️ 注意</div>
+    <p>如果 <code>settings.json</code> 中已有其他 hooks 配置，将 <code>SessionEnd</code> 数组合并到现有 <code>hooks</code> 对象中，不要覆盖已有的 hook 配置。此配置只需执行一次。</p>
+  </div>
+
+  <!-- 每日自动 Agent -->
+  <h3 class="sub-title" id="ch3-agents">3.2 每日自动 Agent</h3>
+
+  <p>SPE 通过远程定时 Agent 实现每日自动规划和复盘，以下是完整时间线：</p>
+
+  <div class="timeline">
+    <div class="timeline-item auto">
+      <div class="timeline-time">6:00am Dubai <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content"><strong>任务自动恢复 Agent</strong> — 检查 active_tasks.yaml，恢复阻塞已解除的任务，续接未完成工作</div>
+    </div>
+    <div class="timeline-item auto">
+      <div class="timeline-time">6:15am Dubai <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content"><strong>SPE 日历同步 Agent</strong> — 读取 Google Calendar + 任务状态 → 生成今日规划 → 更新 personal_tasks.yaml → Slack 推送今日焦点给总裁</div>
+    </div>
+    <div class="timeline-item auto">
+      <div class="timeline-time">8:00am Dubai <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content"><strong>情报日报 Agent</strong> — 搜索 AI 前沿动态 → 筛选实践价值内容 → 生成情报日报 HTML → git push</div>
+    </div>
+    <div class="timeline-item auto">
+      <div class="timeline-time">10:00am Dubai <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content"><strong>情报行动 Agent</strong> — 提取日报建议 → 专家评估 → 评审决策 → 执行批准项 → 生成行动报告</div>
+    </div>
+    <div class="timeline-item auto">
+      <div class="timeline-time">20:00pm Dubai <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content"><strong>SPE 日终复盘 Agent</strong> — 对比今日计划 vs 实际执行 → 标记 carry-over 任务 → 更新周回顾数据</div>
+    </div>
+  </div>
+
+  <!-- 配置步骤 -->
+  <h3 class="sub-title" id="ch3-config">3.3 配置步骤 — 激活定时 Agent</h3>
+
+  <p>通过 <code>/schedule</code> 命令创建远程定时 Agent（cron 时间为 UTC）：</p>
+
+  <div class="code-block">
+<span class="comment"># 日历同步 Agent（UTC 02:15 = Dubai 06:15am）</span>
+<span class="cmd">/schedule</span> create --name <span class="string">"SPE日历同步"</span> \
+  --cron <span class="string">"15 2 * * *"</span> \
+  --prompt-file <span class="string">"agent-butler/config/calendar-sync-prompt.md"</span>
+
+<span class="comment"># 日终复盘 Agent（UTC 16:00 = Dubai 20:00pm）</span>
+<span class="cmd">/schedule</span> create --name <span class="string">"SPE日终复盘"</span> \
+  --cron <span class="string">"0 16 * * *"</span> \
+  --prompt-file <span class="string">"agent-butler/config/daily-review-prompt.md"</span>
+  </div>
+
+  <p>创建后可在 <a href="https://claude.ai/code/scheduled" target="_blank">claude.ai/code/scheduled</a> 查看和管理所有远程定时任务。</p>
+
+  <div class="tip-box">
+    <div class="tip-label">💡 提示</div>
+    <p>情报日报和情报行动 Agent 属于 Synapse 主体系的自动化编排，与 SPE 协同运行。SPE 特有的定时 Agent 是日历同步（6:15am）和日终复盘（20:00pm）。</p>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 4: 数据文件 ===== -->
+<section class="section" id="ch4">
+  <h2 class="section-title">四、数据文件说明</h2>
+
+  <!-- personal_tasks.yaml -->
+  <h3 class="sub-title">4.1 personal_tasks.yaml — 核心数据文件</h3>
+
+  <p><strong>文件位置</strong>：<code>agent-butler/config/personal_tasks.yaml</code></p>
+  <p>这是 SPE 的核心数据存储文件，由 AI 自动维护，总裁一般不需要手动编辑。</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>数据节</th><th>说明</th><th>更新方式</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>personal_okrs</code></td>
+        <td>季度个人 OKR（目标 + 关键结果 + 进度）</td>
+        <td>总裁口述目标，Lysander 录入；进度由 <code>/plan-day</code> 自动追踪</td>
+      </tr>
+      <tr>
+        <td><code>today_focus</code></td>
+        <td>今日焦点（Big Rocks + 决策队列）</td>
+        <td>由 <code>/plan-day</code> 每日自动生成</td>
+      </tr>
+      <tr>
+        <td><code>inbox</code></td>
+        <td>收件箱（四大渠道捕获的未处理项）</td>
+        <td>由 <code>/capture</code> 和 SessionEnd Hook 写入；<code>/plan-day</code> 时自动分流</td>
+      </tr>
+      <tr>
+        <td><code>recent_decisions</code></td>
+        <td>最近活跃决策索引</td>
+        <td>决策记录时自动创建索引；详细内容在独立文件中</td>
+      </tr>
+      <tr>
+        <td><code>weekly_review</code></td>
+        <td>周回顾数据（当前周次、上次回顾日期）</td>
+        <td>由 <code>/weekly-review</code> 或日终复盘 Agent 自动更新</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- 决策日志 -->
+  <h3 class="sub-title">4.2 决策日志</h3>
+  <p><strong>位置</strong>：<code>obs/04-decision-knowledge/decision-log/</code></p>
+  <p><strong>命名规则</strong>：<code>D-YYYY-MMDD-NNN.md</code>（如 <code>D-2026-0412-001.md</code>）</p>
+  <p>所有 L3/L4 级别的决策会自动记录到此目录，每条决策包含背景、选项分析、最终决定、预期结果。系统会在决策 30 天后自动触发回顾提醒，评估决策质量。</p>
+
+  <!-- calendar_config.yaml -->
+  <h3 class="sub-title">4.3 calendar_config.yaml — 日历配置</h3>
+  <p><strong>文件位置</strong>：<code>agent-butler/config/calendar_config.yaml</code></p>
+  <p>此文件定义了颜色编码、精力分配规则和提醒设置。总裁可根据个人习惯调整：</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>配置项</th><th>当前值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>时区</td><td><code>Asia/Dubai</code></td><td>所有时间计算的基准时区</td></tr>
+      <tr><td>工作时间</td><td><code>08:00 - 20:00</code></td><td>时间块只在此范围内安排</td></tr>
+      <tr><td>高精力时段</td><td><code>08:00 - 12:00</code></td><td>分配深度工作、关键决策</td></tr>
+      <tr><td>协作时段</td><td><code>13:00 - 15:00</code></td><td>分配会议、协作任务</td></tr>
+      <tr><td>常规时段</td><td><code>15:00 - 18:00</code></td><td>分配 M 级常规任务</td></tr>
+      <tr><td>收尾时段</td><td><code>18:00 - 20:00</code></td><td>分配 S 级轻量任务、复盘</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 5: 典型工作日 ===== -->
+<section class="section" id="ch5">
+  <h2 class="section-title">五、典型工作日场景</h2>
+
+  <p>以下是一个完整工作日中 SPE 的运作流程，展示人工操作与自动化 Agent 的协同：</p>
+
+  <div class="timeline">
+    <div class="timeline-item auto">
+      <div class="timeline-time">6:15am <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content">
+        <strong>日历同步 Agent 运行</strong><br>
+        自动读取 Google Calendar + 任务状态 → 生成今日规划草稿 → Slack 推送给总裁。<br>
+        <em style="color:#64748b;">你还在睡觉时，今日计划已经准备好了。</em>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">8:00am <span class="timeline-tag tag-manual">手动</span></div>
+      <div class="timeline-content">
+        <strong>打开 Claude Code → <code>/plan-day</code></strong><br>
+        确认今日焦点，查看 Slack 推送的规划草稿，按需调整。<br>
+        选择为 Big Rocks 创建时间块 → 日历上出现对应事件。
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">9:00am <span class="timeline-tag tag-manual">手动</span></div>
+      <div class="timeline-content">
+        <strong>工作中想到一件事</strong><br>
+        <code>/capture 下周要准备投标材料</code> → 立即存入收件箱，不打断当前工作流。
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">10:30am <span class="timeline-tag tag-manual">手动</span></div>
+      <div class="timeline-content">
+        <strong>开完会议</strong><br>
+        <code>/capture 会议决定更换供应商方案</code> → 下次 <code>/plan-day</code> 时会自动分流到决策队列。
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">12:00pm</div>
+      <div class="timeline-content">
+        <strong>Slack 收到消息需要处理</strong><br>
+        不用现在操作——下次 <code>/plan-day</code> 时会自动从 Slack 拉取待办项。
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">15:00pm</div>
+      <div class="timeline-content">
+        <strong>完成重要任务</strong><br>
+        继续处理下一项 Big Rock。时间块帮你守住了专注时间。
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">18:00pm <span class="timeline-tag tag-manual">手动</span></div>
+      <div class="timeline-content">
+        <strong>结束工作</strong><br>
+        <code>/capture auto</code> → AI 扫描今日对话，提取所有未记录的行动项。<br>
+        <em style="color:#64748b;">关闭会话时 SessionEnd Hook 也会再次自动检查。</em>
+      </div>
+    </div>
+    <div class="timeline-item auto">
+      <div class="timeline-time">20:00pm <span class="timeline-tag tag-auto">自动</span></div>
+      <div class="timeline-content">
+        <strong>日终复盘 Agent 运行</strong><br>
+        对比今日计划 vs 实际执行 → 未完成项标记为 carry-over → 更新周回顾数据。
+      </div>
+    </div>
+    <div class="timeline-item review">
+      <div class="timeline-time">周五下午 <span class="timeline-tag tag-manual">手动</span></div>
+      <div class="timeline-content">
+        <strong><code>/weekly-review</code></strong><br>
+        查看本周回顾报告：成就、OKR 进度、决策回顾、时间分配、下周焦点建议。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 6: 智能化特性 ===== -->
+<section class="section" id="ch6">
+  <h2 class="section-title">六、智能化特性</h2>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon green">🧠</div>
+      <div>
+        <div class="card-title">行为观察</div>
+        <div class="card-desc">AI 持续学习你的工作模式，越用越懂你</div>
+      </div>
+    </div>
+    <p>SPE 的智能化层会在后台持续观察四个维度：</p>
+    <div class="card-grid">
+      <div class="mini-card">
+        <div class="icon">⏱️</div>
+        <div class="label">工作节奏</div>
+        <div class="desc">活跃时段、精力高峰、工作模式切换</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">🎯</div>
+        <div class="label">决策模式</div>
+        <div class="desc">决策速度、风险偏好、信任度校准</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">📋</div>
+        <div class="label">任务偏好</div>
+        <div class="desc">亲自做 vs 委派的类型分布</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">💬</div>
+        <div class="label">沟通偏好</div>
+        <div class="desc">信息密度、过程参与度、关注焦点</div>
+      </div>
+    </div>
+    <p>这些观察数据以渐进方式积累，不会一次性要求你填写问卷。当系统发现可操作的模式时，会在 <code>/plan-day</code> 中自动体现（如调整建议时段、调整优先级排序）。</p>
+    <div class="tip-box">
+      <div class="tip-label">🔒 隐私保护</div>
+      <p>所有行为观察数据仅存储在本地 memory 系统中，不会上传到任何外部服务。配置详见 <code>agent-butler/config/spe_intelligence.yaml</code>。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon blue">📈</div>
+      <div>
+        <div class="card-title">OKR 自动追踪</div>
+        <div class="card-desc">每日检查进度，及时预警落后项</div>
+      </div>
+    </div>
+    <p>每次执行 <code>/plan-day</code> 时，系统自动检查 OKR 进度：</p>
+    <ul style="padding-left:20px; color:#cbd5e1; margin:12px 0;">
+      <li><strong>进度落后</strong> → 在日程概览中标注 ⚠️ 警告</li>
+      <li><strong>7 天未更新</strong> → 提醒确认该 KR 是否仍在进行</li>
+      <li><strong>目标无关联任务</strong> → 建议分解为具体行动项</li>
+    </ul>
+    <p>OKR 设定方式：告诉 Lysander 你的季度目标，他会更新 <code>personal_tasks.yaml</code> 的 <code>personal_okrs</code> 节。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon rose">📊</div>
+      <div>
+        <div class="card-title">决策质量分析</div>
+        <div class="card-desc">30 天回顾 + 质量评分，持续提升决策水平</div>
+      </div>
+    </div>
+    <p>每条记录的决策在 30 天后自动触发回顾提醒，评估内容包括：</p>
+    <ul style="padding-left:20px; color:#cbd5e1; margin:12px 0;">
+      <li>预期结果是否实现？（1-5 分）</li>
+      <li>是否有未预见的副作用？</li>
+      <li>如果重来会做不同选择吗？</li>
+      <li>获得了什么经验教训？</li>
+    </ul>
+    <p>系统还会跟踪<span class="highlight">决策准确率</span>、<span class="highlight">领域分布</span>和<span class="highlight">偏差模式</span>，帮助识别哪些领域的决策需要改进。</p>
+  </div>
+</section>
+
+<!-- ===== CHAPTER 7: FAQ ===== -->
+<section class="section" id="ch7">
+  <h2 class="section-title">七、常见问题</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>Skill 不可用怎么办？</span>
+    </div>
+    <div class="faq-a">
+      重新打开一个新的 Claude Code 会话即可。Skill（如 <code>/capture</code>、<code>/plan-day</code> 等）需要在新会话中才能加载。已有会话中首次使用的 Skill 会在当前会话中持续可用。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>Google Calendar 认证过期怎么办？</span>
+    </div>
+    <div class="faq-a">
+      <code>/plan-day</code> 内置降级策略：当日历 API 不可用时，会跳过日历数据，仅基于 personal_tasks.yaml 和 Slack 数据生成规划，并提示你手动告知当天的重要日程。日历认证恢复后自动恢复完整功能。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>如何修改工作时间范围？</span>
+    </div>
+    <div class="faq-a">
+      编辑 <code>agent-butler/config/calendar_config.yaml</code> 的 <code>work_hours</code> 字段。例如将工作时间调整为 09:00-18:00：<br><br>
+      <code>work_hours:<br>&nbsp;&nbsp;start: "09:00"<br>&nbsp;&nbsp;end: "18:00"</code><br><br>
+      同时建议相应调整 <code>energy_rules</code> 中的各时段划分。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>inbox 太多怎么处理？</span>
+    </div>
+    <div class="faq-a">
+      执行 <code>/plan-day</code> 时，AI 会自动将 inbox 中的项目分流到四个类别：<br><br>
+      <strong>→ 决策</strong>：需要你做判断的事项，进入决策队列<br>
+      <strong>→ 委派</strong>：可以交给团队的任务，建议通过 <code>/dispatch</code> 派单<br>
+      <strong>→ 个人</strong>：需要你亲自执行的事项，进入 Big Rocks 候选<br>
+      <strong>→ 参考</strong>：仅供参考的信息，归档到 OBS 知识库<br><br>
+      分流后 inbox 会自动清空。如果积累过多，直接运行一次 <code>/plan-day</code> 即可批量处理。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>如何设置 OKR？</span>
+    </div>
+    <div class="faq-a">
+      直接告诉 Lysander 你的季度目标和关键结果即可。例如：<br><br>
+      <em>"Lysander，我的 Q2 目标是：1. 建立个人品牌影响力——每周发布 1 篇博客、播客访谈笔记沉淀 10 篇；2. 完成 Janus 项目交付——客户满意度 4.5 分以上。"</em><br><br>
+      Lysander 会将其结构化录入 <code>personal_tasks.yaml</code> 的 <code>personal_okrs</code> 节，此后每次 <code>/plan-day</code> 都会自动追踪进度。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>SPE 数据存在哪里？安全吗？</span>
+    </div>
+    <div class="faq-a">
+      所有 SPE 数据存储在本地文件系统（<code>agent-butler/config/</code> 目录下的 YAML 文件）和本地 Git 仓库中。行为观察数据存储在 Claude Code 的 memory 系统中。没有任何数据会上传到第三方服务。Google Calendar 和 Slack 的集成通过 MCP 实时读取，不缓存外部数据。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="arrow">▶</span>
+      <span>时间块的时段是如何自动选择的？</span>
+    </div>
+    <div class="faq-a">
+      SPE 基于 <code>calendar_config.yaml</code> 中的精力分配规则匹配最佳时段：<br><br>
+      <strong>08:00-12:00</strong>（高精力）→ 深度工作、关键决策<br>
+      <strong>13:00-15:00</strong>（中精力）→ 会议、协作<br>
+      <strong>15:00-18:00</strong>（常规）→ M 级任务<br>
+      <strong>18:00-20:00</strong>（低精力）→ S 级轻量任务、复盘<br><br>
+      同时会检查 Google Calendar 上已有事件，避免时间冲突。如果指定时段已满，会自动选择下一个可用的同类时段。
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<div class="footer">
+  <p><span class="brand">Synapse Personal Engine</span> v1.0</p>
+  <p>Janus Digital &copy; 2026</p>
+  <p style="margin-top:8px; color:#334155;">由 Lysander CEO 团队设计开发 — knowledge_engineer 编撰</p>
+</div>
+
+</div><!-- /content -->
+</main>
+</div><!-- /layout -->
+
+<script>
+// ===== Mobile Nav Toggle =====
+function toggleNav() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Close sidebar when clicking a link (mobile)
+document.querySelectorAll('.nav-list a').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 768) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  });
+});
+
+// ===== Active Nav Highlight =====
+(function() {
+  var sections = document.querySelectorAll('section[id], div[id], h3[id]');
+  var navLinks = document.querySelectorAll('.nav-list a');
+
+  function onScroll() {
+    var scrollPos = window.scrollY + 120;
+    var current = '';
+
+    sections.forEach(function(sec) {
+      if (sec.offsetTop <= scrollPos) {
+        current = sec.id;
+      }
+    });
+
+    navLinks.forEach(function(link) {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+
+// ===== FAQ Toggle =====
+function toggleFaq(el) {
+  el.classList.toggle('open');
+  var answer = el.nextElementSibling;
+  answer.classList.toggle('show');
+}
+</script>
+
+</body>
+</html>
