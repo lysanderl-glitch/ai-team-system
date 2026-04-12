@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Video Tutorial Scenes Config",
+  "description": "Configuration schema for the video-gen.py pipeline. Defines metadata, scenes, and rendering parameters for automated video tutorial generation.",
+  "type": "object",
+  "required": ["meta", "scenes"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Global metadata and defaults for the video.",
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Video title, also used as default output filename."
+        },
+        "duration_target": {
+          "type": "integer",
+          "description": "Target total duration in seconds (advisory, not enforced)."
+        },
+        "resolution": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [1920, 1080],
+          "description": "Video resolution as [width, height]."
+        },
+        "voice": {
+          "type": "string",
+          "default": "zh-CN-YunxiNeural",
+          "description": "Edge TTS voice name for narration."
+        },
+        "voice_rate": {
+          "type": "string",
+          "default": "+10%",
+          "description": "TTS speech rate adjustment."
+        },
+        "voice_volume": {
+          "type": "string",
+          "default": "+0%",
+          "description": "TTS volume adjustment."
+        },
+        "html_source": {
+          "type": "string",
+          "description": "Path to a pre-built HTML animation file (bypasses template injection). Relative to config file or project root."
+        },
+        "template": {
+          "type": "string",
+          "default": "terminal-tutorial.html",
+          "description": "Template filename in tools/video-pipeline/templates/ to use for scene rendering."
+        },
+        "brand": {
+          "type": "object",
+          "description": "Branding overrides for the template.",
+          "properties": {
+            "accent_color": {
+              "type": "string",
+              "default": "#14b8a6",
+              "description": "Primary accent color (CSS hex)."
+            },
+            "bg_color": {
+              "type": "string",
+              "default": "#0f172a",
+              "description": "Background color (CSS hex)."
+            },
+            "font_family": {
+              "type": "string",
+              "default": "'JetBrains Mono', monospace",
+              "description": "Primary font family."
+            },
+            "company": {
+              "type": "string",
+              "description": "Company name shown in CTA scene."
+            },
+            "copyright_year": {
+              "type": "string",
+              "description": "Copyright year in CTA."
+            }
+          }
+        }
+      }
+    },
+    "scenes": {
+      "type": "array",
+      "description": "Ordered list of scenes composing the video.",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique scene identifier (used for narration filenames)."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["hook", "terminal-demo", "cta", "info-screen"],
+            "description": "Scene type determining layout and animation behavior."
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Target scene duration in milliseconds."
+          },
+          "title": {
+            "type": "string",
+            "description": "Scene title (shown in hook/cta, used for logging)."
+          },
+          "subtitle": {
+            "type": "string",
+            "description": "Subtitle text displayed in the bottom bar during scene."
+          },
+          "narration": {
+            "type": "string",
+            "description": "TTS narration text for this scene."
+          },
+          "progress_label": {
+            "type": "string",
+            "description": "Label shown in the progress bar for this scene."
+          },
+
+          "chaos_items": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "(hook type) Items displayed as scattered chaos notes before the title reveal."
+          },
+          "hook_cards": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "(hook type) Command cards shown at bottom of hook."
+          },
+
+          "commands": {
+            "type": "array",
+            "description": "(terminal-demo type) Terminal commands to animate.",
+            "items": {
+              "type": "object",
+              "required": ["input"],
+              "properties": {
+                "input": {
+                  "type": "string",
+                  "description": "Command text typed into the terminal."
+                },
+                "output": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Output lines rendered after the command. Supports HTML for color classes."
+                },
+                "delay_before": {
+                  "type": "integer",
+                  "default": 800,
+                  "description": "Milliseconds to wait before typing this command."
+                },
+                "delay_after": {
+                  "type": "integer",
+                  "default": 2000,
+                  "description": "Milliseconds to wait after output finishes."
+                },
+                "clear_before": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Clear terminal before typing this command."
+                }
+              }
+            }
+          },
+          "sidebar": {
+            "type": "object",
+            "description": "(terminal-demo type) Sidebar card config.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["info-card", "flow-steps", "diagram", "color-legend", "pdca"],
+                "description": "Sidebar card visual type."
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string",
+                "description": "HTML content for info-card type."
+              },
+              "steps": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Step labels for flow-steps type."
+              },
+              "items": {
+                "type": "array",
+                "description": "Data items for diagram/color-legend types.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": { "type": "string" },
+                    "color": { "type": "string" },
+                    "description": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "sidebar_cards": {
+            "type": "array",
+            "description": "Multiple sidebar cards for complex scenes.",
+            "items": { "$ref": "#/properties/scenes/items/properties/sidebar" }
+          },
+
+          "arch_layers": {
+            "type": "array",
+            "description": "(cta type) Architecture diagram layers.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "icon": { "type": "string" },
+                "label": { "type": "string" },
+                "command": { "type": "string" },
+                "color": { "type": "string" }
+              }
+            }
+          },
+          "cta_lines": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "(cta type) Call-to-action text lines."
+          },
+          "brand_title": {
+            "type": "string",
+            "description": "(cta type) Brand title at end."
+          },
+          "brand_subtitle": {
+            "type": "string",
+            "description": "(cta type) Brand subtitle/tagline."
+          }
+        }
+      }
+    }
+  }
+}

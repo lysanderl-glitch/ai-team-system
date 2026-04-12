@@ -1,0 +1,316 @@
+{
+  "meta": {
+    "title": "SPE Quick Start - 4 Commands to Master Your Day",
+    "duration_target": 240,
+    "resolution": [1920, 1080],
+    "voice": "zh-CN-YunxiNeural",
+    "voice_rate": "+10%",
+    "template": "terminal-tutorial.html",
+    "brand": {
+      "accent_color": "#14b8a6",
+      "bg_color": "#0f172a",
+      "font_family": "'JetBrains Mono', monospace",
+      "company": "Janus Digital",
+      "copyright_year": "2026"
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene_1_hook",
+      "type": "hook",
+      "duration": 30000,
+      "title": "SPE \u2014 \u4f60\u7684\u4e2a\u4eba\u6548\u7387\u5f15\u64ce",
+      "subtitle": "4 \u4e2a\u547d\u4ee4\uff0c\u638c\u63a7\u4f60\u7684\u6bcf\u4e00\u5929",
+      "chaos_items": [
+        "Slack: 3\u6761\u672a\u8bfb\u6d88\u606f",
+        "TODO: \u66f4\u65b0\u62a5\u4ef7\u8868",
+        "14:00 \u5ba2\u6237\u4f1a\u8bae",
+        "\u8bb0\u5f97\u56de\u738b\u603b\u90ae\u4ef6!",
+        "Q2 OKR \u8fdb\u5ea6?",
+        "\u4f9b\u5e94\u5546\u4ea4\u8d27\u786e\u8ba4",
+        "Blog: \u672c\u5468\u8fd8\u6ca1\u53d1",
+        "\u6295\u6807\u6587\u4ef6\u622a\u6b62\u660e\u5929",
+        "\u65e5\u5386\u51b2\u7a81!",
+        "\u65b0Agent\u5165\u804c\u5ba1\u6279"
+      ],
+      "hook_cards": ["/capture", "/plan-day", "/time-block", "/weekly-review"],
+      "narration": "\u4f60\u7528 Synapse \u7ba1\u597d\u4e86\u6574\u4e2a\u56e2\u961f\uff0c\u4f46\u4f60\u81ea\u5df1\u5462\uff1f\u8111\u5b50\u91cc\u7a81\u7136\u5192\u51fa\u7684\u60f3\u6cd5\uff0cSlack \u91cc\u5806\u79ef\u7684\u6d88\u606f\uff0c\u65e5\u5386\u4e0a\u6563\u843d\u7684\u4f1a\u8bae\uff0c\u8fd9\u4e9b\u8c01\u6765\u7ba1\uff1f\u4eca\u5929\u7528 4 \u5206\u949f\uff0c\u6211\u5e26\u4f60\u4e0a\u624b SPE\uff0c4 \u4e2a\u547d\u4ee4\uff0c\u8ba9\u4f60\u7684\u6bcf\u4e00\u5929\u90fd\u4e0d\u6f0f\u4e00\u4ef6\u4e8b\u3002"
+    },
+    {
+      "id": "scene_2_capture_intro",
+      "type": "terminal-demo",
+      "duration": 25000,
+      "title": "/capture - \u4ecb\u7ecd",
+      "progress_label": "/capture",
+      "commands": [
+        {
+          "input": "/capture \u7ed9\u738b\u603b\u56de\u90ae\u4ef6\u786e\u8ba4\u5408\u540c\u7ec6\u8282",
+          "output": [
+            "<span class=\"highlight-green flash-green\">\u2705 \u5df2\u6355\u83b7\u5230\u6536\u4ef6\u7bb1\uff1a</span><span class=\"output-line\">\u300c\u7ed9\u738b\u603b\u56de\u90ae\u4ef6\u786e\u8ba4\u5408\u540c\u7ec6\u8282\u300d</span>",
+            "<span class=\"dim\">ID: CAP-2026-0412-001 | \u6765\u6e90: claude_cli</span>"
+          ],
+          "delay_after": 2000
+        }
+      ],
+      "sidebar": {
+        "type": "info-card",
+        "title": "\ud83d\udce5 /capture \u547d\u4ee4",
+        "content": "<p>\u4e00\u53e5\u8bdd\u6355\u83b7\u4efb\u52a1\u5230\u6536\u4ef6\u7bb1</p><ul><li><span class=\"sidebar-highlight\">\u624b\u52a8\u8f93\u5165</span> \u2014 \u76f4\u63a5\u63cf\u8ff0\u4efb\u52a1</li><li><span class=\"sidebar-highlight\">\u81ea\u52a8\u63d0\u53d6</span> \u2014 AI \u626b\u63cf\u5bf9\u8bdd\u63d0\u53d6\u884c\u52a8\u9879</li></ul><p style=\"margin-top:16px; font-size:13px; color:#64748b;\">\u652f\u6301 SessionEnd Hook \u81ea\u52a8\u6267\u884c</p>"
+      },
+      "subtitle": "\u7b2c\u4e00\u4e2a\u547d\u4ee4 ... /capture ... \u968f\u65f6\u968f\u5730\u628a\u60f3\u6cd5\u6254\u8fdb\u6536\u4ef6\u7bb1\u3002",
+      "narration": "\u7b2c\u4e00\u4e2a\u547d\u4ee4\uff0c/capture\uff0c\u968f\u65f6\u968f\u5730\u628a\u60f3\u6cd5\u6254\u8fdb\u6536\u4ef6\u7bb1\u3002\u6bd4\u5982\u4f60\u7a81\u7136\u60f3\u8d77\u8981\u7ed9\u738b\u603b\u56de\u90ae\u4ef6\uff0c\u76f4\u63a5 /capture \u52a0\u4e0a\u63cf\u8ff0\uff0c\u4e00\u79d2\u5b58\u5165\u3002"
+    },
+    {
+      "id": "scene_2_capture_detail",
+      "type": "terminal-demo",
+      "duration": 30000,
+      "title": "/capture - \u6df1\u5165",
+      "commands": [
+        {
+          "input": "/capture auto",
+          "output": [
+            "<span class=\"highlight-blue\">\ud83d\udd0d \u626b\u63cf\u5f53\u524d\u5bf9\u8bdd\uff0c\u63d0\u53d6\u884c\u52a8\u9879...</span>",
+            "",
+            "<span class=\"output-line\">\u53d1\u73b0 <span class=\"highlight-cyan bold\">2</span> \u6761\u65b0\u884c\u52a8\u9879\uff1a</span>",
+            "<span class=\"output-line\">  1.\u300c\u66f4\u65b0\u6295\u6807\u6587\u4ef6\u4e2d\u7684\u62a5\u4ef7\u8868\u300d \u2192 <span class=\"highlight-green\">\u5df2\u6355\u83b7</span></span>",
+            "<span class=\"output-line\">  2.\u300c\u786e\u8ba4\u4f9b\u5e94\u5546\u4ea4\u8d27\u65f6\u95f4\u300d \u2192 <span class=\"highlight-green\">\u5df2\u6355\u83b7</span></span>",
+            "",
+            "<span class=\"output-line\">\ud83d\udccb \u6536\u4ef6\u7bb1\u5f53\u524d\u5171 <span class=\"highlight-cyan bold\">5</span> \u6761\u5f85\u5904\u7406\u9879</span>"
+          ],
+          "delay_before": 1000,
+          "delay_after": 3000
+        }
+      ],
+      "sidebar_cards": [
+        {
+          "type": "info-card",
+          "title": "\ud83d\udcd0 SPE \u56db\u5c42\u67b6\u6784",
+          "content": "<div style=\"margin-top:8px;\"><div style=\"padding:8px 12px; background:rgba(20,184,166,0.2); border-radius:6px; color:#14b8a6; font-weight:700; margin-bottom:6px; border:1px solid rgba(20,184,166,0.4);\">1. \u6355\u83b7\u5c42 \u2014 /capture</div><div style=\"text-align:center; color:#475569; margin:2px 0;\">|</div><div style=\"padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:6px; color:#64748b; margin-bottom:6px;\">2. \u5904\u7406\u5c42 \u2014 /plan-day</div><div style=\"text-align:center; color:#475569; margin:2px 0;\">|</div><div style=\"padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:6px; color:#64748b; margin-bottom:6px;\">3. \u6267\u884c\u5c42 \u2014 /time-block</div><div style=\"text-align:center; color:#475569; margin:2px 0;\">|</div><div style=\"padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:6px; color:#64748b;\">4. \u56de\u987e\u5c42 \u2014 /weekly-review</div></div>"
+        }
+      ],
+      "subtitle": "\u4e0d\u7528\u5207\u5e94\u7528\uff0c\u4e0d\u7528\u5f00\u5907\u5fd8\u5f55 ... \u60f3\u5230\u5c31\u8bf4\uff0c\u8bf4\u5b8c\u7ee7\u7eed\u5e72\u6d3b\u3002",
+      "narration": "\u4e0d\u7528\u5207\u5e94\u7528\uff0c\u4e0d\u7528\u5f00\u5907\u5fd8\u5f55\uff0c\u60f3\u5230\u5c31\u8bf4\uff0c\u8bf4\u5b8c\u7ee7\u7eed\u5e72\u6d3b\u3002\u8fd8\u6709\u4e2a\u66f4\u5389\u5bb3\u7684\uff0c\u4f1a\u8bdd\u7ed3\u675f\u524d\u8f93\u5165 /capture auto\uff0cAI \u4f1a\u81ea\u52a8\u626b\u63cf\u4f60\u6574\u6bb5\u5bf9\u8bdd\uff0c\u628a\u804a\u5929\u4e2d\u63d0\u5230\u7684\u6240\u6709\u5f85\u529e\u5168\u90e8\u63d0\u53d6\u51fa\u6765\uff0c\u4e00\u6761\u90fd\u4e0d\u6f0f\u3002\u800c\u4e14\uff0c\u5982\u679c\u4f60\u914d\u4e86 SessionEnd Hook\uff0c\u5173\u95ed\u4f1a\u8bdd\u65f6\u8fd9\u6b65\u4f1a\u81ea\u52a8\u6267\u884c\uff0c\u8fde /capture auto \u90fd\u4e0d\u7528\u6253\u3002"
+    },
+    {
+      "id": "scene_3_planday_intro",
+      "type": "terminal-demo",
+      "duration": 20000,
+      "title": "/plan-day - \u4ecb\u7ecd",
+      "progress_label": "/plan-day",
+      "commands": [
+        {
+          "input": "/plan-day",
+          "output": [
+            "<span class=\"dim\">\u23f3 \u6b63\u5728\u7efc\u5408\u56db\u5927\u4fe1\u606f\u6e90...</span>"
+          ],
+          "delay_after": 1500,
+          "clear_before": true
+        }
+      ],
+      "sidebar": {
+        "type": "flow-steps",
+        "title": "\u26a1 /plan-day \u516d\u6b65\u6d41\u7a0b",
+        "steps": [
+          "\u8bfb\u53d6 Google Calendar \u65e5\u7a0b",
+          "\u8bfb\u53d6\u6536\u4ef6\u7bb1 + \u8fdb\u884c\u4e2d\u4efb\u52a1",
+          "\u62c9\u53d6 Slack \u672a\u8bfb\u5f85\u529e",
+          "\u68c0\u67e5 OKR \u8fdb\u5ea6",
+          "\u7efc\u5408\u751f\u6210\u65e5\u7a0b\u6982\u89c8",
+          "\uff08\u53ef\u9009\uff09\u4e3a Big Rocks \u521b\u5efa\u65f6\u95f4\u5757"
+        ]
+      },
+      "subtitle": "\u6536\u4ef6\u7bb1\u6709\u4e1c\u897f\u4e86 ... \u7136\u540e\u5462\uff1f ... \u6bcf\u5929\u65e9\u4e0a\u7b2c\u4e00\u4ef6\u4e8b ... /plan-day\u3002",
+      "narration": "\u6536\u4ef6\u7bb1\u6709\u4e1c\u897f\u4e86\uff0c\u7136\u540e\u5462\uff1f\u6bcf\u5929\u65e9\u4e0a\u7b2c\u4e00\u4ef6\u4e8b\uff0c/plan-day\u3002\u4e00\u4e2a\u547d\u4ee4\uff0cSPE \u81ea\u52a8\u505a 6 \u4ef6\u4e8b\u3002"
+    },
+    {
+      "id": "scene_3_planday_detail",
+      "type": "terminal-demo",
+      "duration": 35000,
+      "title": "/plan-day - \u8be6\u89e3",
+      "commands": [
+        {
+          "input": "",
+          "output": [
+            "<span class=\"highlight-cyan bold\">\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501</span>",
+            "<span class=\"highlight-cyan bold\">\ud83d\udcc5  2026-04-12\uff08\u5468\u65e5\uff09\u65e5\u7a0b\u6982\u89c8</span>",
+            "<span class=\"highlight-cyan bold\">\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501</span>",
+            "",
+            "<span class=\"highlight-blue bold\">\ud83d\udcc6 \u4eca\u65e5\u65e5\u7a0b\uff08Google Calendar\uff09</span>",
+            "<span class=\"output-line\">  09:00-10:00  \u56e2\u961f\u5468\u4f1a</span>",
+            "<span class=\"output-line\">  14:00-15:00  \u5ba2\u6237\u6f14\u793a\u4f1a\u8bae</span>",
+            "<span class=\"output-line\">  16:00-16:30  1:1 with \u6280\u672f\u8d1f\u8d23\u4eba</span>",
+            "",
+            "<span class=\"highlight-purple bold\">\ud83d\udd12 \u5efa\u8bae\u65f6\u95f4\u5757</span>",
+            "<span class=\"output-line\">  10:00-12:00  \u6df1\u5ea6\u5de5\u4f5c \u2014 \u5ba1\u9605 Janus \u9879\u76ee\u65b9\u6848</span>",
+            "<span class=\"output-line\">  15:00-16:00  \u5904\u7406\u6536\u4ef6\u7bb1 + \u51b3\u7b56\u961f\u5217</span>",
+            "",
+            "<span class=\"highlight-yellow bold\">\ud83c\udfaf Big Rocks\uff08\u4eca\u65e5\u6700\u91cd\u8981\u7684\u4e8b\uff09</span>",
+            "<span class=\"output-line\">  1. \u5ba1\u9605 Janus \u9879\u76ee\u4ea4\u4ed8\u65b9\u6848 <span class=\"dim\">[\u6765\u6e90: active_tasks]</span></span>",
+            "<span class=\"output-line\">  2. \u786e\u8ba4\u7ade\u54c1\u5206\u6790\u62a5\u544a <span class=\"dim\">[\u6765\u6e90: inbox]</span></span>",
+            "",
+            "<span class=\"highlight-green bold\">\ud83d\udcec \u6536\u4ef6\u7bb1\u5206\u6d41\uff084 \u6761\u5f85\u5904\u7406\uff09</span>",
+            "<span class=\"output-line\">  \u2192 <span class=\"triage-highlight triage-decision\">\u51b3\u7b56</span>:\u300cn8n OAuth \u8fc1\u79fb\u65b9\u6848\u9009\u62e9\u300d</span>",
+            "<span class=\"output-line\">  \u2192 <span class=\"triage-highlight triage-delegate\">\u59d4\u6d3e</span>:\u300c\u66f4\u65b0\u5b98\u7f51\u4ef7\u683c\u9875\u9762\u300d\u2192 \u5efa\u8bae\u6d3e\u5355 Growth \u56e2\u961f</span>",
+            "<span class=\"output-line\">  \u2192 <span class=\"triage-highlight triage-personal\">\u4e2a\u4eba</span>:\u300c\u7ed9\u738b\u603b\u56de\u90ae\u4ef6\u300d</span>",
+            "<span class=\"output-line\">  \u2192 <span class=\"triage-highlight triage-reference\">\u53c2\u8003</span>:\u300c\u7ade\u54c1\u5b9a\u4ef7\u7b56\u7565\u7814\u7a76\u300d\u2192 \u5f52\u6863\u5230 OBS</span>",
+            "",
+            "<span class=\"highlight-red bold\">\u26a0\ufe0f OKR \u8fdb\u5ea6\u63d0\u9192</span>",
+            "<span class=\"output-line\">  \u300c\u6bcf\u5468\u53d1\u5e031\u7bc7\u535a\u5ba2\u300d\u2014 \u672c\u5468\u5c1a\u672a\u53d1\u5e03\uff0c<span class=\"highlight-red\">\u8fdb\u5ea6\u843d\u540e</span></span>"
+          ],
+          "delay_after": 2000,
+          "clear_before": true
+        }
+      ],
+      "sidebar": {
+        "type": "info-card",
+        "title": "\ud83d\udcec \u6536\u4ef6\u7bb1\u5206\u6d41",
+        "content": "<div class=\"inbox-flow\"><div class=\"inbox-box\" style=\"background:rgba(20,184,166,0.15); color:#14b8a6; border:1px solid rgba(20,184,166,0.3);\">\ud83d\udce5 \u6536\u4ef6\u7bb1</div><div style=\"color:#475569; font-size:18px;\">\u2193 AI \u81ea\u52a8\u5206\u7c7b \u2193</div><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%;\"><div class=\"inbox-bucket\" style=\"background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); text-align:center;\">\ud83e\udde0 \u51b3\u7b56</div><div class=\"inbox-bucket\" style=\"background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); text-align:center;\">\ud83d\udc65 \u59d4\u6d3e</div><div class=\"inbox-bucket\" style=\"background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); text-align:center;\">\ud83d\udc64 \u4e2a\u4eba</div><div class=\"inbox-bucket\" style=\"background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); text-align:center;\">\ud83d\udcda \u53c2\u8003</div></div></div>"
+      },
+      "subtitle": "\u65e5\u5386\u3001\u4efb\u52a1\u3001Slack\u3001OKR ... \u56db\u4e2a\u4fe1\u606f\u6e90\u81ea\u52a8\u6c47\u603b ... \u7136\u540e\u7ed9\u4f60\u4e00\u4efd\u4eca\u65e5\u7126\u70b9\u62a5\u544a\u3002",
+      "narration": "\u65e5\u5386\u3001\u4efb\u52a1\u3001Slack\u3001OKR\uff0c\u56db\u4e2a\u4fe1\u606f\u6e90\u81ea\u52a8\u6c47\u603b\uff0c\u7136\u540e\u7ed9\u4f60\u4e00\u4efd\u4eca\u65e5\u7126\u70b9\u62a5\u544a\u3002\u6ce8\u610f\u770b\u8fd9\u4e2a\u6536\u4ef6\u7bb1\u5206\u6d41\uff0cAI \u81ea\u52a8\u628a\u4f60\u6628\u5929 capture \u7684\u4e1c\u897f\u5206\u6210\u56db\u7c7b\uff0c\u9700\u8981\u4f60\u51b3\u7b56\u7684\u3001\u53ef\u4ee5\u6d3e\u7ed9\u56e2\u961f\u7684\u3001\u8981\u81ea\u5df1\u505a\u7684\u3001\u8fd8\u6709\u7eaf\u53c2\u8003\u7684\uff0c\u4f60\u53ea\u9700\u8981\u626b\u4e00\u773c\u786e\u8ba4\u5c31\u884c\u3002"
+    },
+    {
+      "id": "scene_3_planday_closing",
+      "type": "terminal-demo",
+      "duration": 8000,
+      "title": "/plan-day - \u603b\u7ed3",
+      "commands": [],
+      "subtitle": "\u4e24\u5206\u949f\uff0c\u4f60\u5c31\u77e5\u9053\u4eca\u5929\u6700\u91cd\u8981\u7684\u4e8b\u662f\u4ec0\u4e48 ... \u548c\u4ec0\u4e48\u65f6\u5019\u505a\u3002",
+      "narration": "\u4e24\u5206\u949f\uff0c\u4f60\u5c31\u77e5\u9053\u4eca\u5929\u6700\u91cd\u8981\u7684\u4e8b\u662f\u4ec0\u4e48\uff0c\u548c\u4ec0\u4e48\u65f6\u5019\u505a\u3002"
+    },
+    {
+      "id": "scene_4_timeblock_intro",
+      "type": "terminal-demo",
+      "duration": 25000,
+      "title": "/time-block - \u4ecb\u7ecd",
+      "progress_label": "/time-block",
+      "commands": [
+        {
+          "input": "/time-block \"\u5ba1\u9605Janus\u65b9\u6848\" 2h tomorrow",
+          "output": [
+            "<span class=\"highlight-green\">\u2705 \u5df2\u521b\u5efa\u65f6\u95f4\u5757\uff1a</span>",
+            "<span class=\"output-line\">  \ud83d\udccb \u5ba1\u9605Janus\u65b9\u6848</span>",
+            "<span class=\"output-line\">  \u23f0 2026-04-13 10:00-12:00\uff08<span class=\"highlight-yellow\">\u81ea\u52a8\u5339\u914d\u9ad8\u7cbe\u529b\u65f6\u6bb5</span>\uff09</span>",
+            "<span class=\"output-line\">  \ud83c\udfa8 Banana\uff08\u9ec4\u8272\uff09\u2014 \u5e38\u89c4\u4efb\u52a1</span>",
+            "<span class=\"output-line\">  \ud83d\udd14 \u63d0\u9192\uff1a\u63d0\u524d 10 \u5206\u949f</span>"
+          ],
+          "delay_after": 2000,
+          "clear_before": true
+        }
+      ],
+      "sidebar": {
+        "type": "info-card",
+        "title": "\u26a1 \u7cbe\u529b\u5206\u5e03 \u00d7 \u65f6\u95f4\u5757",
+        "content": "<div style=\"margin-top:12px;\"><div style=\"display:flex; align-items:center; gap:8px; margin-bottom:8px;\"><div style=\"width:100px; font-size:13px; color:#94a3b8; text-align:right;\">\u4e0a\u5348 8-12</div><div style=\"flex:1; height:24px; background:linear-gradient(90deg, rgba(20,184,166,0.4), rgba(20,184,166,0.15)); border-radius:4px; display:flex; align-items:center; padding-left:8px;\"><span style=\"font-size:12px; color:#14b8a6; font-weight:700;\">\u9ad8\u7cbe\u529b \u2192 \u6df1\u5ea6\u5de5\u4f5c</span></div></div><div style=\"display:flex; align-items:center; gap:8px; margin-bottom:8px;\"><div style=\"width:100px; font-size:13px; color:#94a3b8; text-align:right;\">\u4e0b\u5348 13-17</div><div style=\"flex:1; height:24px; background:linear-gradient(90deg, rgba(234,179,8,0.3), rgba(234,179,8,0.1)); border-radius:4px; display:flex; align-items:center; padding-left:8px;\"><span style=\"font-size:12px; color:#eab308; font-weight:700;\">\u4e2d\u7cbe\u529b \u2192 \u5e38\u89c4\u4efb\u52a1</span></div></div><div style=\"display:flex; align-items:center; gap:8px;\"><div style=\"width:100px; font-size:13px; color:#94a3b8; text-align:right;\">\u508d\u665a 17-19</div><div style=\"flex:1; height:24px; background:linear-gradient(90deg, rgba(100,116,139,0.3), rgba(100,116,139,0.1)); border-radius:4px; display:flex; align-items:center; padding-left:8px;\"><span style=\"font-size:12px; color:#64748b; font-weight:700;\">\u4f4e\u7cbe\u529b \u2192 \u8f7b\u91cf\u6536\u5c3e</span></div></div></div>"
+      },
+      "subtitle": "\u544a\u8bc9\u5b83\u4efb\u52a1\u540d\u3001\u65f6\u957f\u3001\u65e5\u671f ... \u5b83\u4f1a\u81ea\u52a8\u627e\u5230\u4f60\u65e5\u5386\u4e0a\u7684\u7a7a\u95f2\u65f6\u6bb5 ...",
+      "narration": "\u77e5\u9053\u8981\u505a\u4ec0\u4e48\u4e86\uff0c\u63a5\u4e0b\u6765\u9501\u5b9a\u65f6\u95f4\u3002/time-block \u5e2e\u4f60\u5728 Google Calendar \u4e0a\u521b\u5efa\u4e13\u5c5e\u65f6\u95f4\u5757\u3002\u544a\u8bc9\u5b83\u4efb\u52a1\u540d\u3001\u65f6\u957f\u3001\u65e5\u671f\uff0c\u5b83\u4f1a\u81ea\u52a8\u627e\u5230\u4f60\u65e5\u5386\u4e0a\u7684\u7a7a\u95f2\u65f6\u6bb5\uff0c\u800c\u4e14\u4f18\u5148\u5b89\u6392\u5728\u4f60\u7cbe\u529b\u6700\u597d\u7684\u65f6\u5019\u3002\u4e0a\u5348\u72b6\u6001\u597d\uff1f\u6df1\u5ea6\u5de5\u4f5c\u5c31\u653e\u4e0a\u5348\u3002"
+    },
+    {
+      "id": "scene_4_timeblock_detail",
+      "type": "terminal-demo",
+      "duration": 25000,
+      "title": "/time-block - \u6df1\u5165",
+      "commands": [
+        {
+          "input": "/time-block focus 2h",
+          "output": [
+            "<span class=\"highlight-green\">\u2705 \u5df2\u521b\u5efa\u6df1\u5ea6\u5de5\u4f5c\u5757\uff1a</span>",
+            "<span class=\"output-line\">  \ud83d\udd12 \u6df1\u5ea6\u5de5\u4f5c \u2014 Focus Time</span>",
+            "<span class=\"output-line\">  \u23f0 2026-04-12 10:00-12:00\uff08<span class=\"highlight-cyan\">\u9ad8\u7cbe\u529b\u65f6\u6bb5</span>\uff09</span>",
+            "<span class=\"output-line\">  \ud83c\udfa8 Peacock\uff08\u9752\u8272\uff09\u2014 \u6df1\u5ea6\u5de5\u4f5c</span>",
+            "<span class=\"output-line\">  \ud83d\udd14 \u63d0\u9192\uff1a\u63d0\u524d 10 \u5206\u949f</span>"
+          ],
+          "delay_before": 1000,
+          "delay_after": 2000
+        }
+      ],
+      "sidebar": {
+        "type": "color-legend",
+        "title": "\ud83c\udfa8 \u989c\u8272\u7f16\u7801\u901f\u67e5",
+        "items": [
+          { "label": "Peacock \u9752\u8272", "color": "#14b8a6", "description": "\u6df1\u5ea6\u5de5\u4f5c / Focus" },
+          { "label": "Banana \u9ec4\u8272", "color": "#eab308", "description": "\u5e38\u89c4\u4efb\u52a1" },
+          { "label": "Tomato \u7ea2\u8272", "color": "#ef4444", "description": "Deadline / \u7d27\u6025" },
+          { "label": "Sage \u7eff\u8272", "color": "#22c55e", "description": "\u5b66\u4e60 / \u4e2a\u4eba\u53d1\u5c55" }
+        ]
+      },
+      "subtitle": "focus \u6a21\u5f0f\u4e13\u95e8\u7528\u6765\u521b\u5efa\u6df1\u5ea6\u5de5\u4f5c\u65f6\u6bb5 ... \u6bcf\u79cd\u4efb\u52a1\u7c7b\u578b\u90fd\u6709\u4e13\u5c5e\u989c\u8272 ...",
+      "narration": "focus \u6a21\u5f0f\u4e13\u95e8\u7528\u6765\u521b\u5efa\u6df1\u5ea6\u5de5\u4f5c\u65f6\u6bb5\uff0c\u9752\u8272\u6807\u8bb0\uff0c\u4e00\u773c\u5c31\u80fd\u5728\u65e5\u5386\u4e0a\u8ba4\u51fa\u6765\u3002\u8fd8\u652f\u6301 deadline \u6a21\u5f0f\u521b\u5efa\u622a\u6b62\u65e5\u671f\u63d0\u9192\uff0c\u7ea2\u8272\u6807\u8bb0\uff0c\u5230\u671f\u524d\u81ea\u52a8\u901a\u77e5\u4f60\u3002\u6bcf\u79cd\u4efb\u52a1\u7c7b\u578b\u90fd\u6709\u4e13\u5c5e\u989c\u8272\uff0c\u6253\u5f00\u65e5\u5386\u4e00\u773c\u5c31\u77e5\u9053\u8fd9\u5757\u65f6\u95f4\u662f\u5e72\u4ec0\u4e48\u7684\u3002"
+    },
+    {
+      "id": "scene_5_weeklyreview",
+      "type": "terminal-demo",
+      "duration": 35000,
+      "title": "/weekly-review - \u6bcf\u5468\u56de\u987e",
+      "progress_label": "/weekly-review",
+      "commands": [
+        {
+          "input": "/weekly-review",
+          "output": [
+            "<span class=\"highlight-cyan bold\">\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501</span>",
+            "<span class=\"highlight-cyan bold\">\ud83d\udcca  2026-W16 \u6bcf\u5468\u56de\u987e\u62a5\u544a</span>",
+            "<span class=\"highlight-cyan bold\">\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501</span>",
+            "",
+            "<span class=\"highlight-green bold\">\ud83c\udfc6 \u672c\u5468\u6210\u5c31</span>",
+            "<span class=\"output-line\">  \u2705 \u5b8c\u6210 SPE Phase 1-4 \u5168\u90e8\u5f00\u53d1\u5e76\u4ea4\u4ed8</span>",
+            "<span class=\"output-line\">  \u2705 \u60c5\u62a5\u65e5\u62a5\u7cfb\u7edf\u4e0a\u7ebf\u8fd0\u884c</span>",
+            "<span class=\"output-line\">  \u2705 3 \u4e2a\u8fdc\u7a0b\u5b9a\u65f6 Agent \u914d\u7f6e\u5b8c\u6210</span>",
+            "",
+            "<span class=\"highlight-blue bold\">\ud83d\udcc8 OKR \u8fdb\u5ea6 (2026-Q2)</span>",
+            "<span class=\"output-line\">  \u300c\u6bcf\u5468\u53d1\u5e031\u7bc7\u535a\u5ba2\u300d\u2014 <span class=\"highlight-green\">\u672c\u5468\u5df2\u5b8c\u6210</span></span>",
+            "",
+            "<span class=\"highlight-purple bold\">\ud83d\udcdd \u51b3\u7b56\u56de\u987e</span>",
+            "<span class=\"output-line\">  \u672c\u5468\u65b0\u589e\u51b3\u7b56: 2 \u9879</span>",
+            "<span class=\"output-line\">  \u2022 D-2026-0412-001: SPE \u4f53\u7cfb\u65b9\u6848\u9009\u578b <span class=\"dim\">[\u5df2\u51b3\u7b56]</span></span>",
+            "<span class=\"output-line\">  \u2022 D-2026-0412-002: SessionEnd Hook \u65b9\u6848 <span class=\"dim\">[\u5df2\u51b3\u7b56]</span></span>",
+            "",
+            "<span class=\"highlight-yellow bold\">\u23f1\ufe0f \u65f6\u95f4\u5206\u914d</span>",
+            "<span class=\"output-line\">  \u6df1\u5ea6\u5de5\u4f5c: 12h (35%)  |  \u4f1a\u8bae: 6h (18%)</span>",
+            "<span class=\"output-line\">  \u5e38\u89c4\u4efb\u52a1: 10h (29%)  |  \u5b66\u4e60: 4h (12%)</span>",
+            "",
+            "<span class=\"highlight-cyan bold\">\ud83d\udd2e \u4e0b\u5468\u7126\u70b9\u5efa\u8bae</span>",
+            "<span class=\"output-line\">  1. \u8bbe\u5b9a Q2 \u4e2a\u4eba OKR</span>",
+            "<span class=\"output-line\">  2. \u9a8c\u8bc1 SPE \u81ea\u52a8\u5316 Agent \u7a33\u5b9a\u6027</span>"
+          ],
+          "delay_after": 2000,
+          "clear_before": true
+        }
+      ],
+      "sidebar": {
+        "type": "pdca",
+        "title": "\ud83d\udd04 PDCA \u95ed\u73af",
+        "items": [
+          { "label": "P", "description": "Plan", "color": "#38bdf8" },
+          { "label": "D", "description": "Do", "color": "#22c55e" },
+          { "label": "C", "description": "Check", "color": "#eab308" },
+          { "label": "A", "description": "Act", "color": "#a855f7" }
+        ]
+      },
+      "subtitle": "\u672c\u5468\u5e72\u4e86\u4ec0\u4e48\u3001OKR \u8fdb\u4e86\u591a\u5c11\u3001\u505a\u4e86\u54ea\u4e9b\u5173\u952e\u51b3\u7b56\u3001\u65f6\u95f4\u82b1\u5728\u54ea\u4e86 ...",
+      "narration": "\u6700\u540e\u4e00\u4e2a\u547d\u4ee4\uff0c\u6bcf\u5468\u4e94\u82b1 10 \u5206\u949f\uff0c/weekly-review\u3002\u672c\u5468\u5e72\u4e86\u4ec0\u4e48\u3001OKR \u8fdb\u4e86\u591a\u5c11\u3001\u505a\u4e86\u54ea\u4e9b\u5173\u952e\u51b3\u7b56\u3001\u65f6\u95f4\u82b1\u5728\u54ea\u4e86\uff0c\u4e00\u5f20\u62a5\u544a\u5168\u770b\u6e05\u3002\u7cfb\u7edf\u8fd8\u4f1a\u7ed9\u4f60\u4e0b\u5468\u7684\u7126\u70b9\u5efa\u8bae\uff0c\u8fd9\u5c31\u662f SPE \u7684\u56de\u987e\u5c42\uff0c\u8ba9\u4f60\u7684\u6bcf\u4e00\u5468\u90fd\u6bd4\u4e0a\u4e00\u5468\u66f4\u597d\u3002"
+    },
+    {
+      "id": "scene_6_summary",
+      "type": "cta",
+      "duration": 25000,
+      "title": "\u603b\u7ed3 + CTA",
+      "arch_layers": [
+        { "icon": "\ud83d\udce5", "label": "\u6355\u83b7\u5c42", "command": "/capture", "color": "rgba(20,184,166,0.2)" },
+        { "icon": "\ud83d\udcc5", "label": "\u5904\u7406\u5c42", "command": "/plan-day", "color": "rgba(56,189,248,0.2)" },
+        { "icon": "\u23f0", "label": "\u6267\u884c\u5c42", "command": "/time-block", "color": "rgba(234,179,8,0.2)" },
+        { "icon": "\ud83d\udcca", "label": "\u56de\u987e\u5c42", "command": "/weekly-review", "color": "rgba(168,85,247,0.2)" }
+      ],
+      "cta_lines": [
+        "\u73b0\u5728\u5c31\u8bd5\u8bd5\uff1a",
+        "1. \u6253\u5f00 Claude Code",
+        "2. \u8f93\u5165 /capture \u4f60\u8111\u4e2d\u7684\u7b2c\u4e00\u4ef6\u5f85\u529e",
+        "3. \u660e\u5929\u65e9\u4e0a /plan-day \u5f00\u59cb\u4f60\u7684\u7b2c\u4e00\u5929"
+      ],
+      "brand_title": "Synapse Personal Engine",
+      "brand_subtitle": "\u8be6\u7ec6\u4f7f\u7528\u624b\u518c\u89c1 spe-user-guide.html",
+      "subtitle": "\u56de\u987e\u4e00\u4e0b ... 4 \u4e2a\u547d\u4ee4\uff0c4 \u4e2a\u52a8\u4f5c ...",
+      "narration": "\u56de\u987e\u4e00\u4e0b\uff0c4 \u4e2a\u547d\u4ee4\uff0c4 \u4e2a\u52a8\u4f5c\u3002\u60f3\u5230\u5c31 capture\uff0c\u65e9\u4e0a plan-day \u770b\u4eca\u65e5\u7126\u70b9\uff0c\u91cd\u8981\u7684\u4e8b time-block \u9501\u8fdb\u65e5\u5386\uff0c\u5468\u4e94 weekly-review \u590d\u76d8\u4e00\u5468\u3002\u6355\u83b7\u3001\u89c4\u5212\u3001\u6267\u884c\u3001\u56de\u987e\uff0c\u4e00\u4e2a\u95ed\u73af\uff0c\u96f6\u9057\u6f0f\u3002\u73b0\u5728\u5c31\u6253\u5f00 Claude Code\uff0c\u8f93\u5165 /capture\uff0c\u628a\u4f60\u8111\u5b50\u91cc\u7b2c\u4e00\u4ef6\u60f3\u5230\u7684\u4e8b\u5b58\u8fdb\u53bb\u3002\u660e\u5929\u65e9\u4e0a\uff0c\u7528 /plan-day \u5f00\u59cb\u4f60\u9ad8\u6548\u7684\u4e00\u5929\u3002"
+    }
+  ]
+}
