@@ -99,6 +99,40 @@ active_tasks:
 
 # 已完成任务归档（保留最近20条）
 completed_tasks:
+  - id: "TASK-2026-0412-001"
+    title: "SPE 个人任务管理体系 — 全4阶段开发+验收+使用指引"
+    level: "L"
+    status: "completed"
+    completed_at: "2026-04-12"
+    summary: |
+      Synapse Personal Engine (SPE) v1.0 全部完成。
+      Phase 1: 基础框架 — personal_tasks.yaml + /capture + /plan-day + 决策日志
+      Phase 2: 日历集成 — /time-block + calendar_config.yaml + 颜色编码
+      Phase 3: 自动化 — SessionEnd Hook + 日历同步Agent + 日终复盘Agent
+      Phase 4: 智能化 — 行为观察 + OKR追踪 + /weekly-review + 决策质量分析
+      使用指引: spe-user-guide.html (深色主题，7章，模拟验证通过)
+      分阶段验收: P1(4.8) P2(5.0) P3(4.8) P4(4.8) 整体(4.8/5.0)
+      17项交付物全部通过QA质量门禁。
+
+  - id: "TASK-2026-0412-002"
+    title: "gstack 战略评估 + Synapse 体系升级 + 博客发布管线拉通"
+    level: "L"
+    status: "completed"
+    completed_at: "2026-04-12"
+    summary: |
+      1. gstack 战略评估：16维度对比，选定方案Z双轮驱动
+      2. 13个 Synapse Slash Commands 创建（8管理+5研发）
+      3. RD团队5人 Agent 卡片升级（+23项gstack方法论能力）
+      4. 博客发布管线拉通：从旧obsidian-knowledge迁移到lysander-bond CI/CD
+      5. 博客文章上线：https://lysander.bond/blog/gstack-team-empowerment
+      6. CLAUDE.md 新增 CEO 执行禁区 + 个人化配置区
+      7. /daily-blog Skill + 发布SOP 更新适配 lysander-bond
+    deliverables:
+      - ".claude/skills/ (13个Skills)"
+      - "obs/04-decision-knowledge/gstack-strategic-evaluation-2026-04-11.md"
+      - "obs/06-daily-reports/2026-04-11-daily-retro.html"
+      - "lysander-bond/src/pages/blog/gstack-team-empowerment.astro"
+
   - id: "TASK-2026-0410-001"
     title: "PMO Notion 迁移 - 新Workspace重建"
     level: "L"

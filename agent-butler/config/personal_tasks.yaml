@@ -46,26 +46,36 @@ today_focus:
 # 从4大渠道捕获的未处理项
 # 渠道: claude_cli, claude_web, slack, google_calendar
 inbox:
-  items: []
-  # 示例:
-  # - id: "CAP-2026-0412-001"
-  #   content: "研究个人任务管理体系"
-  #   source: "claude_cli"       # claude_cli | claude_web | slack | google_calendar
-  #   captured_at: "2026-04-12T10:30:00"
-  #   status: "pending"          # pending | processing | done | dismissed
-  #   processed_to: ""           # 处理后去向: decision | team_task | personal | reference
+  items:
+    - id: "CAP-2026-0412-001"
+      content: "配置 SessionEnd Hook — 按 scripts/README-hooks.md 将配置加入 settings.json"
+      source: "claude_cli"
+      captured_at: "2026-04-12T18:00:00"
+      status: "pending"
+      processed_to: ""
+    - id: "CAP-2026-0412-002"
+      content: "创建 SPE 定时 Agent — 通过 /schedule 创建日历同步(6:15am)和日终复盘(8:00pm)两个远程Agent"
+      source: "claude_cli"
+      captured_at: "2026-04-12T18:00:00"
+      status: "pending"
+      processed_to: ""
+    - id: "CAP-2026-0412-003"
+      content: "设定 Q2 个人 OKR — 告诉 Lysander 季度目标，由其更新 personal_tasks.yaml"
+      source: "claude_cli"
+      captured_at: "2026-04-12T18:00:00"
+      status: "pending"
+      processed_to: ""
 
 # ===== 决策日志索引 =====
 # 详细决策记录在 obs/04-decision-knowledge/decision-log/ 下
 # 此处仅索引最近的活跃决策
-recent_decisions: []
-  # 示例:
-  # - id: "D-2026-0412-001"
-  #   title: "SPE 体系方案选型"
-  #   level: "L3"
-  #   status: "decided"
-  #   decided_at: "2026-04-12"
-  #   file: "obs/04-decision-knowledge/decision-log/D-2026-0412-001.md"
+recent_decisions:
+  - id: "D-2026-0412-001"
+    title: "SPE 体系方案选型"
+    level: "L3"
+    status: "decided"
+    decided_at: "2026-04-12"
+    file: "obs/04-decision-knowledge/decision-log/D-2026-0412-001.md"
 
 # ===== 周回顾数据 =====
 weekly_review:
