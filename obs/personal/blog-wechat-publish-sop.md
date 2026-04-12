@@ -10,84 +10,129 @@ type: SOP
 
 # 博客 + 微信发布 SOP v0.4
 
-## 架构总览
+## 架构总览（2026-04-12 更新）
 
 ```
-本地 obsidian-knowledge
-  └── 📝-Articles/ 写文章
-        ↓ obsidian-git 每5分钟自动 push
-GitHub: lysanderl-glitch/obsidian-knowledge
-        ↓ 服务器 cron 每小时 git pull
-服务器 /home/ubuntu/knowledge-base/📝-Articles/
-        ↓ 22:30 迪拜时间 harness-daily-publish.sh
-Astro 构建 → lysander.bond/blog/
-        ↓ 22:45 迪拜时间 n8n workflow LGkeWFUdYx5X7vgP
-微信公众号草稿箱
+本地 lysander-bond 项目
+  └── src/pages/blog/{slug}.astro   写文章（.astro 格式）
+  └── src/pages/blog/index.astro    更新文章列表（posts 数组）
+        ↓ git push origin main
+GitHub: lysanderl-glitch/lysander-bond
+        ↓ GitHub Actions 自动触发
+CI/CD: npm ci → npm run build → SSH deploy
+        ↓
+lysander.bond/blog/{slug} 上线
 ```
 
-**当前状态**：全链路通畅 ✅（最新文章 2026-04-09 已在线）
+**网站项目目录**：`C:\Users\lysanderl_janusd\Claude Code\lysander-bond`
+**技术栈**：Astro + Tailwind CSS
+**CI/CD**：GitHub Actions → SSH deploy to 43.156.171.107
+**当前状态**：全链路通畅 ✅
+
+> **注意**：旧管线（obsidian-knowledge → 服务器 cron pull）已弃用。
+> 所有博客发布通过 lysander-bond 仓库的 CI/CD 管线。
 
 ---
 
 ## 创建新文章
 
-### 文章格式（.astro.html 或 .md）
+### Step 1: 创建 .astro 文件
 
-放入 `obsidian-knowledge/📝-Articles/` 目录。
+在 `lysander-bond/src/pages/blog/` 下创建 `{slug}.astro`：
 
-**METADATA 格式**（.astro.html 文章必须包含）：
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+---
 
-```html
-<!-- METADATA:{"title":"文章标题","date":"2026-04-10","tags":["AI","标签2"],"description":"文章描述"} -->
+<Layout darkContent={true} title='文章标题 - Lysander' description='文章描述'>
+  <article class="max-w-4xl mx-auto px-6 py-16">
+    <header class="mb-12">
+      <div class="flex items-center gap-3 mb-4">
+        <time class="text-white/40 text-sm">YYYY-MM-DD</time>
+        <div class="flex gap-2">
+          <span class="px-2 py-0.5 bg-sky-500/20 text-sky-400 rounded text-xs">标签</span>
+        </div>
+      </div>
+      <h1 class="text-4xl font-bold text-white">文章标题</h1>
+    </header>
+    <div class="prose prose-invert max-w-none space-y-8 text-white/80 leading-relaxed">
+      <!-- 正文内容 -->
+    </div>
+    <footer class="mt-16 pt-8 border-t border-white/10">
+      <a href="/blog" class="text-sky-400 hover:text-sky-300">&larr; 返回博客</a>
+    </footer>
+  </article>
+</Layout>
 ```
 
-注意：标题中如有引号必须转义为 `\"`
+### Step 2: 更新列表页
+
+在 `src/pages/blog/index.astro` 的 `posts` 数组**头部**新增：
+
+```javascript
+{
+  slug: '{slug}',
+  title: '{标题}',
+  date: '{YYYY-MM-DD}',
+  description: '{描述}',
+  tags: ['{标签1}', '{标签2}']
+}
+```
+
+### Step 3: 推送发布
+
+```bash
+cd "C:\Users\lysanderl_janusd\Claude Code\lysander-bond"
+git add src/pages/blog/{slug}.astro src/pages/blog/index.astro
+git commit -m "blog: {标题}"
+git push origin main
+```
+
+GitHub Actions 自动构建部署，通常 1-2 分钟上线。
 
 ### 文章发布时间线
 
 | 动作 | 触发方式 | 预计延迟 |
 |------|----------|----------|
-| 本地写完文章 | 手动保存 | 立即 |
-| 推送到 GitHub | obsidian-git 自动 | ≤5分钟 |
-| 服务器拉取 | cron 每小时 | ≤60分钟 |
-| 博客发布 | cron 22:30 迪拜 | 当日 22:30 |
-| 微信草稿 | n8n 22:45 迪拜 | 当日 22:45 |
+| 创建 .astro 文件 + 更新 index | 手动或 Synapse `/daily-blog` | 立即 |
+| push 到 GitHub | git push | 立即 |
+| CI/CD build + deploy | GitHub Actions 自动 | 1-2 分钟 |
+| 文章上线 | 自动 | push 后约 2 分钟 |
 
 ---
 
-## 手动触发（跳过等待）
+## Synapse 集成
 
-```bash
-# 触发 n8n 微信草稿发布
-curl -X POST https://n8n.lysander.bond/webhook/wechat-blog-draft
-```
-
-服务器端手动触发博客构建：需 SSH 到服务器执行 `bash /home/ubuntu/scripts/harness-daily-publish.sh`（当前无 SSH 访问，等待 cron 即可）
+Synapse 的 `/daily-blog` Skill 产出博客内容后，publishing_ops 负责：
+1. Markdown 存入 `ai-team-system/obs/05-industry-knowledge/blog/`（知识沉淀）
+2. 转为 .astro 格式写入 `lysander-bond/src/pages/blog/`（网站发布）
+3. 更新 index.astro 列表
+4. git push 触发 CI/CD
 
 ---
 
 ## 验证清单
 
-- [ ] GitHub 上 obsidian-knowledge 有最新文章：https://github.com/lysanderl-glitch/obsidian-knowledge
 - [ ] 博客页面已更新：https://lysander.bond/blog/
-- [ ] 微信公众号草稿箱有新草稿：https://mp.weixin.qq.com/draft
+- [ ] 文章可访问：https://lysander.bond/blog/{slug}
+- [ ] GitHub Actions 构建成功：https://github.com/lysanderl-glitch/lysander-bond/actions
 
 ---
 
-## 常见问题
+## 微信发布（可选）
 
-| 问题 | 原因 | 解决 |
-|------|------|------|
-| 博客未更新 | 服务器尚未拉取 / cron 未触发 | 等下一个小时周期 |
-| 微信草稿未出现 | n8n workflow 未执行 | 检查 n8n.lysander.bond 执行历史 |
-| JSON 解析失败 | METADATA 中含中文引号 | 改用 `\"` 转义 |
-| 文章重复发布 | 同名文件改过 METADATA | harness-daily-publish.sh 会去重 |
+```bash
+curl -X POST https://n8n.lysander.bond/webhook/wechat-blog-draft
+```
+
+- n8n workflow ID: `LGkeWFUdYx5X7vgP`
 
 ---
 
 ## 相关配置
 
-- n8n workflow ID: `LGkeWFUdYx5X7vgP`
-- webhook: `https://n8n.lysander.bond/webhook/wechat-blog-draft`
-- 配置文件: `agent-butler/config/n8n_integration.yaml`
-- 服务器发布脚本: `/home/ubuntu/scripts/harness-daily-publish.sh`
+- 网站仓库: `lysanderl-glitch/lysander-bond`
+- CI/CD: `.github/workflows/deploy.yml`
+- Synapse Skill: `ai-team-system/.claude/skills/daily-blog/SKILL.md`
+- n8n 配置: `ai-team-system/agent-butler/config/n8n_integration.yaml`
