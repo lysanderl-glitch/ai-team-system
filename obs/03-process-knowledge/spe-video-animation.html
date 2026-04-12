@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1">
+<title>SPE Quick Start - 4 Commands to Master Your Day</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#app {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+}
+
+/* --- Progress bar (top-left) --- */
+#progress-bar {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  gap: 12px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+#progress-bar.visible { opacity: 1; }
+
+.prog-item {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.06);
+  color: #64748b;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.4s;
+}
+.prog-item.active {
+  background: rgba(20,184,166,0.18);
+  color: #14b8a6;
+  border-color: #14b8a6;
+  box-shadow: 0 0 12px rgba(20,184,166,0.25);
+}
+.prog-item.done {
+  background: rgba(20,184,166,0.10);
+  color: #14b8a6;
+  border-color: rgba(20,184,166,0.3);
+}
+
+/* --- Main content area --- */
+#main-area {
+  position: absolute;
+  top: 70px;
+  left: 32px;
+  width: 1856px;
+  height: 920px;
+  display: flex;
+  gap: 24px;
+}
+
+/* --- Terminal panel (left 65%) --- */
+#terminal-panel {
+  flex: 0 0 1200px;
+  background: #0a0e1a;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#terminal-titlebar {
+  height: 40px;
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.dot { width:12px; height:12px; border-radius:50%; }
+.dot-r { background:#ef4444; }
+.dot-y { background:#eab308; }
+.dot-g { background:#22c55e; }
+
+#terminal-title {
+  margin-left: 12px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+#terminal-body {
+  flex: 1;
+  padding: 20px 24px;
+  overflow: hidden;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+#terminal-content {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* cursor */
+#cursor {
+  display: inline-block;
+  width: 10px;
+  height: 20px;
+  background: #14b8a6;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* prompt */
+.prompt { color: #14b8a6; }
+.cmd-text { color: #f8fafc; }
+.output-line { color: #94a3b8; }
+.highlight-green { color: #22c55e; }
+.highlight-yellow { color: #eab308; }
+.highlight-red { color: #ef4444; }
+.highlight-cyan { color: #14b8a6; }
+.highlight-blue { color: #38bdf8; }
+.highlight-purple { color: #a78bfa; }
+.dim { color: #475569; }
+.bold { font-weight: 700; }
+
+/* --- Sidebar panel (right ~30%) --- */
+#sidebar-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* sidebar card */
+.sidebar-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 24px;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.5s ease-out;
+}
+.sidebar-card.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-card h3 {
+  font-size: 18px;
+  color: #14b8a6;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-card p, .sidebar-card li {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.8;
+}
+
+.sidebar-card ul { list-style: none; padding-left: 4px; }
+.sidebar-card ul li::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #14b8a6; margin-right: 10px; vertical-align: middle; }
+
+.sidebar-highlight {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(20,184,166,0.15);
+  border-radius: 4px;
+  color: #14b8a6;
+  font-weight: 700;
+}
+
+/* flow steps */
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease-out;
+}
+.flow-step.visible { opacity: 1; transform: translateY(0); }
+
+.flow-num {
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(20,184,166,0.2);
+  color: #14b8a6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.flow-label { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
+.flow-arrow {
+  width: 2px;
+  height: 12px;
+  background: rgba(20,184,166,0.3);
+  margin-left: 13px;
+  margin-bottom: 4px;
+}
+
+/* color swatch card */
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* PDCA ring */
+.pdca-container {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+.pdca-ring {
+  width: 240px;
+  height: 240px;
+  position: relative;
+}
+.pdca-quad {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.5s;
+  opacity: 0.5;
+}
+.pdca-quad.active { opacity: 1; box-shadow: 0 0 16px rgba(20,184,166,0.3); }
+.pdca-p { top:0; left:0; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); }
+.pdca-d { top:0; right:0; background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); }
+.pdca-c { bottom:0; right:0; background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); }
+.pdca-a { bottom:0; left:0; background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); }
+
+.pdca-arrow {
+  position: absolute;
+  font-size: 20px;
+  color: #475569;
+}
+.pdca-arrow-top { top: 50px; left: 50%; transform: translateX(-50%); }
+.pdca-arrow-right { top: 50%; right: 50px; transform: translateY(-50%); }
+.pdca-arrow-bottom { bottom: 50px; left: 50%; transform: translateX(-50%); }
+.pdca-arrow-left { top: 50%; left: 50px; transform: translateY(-50%); }
+
+/* --- Subtitle bar (bottom) --- */
+#subtitle-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1920px;
+  height: 90px;
+  background: linear-gradient(transparent, rgba(15,23,42,0.95) 30%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#subtitle-text {
+  font-size: 22px;
+  color: #e2e8f0;
+  text-align: center;
+  max-width: 1400px;
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#subtitle-text.visible { opacity: 1; }
+
+/* ============================================================
+   SCENE OVERLAYS
+   ============================================================ */
+
+/* Hook scene overlay */
+#hook-overlay {
+  position: absolute;
+  inset: 0;
+  background: #0f172a;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.8s;
+}
+
+/* Chaotic notes for hook */
+.chaos-note {
+  position: absolute;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+/* Title animation */
+#hook-title {
+  font-size: 52px;
+  font-weight: 700;
+  color: #f8fafc;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 1s ease-out;
+  z-index: 10;
+  text-align: center;
+}
+#hook-title.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+#hook-subtitle {
+  font-size: 24px;
+  color: #14b8a6;
+  margin-top: 16px;
+  opacity: 0;
+  transition: opacity 0.8s;
+  z-index: 10;
+}
+#hook-subtitle.visible { opacity: 1; }
+
+/* command cards at bottom of hook */
+#hook-cards {
+  position: absolute;
+  bottom: 120px;
+  display: flex;
+  gap: 20px;
+  z-index: 10;
+}
+
+.hook-card {
+  padding: 12px 24px;
+  background: rgba(20,184,166,0.1);
+  border: 1px solid rgba(20,184,166,0.3);
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #14b8a6;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.5s ease-out;
+}
+.hook-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* CTA scene overlay */
+#cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: #0f172a;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#cta-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Architecture diagram for CTA */
+.arch-layer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.5s ease-out;
+}
+.arch-layer.visible { opacity: 1; transform: translateX(0); }
+
+.arch-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.arch-label { font-size: 18px; color: #cbd5e1; }
+.arch-cmd { font-size: 16px; color: #14b8a6; font-weight: 700; margin-left: 8px; }
+.arch-arrow-down {
+  margin-left: 22px;
+  font-size: 20px;
+  color: #334155;
+  margin-bottom: 6px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.arch-arrow-down.visible { opacity: 1; }
+
+#cta-text-area {
+  margin-top: 48px;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+#cta-text-area.visible { opacity: 1; }
+
+.cta-line {
+  font-size: 20px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.5s ease-out;
+}
+.cta-line.visible { opacity: 1; transform: translateY(0); }
+.cta-line.big { font-size: 26px; color: #f8fafc; font-weight: 700; }
+
+#cta-brand {
+  margin-top: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s;
+}
+#cta-brand.visible { opacity: 1; }
+#cta-brand h2 {
+  font-size: 36px;
+  color: #14b8a6;
+  margin-bottom: 8px;
+}
+#cta-brand p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* inbox triage highlight */
+.triage-highlight {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0 4px;
+  transition: background 0.4s;
+}
+.triage-decision { background: rgba(168,85,247,0.2); }
+.triage-delegate { background: rgba(56,189,248,0.2); }
+.triage-personal { background: rgba(34,197,94,0.2); }
+.triage-reference { background: rgba(234,179,8,0.2); }
+
+/* glitch effect */
+@keyframes glitch {
+  0% { transform: translate(0); filter: none; }
+  20% { transform: translate(-4px, 2px); filter: hue-rotate(90deg); }
+  40% { transform: translate(4px, -2px); filter: hue-rotate(-90deg); }
+  60% { transform: translate(-2px, -4px); filter: hue-rotate(180deg); }
+  80% { transform: translate(2px, 4px); filter: none; }
+  100% { transform: translate(0); filter: none; }
+}
+.glitch { animation: glitch 0.3s ease-in-out; }
+
+/* highlight flash */
+@keyframes flash-green {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(34,197,94,0.2); }
+}
+.flash-green { animation: flash-green 0.6s ease-in-out 2; border-radius: 4px; }
+
+/* inbox flow sidebar diagram */
+.inbox-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+}
+.inbox-box {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+.inbox-arrows {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.inbox-arrow { color: #475569; font-size: 16px; }
+.inbox-bucket {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Progress Bar -->
+  <div id="progress-bar">
+    <div class="prog-item" data-cmd="/capture">/capture</div>
+    <div class="prog-item" data-cmd="/plan-day">/plan-day</div>
+    <div class="prog-item" data-cmd="/time-block">/time-block</div>
+    <div class="prog-item" data-cmd="/weekly-review">/weekly-review</div>
+  </div>
+
+  <!-- Main Area -->
+  <div id="main-area">
+    <!-- Terminal -->
+    <div id="terminal-panel">
+      <div id="terminal-titlebar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span id="terminal-title">claude-code ~ SPE</span>
+      </div>
+      <div id="terminal-body">
+        <div id="terminal-content"></div><span id="cursor"></span>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar-panel"></div>
+  </div>
+
+  <!-- Subtitle -->
+  <div id="subtitle-bar">
+    <div id="subtitle-text"></div>
+  </div>
+
+  <!-- Hook Overlay -->
+  <div id="hook-overlay">
+    <div id="hook-title">SPE &mdash; 你的个人效率引擎</div>
+    <div id="hook-subtitle">4 个命令，掌控你的每一天</div>
+    <div id="hook-cards">
+      <div class="hook-card">/capture</div>
+      <div class="hook-card">/plan-day</div>
+      <div class="hook-card">/time-block</div>
+      <div class="hook-card">/weekly-review</div>
+    </div>
+  </div>
+
+  <!-- CTA Overlay -->
+  <div id="cta-overlay"></div>
+
+</div>
+
+<script>
+// ============================================================
+// ENGINE
+// ============================================================
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// Terminal state
+const termContent = $('#terminal-content');
+const cursorEl = $('#cursor');
+
+function termClear() {
+  termContent.innerHTML = '';
+}
+
+function termAppend(html) {
+  termContent.insertAdjacentHTML('beforeend', html);
+  // keep cursor after content
+  termContent.parentElement.appendChild(cursorEl);
+  // scroll to bottom
+  const body = $('#terminal-body');
+  body.scrollTop = body.scrollHeight;
+}
+
+async function typeText(text, className, charDelay) {
+  charDelay = charDelay || 55;
+  const span = document.createElement('span');
+  if (className) span.className = className;
+  termContent.appendChild(span);
+  termContent.parentElement.appendChild(cursorEl);
+  for (let i = 0; i < text.length; i++) {
+    span.textContent += text[i];
+    const body = $('#terminal-body');
+    body.scrollTop = body.scrollHeight;
+    // vary speed slightly
+    await wait(charDelay + Math.random() * 25);
+  }
+}
+
+async function typeCommand(cmd) {
+  termAppend('<span class="prompt">$ </span>');
+  await typeText(cmd, 'cmd-text', 55);
+  termAppend('\n');
+}
+
+async function showOutputLines(lines, lineDelay) {
+  lineDelay = lineDelay || 150;
+  for (const line of lines) {
+    termAppend(line + '\n');
+    await wait(lineDelay);
+  }
+}
+
+// Subtitle
+function showSubtitle(text) {
+  const el = $('#subtitle-text');
+  el.textContent = text;
+  el.classList.add('visible');
+}
+function hideSubtitle() {
+  const el = $('#subtitle-text');
+  el.classList.remove('visible');
+}
+
+// Progress bar
+function setProgress(activeIndex) {
+  // -1 = none active, 0-3 = active command, 4 = all done
+  const items = $$('.prog-item');
+  items.forEach((item, i) => {
+    item.classList.remove('active', 'done');
+    if (activeIndex === 4) {
+      item.classList.add('done');
+    } else if (i < activeIndex) {
+      item.classList.add('done');
+    } else if (i === activeIndex) {
+      item.classList.add('active');
+    }
+  });
+}
+
+// Sidebar
+function clearSidebar() {
+  $('#sidebar-panel').innerHTML = '';
+}
+
+function addSidebarCard(html, delayMs) {
+  const card = document.createElement('div');
+  card.className = 'sidebar-card';
+  card.innerHTML = html;
+  $('#sidebar-panel').appendChild(card);
+  setTimeout(() => card.classList.add('visible'), delayMs || 100);
+  return card;
+}
+
+// ============================================================
+// SCENES
+// ============================================================
+
+async function sceneHook() {
+  // Scene 1: Hook (30s)
+  const overlay = $('#hook-overlay');
+  overlay.style.opacity = '1';
+  overlay.style.display = 'flex';
+
+  // Create chaos notes
+  const chaosNotes = [
+    { text: "Slack: 3条未读消息", x: 200, y: 180, bg: "rgba(239,68,68,0.15)", color: "#ef4444", rot: -5 },
+    { text: "TODO: 更新报价表", x: 700, y: 120, bg: "rgba(234,179,8,0.15)", color: "#eab308", rot: 3 },
+    { text: "14:00 客户会议", x: 400, y: 350, bg: "rgba(56,189,248,0.15)", color: "#38bdf8", rot: -2 },
+    { text: "记得回王总邮件!", x: 1100, y: 200, bg: "rgba(168,85,247,0.15)", color: "#a855f7", rot: 7 },
+    { text: "Q2 OKR 进度?", x: 900, y: 400, bg: "rgba(34,197,94,0.15)", color: "#22c55e", rot: -4 },
+    { text: "供应商交货确认", x: 300, y: 500, bg: "rgba(249,115,22,0.15)", color: "#f97316", rot: 2 },
+    { text: "Blog: 本周还没发", x: 1300, y: 350, bg: "rgba(239,68,68,0.15)", color: "#ef4444", rot: -6 },
+    { text: "投标文件截止明天", x: 600, y: 650, bg: "rgba(234,179,8,0.15)", color: "#eab308", rot: 4 },
+    { text: "日历冲突!", x: 1050, y: 550, bg: "rgba(239,68,68,0.2)", color: "#ef4444", rot: -3 },
+    { text: "新Agent入职审批", x: 1400, y: 150, bg: "rgba(20,184,166,0.15)", color: "#14b8a6", rot: 5 },
+  ];
+
+  const noteEls = [];
+  chaosNotes.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'chaos-note';
+    el.textContent = n.text;
+    el.style.cssText = `left:${n.x}px; top:${n.y}px; background:${n.bg}; color:${n.color}; border:1px solid ${n.color}; transform:rotate(${n.rot}deg);`;
+    overlay.appendChild(el);
+    noteEls.push(el);
+  });
+
+  // Show subtitle
+  showSubtitle("Synapse 帮你管好了 44 人的 AI 团队 ... 但你自己呢？");
+
+  // Animate chaos notes in
+  for (let i = 0; i < noteEls.length; i++) {
+    noteEls[i].style.opacity = '1';
+    await wait(200);
+  }
+
+  await wait(2000);
+  showSubtitle("脑子里突然冒出的想法，Slack 里堆积的消息，日历上散落的会议 ...");
+  await wait(3000);
+  showSubtitle("这些谁来管？");
+  await wait(1500);
+
+  // Glitch + shatter transition
+  overlay.classList.add('glitch');
+  await wait(300);
+  overlay.classList.remove('glitch');
+
+  // Fade out chaos notes
+  noteEls.forEach(el => { el.style.opacity = '0'; el.style.transition = 'all 0.4s'; });
+  await wait(500);
+
+  // Show title
+  $('#hook-title').classList.add('visible');
+  showSubtitle("今天用 4 分钟，我带你上手 SPE ...");
+  await wait(2000);
+
+  $('#hook-subtitle').classList.add('visible');
+  showSubtitle("4 个命令，让你的每一天都不漏一件事。");
+  await wait(2000);
+
+  // Show command cards one by one
+  const cards = $$('.hook-card');
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].classList.add('visible');
+    await wait(400);
+  }
+  await wait(2000);
+
+  // Transition out: fade overlay, show progress bar
+  overlay.style.transition = 'opacity 0.8s';
+  overlay.style.opacity = '0';
+  await wait(400);
+  $('#progress-bar').classList.add('visible');
+  await wait(500);
+  overlay.style.display = 'none';
+  hideSubtitle();
+}
+
+
+async function sceneCapture() {
+  // Scene 2: /capture (45s)
+  setProgress(0);
+  termClear();
+  clearSidebar();
+
+  showSubtitle("第一个命令 ... /capture ... 随时随地把想法扔进收件箱。");
+  await wait(3000);
+
+  // Type first command
+  showSubtitle("比如你突然想起要给王总回邮件 ... 直接 /capture 加上描述，一秒存入。");
+  await typeCommand('/capture 给王总回邮件确认合同细节');
+  await wait(800);
+
+  // Show output
+  await showOutputLines([
+    '<span class="highlight-green flash-green">✅ 已捕获到收件箱：</span><span class="output-line">「给王总回邮件确认合同细节」</span>',
+    '<span class="dim">ID: CAP-2026-0412-001 | 来源: claude_cli</span>',
+  ], 200);
+
+  await wait(2000);
+
+  // Sidebar: capture info card
+  addSidebarCard(`
+    <h3>📥 /capture 命令</h3>
+    <p>一句话捕获任务到收件箱</p>
+    <ul>
+      <li><span class="sidebar-highlight">手动输入</span> — 直接描述任务</li>
+      <li><span class="sidebar-highlight">自动提取</span> — AI 扫描对话提取行动项</li>
+    </ul>
+    <p style="margin-top:16px; font-size:13px; color:#64748b;">支持 SessionEnd Hook 自动执行</p>
+  `);
+
+  // Second part: architecture sidebar
+  await wait(2000);
+  addSidebarCard(`
+    <h3>📐 SPE 四层架构</h3>
+    <div style="margin-top:8px;">
+      <div style="padding:8px 12px; background:rgba(20,184,166,0.2); border-radius:6px; color:#14b8a6; font-weight:700; margin-bottom:6px; border:1px solid rgba(20,184,166,0.4);">1. 捕获层 — /capture</div>
+      <div style="text-align:center; color:#475569; margin:2px 0;">|</div>
+      <div style="padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:6px; color:#64748b; margin-bottom:6px;">2. 处理层 — /plan-day</div>
+      <div style="text-align:center; color:#475569; margin:2px 0;">|</div>
+      <div style="padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:6px; color:#64748b; margin-bottom:6px;">3. 执行层 — /time-block</div>
+      <div style="text-align:center; color:#475569; margin:2px 0;">|</div>
+      <div style="padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:6px; color:#64748b;">4. 回顾层 — /weekly-review</div>
+    </div>
+  `, 300);
+
+  showSubtitle("不用切应用，不用开备忘录 ... 想到就说，说完继续干活。");
+  await wait(3500);
+
+  showSubtitle("还有个更厉害的 ... 会话结束前输入 /capture auto ...");
+  await wait(2500);
+
+  // Clear and type capture auto
+  termAppend('\n');
+  await typeCommand('/capture auto');
+  await wait(600);
+
+  await showOutputLines([
+    '<span class="highlight-blue">🔍 扫描当前对话，提取行动项...</span>',
+    '',
+    '<span class="output-line">发现 <span class="highlight-cyan bold">2</span> 条新行动项：</span>',
+    '<span class="output-line">  1.「更新投标文件中的报价表」 → <span class="highlight-green">已捕获</span></span>',
+    '<span class="output-line">  2.「确认供应商交货时间」 → <span class="highlight-green">已捕获</span></span>',
+    '',
+    '<span class="output-line">📋 收件箱当前共 <span class="highlight-cyan bold">5</span> 条待处理项</span>',
+  ], 180);
+
+  showSubtitle("AI 会自动扫描你整段对话 ... 把聊天中提到的所有待办全部提取出来 ... 一条都不漏。");
+  await wait(4000);
+
+  showSubtitle("如果你配了 SessionEnd Hook ... 关闭会话时这步会自动执行 ... 连 /capture auto 都不用打。");
+  await wait(4000);
+  hideSubtitle();
+  await wait(500);
+}
+
+
+async function scenePlanDay() {
+  // Scene 3: /plan-day (60s)
+  setProgress(1);
+  termClear();
+  clearSidebar();
+
+  showSubtitle("收件箱有东西了 ... 然后呢？ ... 每天早上第一件事 ... /plan-day。");
+  await wait(3500);
+
+  await typeCommand('/plan-day');
+  await wait(600);
+
+  showSubtitle("一个命令，SPE 自动做 6 件事 ...");
+
+  // Sidebar: 6 steps flow
+  const flowCard = addSidebarCard(`
+    <h3>⚡ /plan-day 六步流程</h3>
+    <div id="flow-steps">
+      <div class="flow-step" data-step="0"><div class="flow-num">1</div><div class="flow-label">读取 Google Calendar 日程</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step" data-step="1"><div class="flow-num">2</div><div class="flow-label">读取收件箱 + 进行中任务</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step" data-step="2"><div class="flow-num">3</div><div class="flow-label">拉取 Slack 未读待办</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step" data-step="3"><div class="flow-num">4</div><div class="flow-label">检查 OKR 进度</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step" data-step="4"><div class="flow-num">5</div><div class="flow-label">综合生成日程概览</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step" data-step="5"><div class="flow-num">6</div><div class="flow-label">（可选）为 Big Rocks 创建时间块</div></div>
+    </div>
+  `, 200);
+
+  // Animate steps one by one
+  await wait(600);
+  const steps = flowCard.querySelectorAll('.flow-step');
+  for (let i = 0; i < steps.length; i++) {
+    steps[i].classList.add('visible');
+    await wait(500);
+  }
+
+  // Show loading in terminal
+  termAppend('<span class="dim">⏳ 正在综合四大信息源...</span>\n');
+  await wait(1500);
+
+  showSubtitle("日历、任务、Slack、OKR ... 四个信息源自动汇总 ... 然后给你一份今日焦点报告。");
+  await wait(3000);
+
+  // Clear loading and show full output
+  termClear();
+
+  const planOutput = [
+    '<span class="highlight-cyan bold">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>',
+    '<span class="highlight-cyan bold">📅  2026-04-12（周日）日程概览</span>',
+    '<span class="highlight-cyan bold">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>',
+    '',
+    '<span class="highlight-blue bold">📆 今日日程（Google Calendar）</span>',
+    '<span class="output-line">  09:00-10:00  团队周会</span>',
+    '<span class="output-line">  14:00-15:00  客户演示会议</span>',
+    '<span class="output-line">  16:00-16:30  1:1 with 技术负责人</span>',
+    '',
+    '<span class="highlight-purple bold">🔒 建议时间块</span>',
+    '<span class="output-line">  10:00-12:00  深度工作 — 审阅 Janus 项目方案</span>',
+    '<span class="output-line">  15:00-16:00  处理收件箱 + 决策队列</span>',
+    '',
+    '<span class="highlight-yellow bold">🎯 Big Rocks（今日最重要的事）</span>',
+    '<span class="output-line">  1. 审阅 Janus 项目交付方案 <span class="dim">[来源: active_tasks]</span></span>',
+    '<span class="output-line">  2. 确认竞品分析报告 <span class="dim">[来源: inbox]</span></span>',
+    '',
+    '<span class="highlight-green bold">📬 收件箱分流（4 条待处理）</span>',
+    '<span class="output-line">  → <span class="triage-highlight triage-decision">决策</span>:「n8n OAuth 迁移方案选择」</span>',
+    '<span class="output-line">  → <span class="triage-highlight triage-delegate">委派</span>:「更新官网价格页面」→ 建议派单 Growth 团队</span>',
+    '<span class="output-line">  → <span class="triage-highlight triage-personal">个人</span>:「给王总回邮件」</span>',
+    '<span class="output-line">  → <span class="triage-highlight triage-reference">参考</span>:「竞品定价策略研究」→ 归档到 OBS</span>',
+    '',
+    '<span class="highlight-red bold">⚠️ OKR 进度提醒</span>',
+    '<span class="output-line">  「每周发布1篇博客」— 本周尚未发布，<span class="highlight-red">进度落后</span></span>',
+  ];
+
+  await showOutputLines(planOutput, 130);
+
+  await wait(1500);
+
+  // Replace sidebar with inbox triage diagram
+  clearSidebar();
+  addSidebarCard(`
+    <h3>📬 收件箱分流</h3>
+    <div class="inbox-flow">
+      <div class="inbox-box" style="background:rgba(20,184,166,0.15); color:#14b8a6; border:1px solid rgba(20,184,166,0.3);">📥 收件箱</div>
+      <div style="color:#475569; font-size:18px;">↓ AI 自动分类 ↓</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%;">
+        <div class="inbox-bucket" style="background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); text-align:center;">🧠 决策</div>
+        <div class="inbox-bucket" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); text-align:center;">👥 委派</div>
+        <div class="inbox-bucket" style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); text-align:center;">👤 个人</div>
+        <div class="inbox-bucket" style="background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); text-align:center;">📚 参考</div>
+      </div>
+    </div>
+  `, 200);
+
+  showSubtitle("注意看这个收件箱分流 ... AI 自动把你昨天 capture 的东西分成四类 ...");
+  await wait(4000);
+
+  showSubtitle("需要你决策的、可以派给团队的、要自己做的、还有纯参考的 ... 你只需要扫一眼确认就行。");
+  await wait(4500);
+
+  showSubtitle("两分钟，你就知道今天最重要的事是什么 ... 和什么时候做。");
+  await wait(3500);
+  hideSubtitle();
+  await wait(500);
+}
+
+
+async function sceneTimeBlock() {
+  // Scene 4: /time-block (45s)
+  setProgress(2);
+  termClear();
+  clearSidebar();
+
+  showSubtitle("知道要做什么了 ... 接下来锁定时间。");
+  await wait(2500);
+
+  showSubtitle("/time-block 帮你在 Google Calendar 上创建专属时间块。");
+  await wait(3000);
+
+  await typeCommand('/time-block "审阅Janus方案" 2h tomorrow');
+  await wait(800);
+
+  await showOutputLines([
+    '<span class="highlight-green">✅ 已创建时间块：</span>',
+    '<span class="output-line">  📋 审阅Janus方案</span>',
+    '<span class="output-line">  ⏰ 2026-04-13 10:00-12:00（<span class="highlight-yellow">自动匹配高精力时段</span>）</span>',
+    '<span class="output-line">  🎨 Banana（黄色）— 常规任务</span>',
+    '<span class="output-line">  🔔 提醒：提前 10 分钟</span>',
+  ], 180);
+
+  // Sidebar: energy diagram
+  addSidebarCard(`
+    <h3>⚡ 精力分布 × 时间块</h3>
+    <div style="margin-top:12px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <div style="width:100px; font-size:13px; color:#94a3b8; text-align:right;">上午 8-12</div>
+        <div style="flex:1; height:24px; background:linear-gradient(90deg, rgba(20,184,166,0.4), rgba(20,184,166,0.15)); border-radius:4px; display:flex; align-items:center; padding-left:8px;"><span style="font-size:12px; color:#14b8a6; font-weight:700;">高精力 → 深度工作</span></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <div style="width:100px; font-size:13px; color:#94a3b8; text-align:right;">下午 13-17</div>
+        <div style="flex:1; height:24px; background:linear-gradient(90deg, rgba(234,179,8,0.3), rgba(234,179,8,0.1)); border-radius:4px; display:flex; align-items:center; padding-left:8px;"><span style="font-size:12px; color:#eab308; font-weight:700;">中精力 → 常规任务</span></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:100px; font-size:13px; color:#94a3b8; text-align:right;">傍晚 17-19</div>
+        <div style="flex:1; height:24px; background:linear-gradient(90deg, rgba(100,116,139,0.3), rgba(100,116,139,0.1)); border-radius:4px; display:flex; align-items:center; padding-left:8px;"><span style="font-size:12px; color:#64748b; font-weight:700;">低精力 → 轻量收尾</span></div>
+      </div>
+    </div>
+  `, 200);
+
+  showSubtitle("告诉它任务名、时长、日期 ... 它会自动找到你日历上的空闲时段 ...");
+  await wait(3500);
+
+  showSubtitle("而且优先安排在你精力最好的时候 ... 上午状态好？深度工作就放上午。");
+  await wait(3500);
+
+  // Second command: focus mode
+  termAppend('\n');
+  await typeCommand('/time-block focus 2h');
+  await wait(800);
+
+  await showOutputLines([
+    '<span class="highlight-green">✅ 已创建深度工作块：</span>',
+    '<span class="output-line">  🔒 深度工作 — Focus Time</span>',
+    '<span class="output-line">  ⏰ 2026-04-12 10:00-12:00（<span class="highlight-cyan">高精力时段</span>）</span>',
+    '<span class="output-line">  🎨 Peacock（青色）— 深度工作</span>',
+    '<span class="output-line">  🔔 提醒：提前 10 分钟</span>',
+  ], 180);
+
+  showSubtitle("focus 模式专门用来创建深度工作时段 ... 青色标记，一眼就能在日历上认出来。");
+  await wait(3500);
+
+  // Sidebar: color coding card
+  addSidebarCard(`
+    <h3>🎨 颜色编码速查</h3>
+    <div style="margin-top:12px;">
+      <div class="color-row">
+        <div class="color-swatch" style="background:#14b8a6;"></div>
+        <span style="color:#14b8a6; font-weight:700;">Peacock 青色</span>
+        <span style="color:#94a3b8;">— 深度工作 / Focus</span>
+      </div>
+      <div class="color-row">
+        <div class="color-swatch" style="background:#eab308;"></div>
+        <span style="color:#eab308; font-weight:700;">Banana 黄色</span>
+        <span style="color:#94a3b8;">— 常规任务</span>
+      </div>
+      <div class="color-row">
+        <div class="color-swatch" style="background:#ef4444;"></div>
+        <span style="color:#ef4444; font-weight:700;">Tomato 红色</span>
+        <span style="color:#94a3b8;">— Deadline / 紧急</span>
+      </div>
+      <div class="color-row">
+        <div class="color-swatch" style="background:#22c55e;"></div>
+        <span style="color:#22c55e; font-weight:700;">Sage 绿色</span>
+        <span style="color:#94a3b8;">— 学习 / 个人发展</span>
+      </div>
+    </div>
+  `, 300);
+
+  showSubtitle("还支持 deadline 模式创建截止日期提醒 ... 每种任务类型都有专属颜色 ...");
+  await wait(3500);
+
+  showSubtitle("打开日历一眼就知道这块时间是干什么的。");
+  await wait(3000);
+  hideSubtitle();
+  await wait(500);
+}
+
+
+async function sceneWeeklyReview() {
+  // Scene 5: /weekly-review (35s)
+  setProgress(3);
+  termClear();
+  clearSidebar();
+
+  showSubtitle("最后一个命令 ... 每周五花 10 分钟 ... /weekly-review。");
+  await wait(3000);
+
+  await typeCommand('/weekly-review');
+  await wait(800);
+
+  const reviewOutput = [
+    '<span class="highlight-cyan bold">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>',
+    '<span class="highlight-cyan bold">📊  2026-W16 每周回顾报告</span>',
+    '<span class="highlight-cyan bold">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>',
+    '',
+    '<span class="highlight-green bold">🏆 本周成就</span>',
+    '<span class="output-line">  ✅ 完成 SPE Phase 1-4 全部开发并交付</span>',
+    '<span class="output-line">  ✅ 情报日报系统上线运行</span>',
+    '<span class="output-line">  ✅ 3 个远程定时 Agent 配置完成</span>',
+    '',
+    '<span class="highlight-blue bold">📈 OKR 进度 (2026-Q2)</span>',
+    '<span class="output-line">  「每周发布1篇博客」— <span class="highlight-green">本周已完成</span></span>',
+    '',
+    '<span class="highlight-purple bold">📝 决策回顾</span>',
+    '<span class="output-line">  本周新增决策: 2 项</span>',
+    '<span class="output-line">  • D-2026-0412-001: SPE 体系方案选型 <span class="dim">[已决策]</span></span>',
+    '<span class="output-line">  • D-2026-0412-002: SessionEnd Hook 方案 <span class="dim">[已决策]</span></span>',
+    '',
+    '<span class="highlight-yellow bold">⏱️ 时间分配</span>',
+    '<span class="output-line">  深度工作: 12h (35%)  |  会议: 6h (18%)</span>',
+    '<span class="output-line">  常规任务: 10h (29%)  |  学习: 4h (12%)</span>',
+    '',
+    '<span class="highlight-cyan bold">🔮 下周焦点建议</span>',
+    '<span class="output-line">  1. 设定 Q2 个人 OKR</span>',
+    '<span class="output-line">  2. 验证 SPE 自动化 Agent 稳定性</span>',
+  ];
+
+  await showOutputLines(reviewOutput, 120);
+
+  // Sidebar: PDCA
+  addSidebarCard(`
+    <h3>🔄 PDCA 闭环</h3>
+    <div class="pdca-container">
+      <div class="pdca-ring">
+        <div class="pdca-quad pdca-p" id="pdca-p">P<br><span style="font-size:11px;">Plan</span></div>
+        <div class="pdca-quad pdca-d" id="pdca-d">D<br><span style="font-size:11px;">Do</span></div>
+        <div class="pdca-quad pdca-c active" id="pdca-c">C<br><span style="font-size:11px;">Check</span></div>
+        <div class="pdca-quad pdca-a" id="pdca-a">A<br><span style="font-size:11px;">Act</span></div>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:13px; color:#14b8a6; margin-top:8px;">weekly-review = Check 环节<br>让你的每一周都比上一周更好</p>
+  `, 200);
+
+  // Animate PDCA highlight
+  await wait(2000);
+  showSubtitle("本周干了什么、OKR 进了多少、做了哪些关键决策、时间花在哪了 ...");
+  await wait(4000);
+
+  // Animate PDCA cycle
+  const pdcaEls = ['pdca-p', 'pdca-d', 'pdca-c', 'pdca-a'];
+  for (let i = 0; i < pdcaEls.length; i++) {
+    pdcaEls.forEach(id => document.getElementById(id)?.classList.remove('active'));
+    document.getElementById(pdcaEls[i])?.classList.add('active');
+    await wait(600);
+  }
+  // Back to Check
+  pdcaEls.forEach(id => document.getElementById(id)?.classList.remove('active'));
+  document.getElementById('pdca-c')?.classList.add('active');
+  document.getElementById('pdca-p')?.classList.add('active');
+
+  showSubtitle("系统还会给你下周的焦点建议 ... 这就是 SPE 的回顾层 ... 让你的每一周都比上一周更好。");
+  await wait(4500);
+  hideSubtitle();
+  await wait(500);
+}
+
+
+async function sceneCTA() {
+  // Scene 6: CTA (25s)
+  setProgress(4); // all done
+
+  const overlay = $('#cta-overlay');
+
+  // Build CTA content
+  overlay.innerHTML = `
+    <div style="display:flex; gap:64px; align-items:flex-start;">
+      <!-- Architecture diagram -->
+      <div id="arch-diagram" style="min-width:320px;">
+        <div class="arch-layer" data-i="0">
+          <div class="arch-icon" style="background:rgba(20,184,166,0.2); color:#14b8a6;">📥</div>
+          <div><div class="arch-label">捕获层</div><div class="arch-cmd">/capture</div></div>
+        </div>
+        <div class="arch-arrow-down">↓</div>
+        <div class="arch-layer" data-i="1">
+          <div class="arch-icon" style="background:rgba(56,189,248,0.2); color:#38bdf8;">📅</div>
+          <div><div class="arch-label">处理层</div><div class="arch-cmd">/plan-day</div></div>
+        </div>
+        <div class="arch-arrow-down">↓</div>
+        <div class="arch-layer" data-i="2">
+          <div class="arch-icon" style="background:rgba(234,179,8,0.2); color:#eab308;">⏰</div>
+          <div><div class="arch-label">执行层</div><div class="arch-cmd">/time-block</div></div>
+        </div>
+        <div class="arch-arrow-down">↓</div>
+        <div class="arch-layer" data-i="3">
+          <div class="arch-icon" style="background:rgba(168,85,247,0.2); color:#a855f7;">📊</div>
+          <div><div class="arch-label">回顾层</div><div class="arch-cmd">/weekly-review</div></div>
+        </div>
+        <div class="arch-arrow-down">↑ 闭环 ↑</div>
+      </div>
+
+      <!-- CTA text -->
+      <div>
+        <div id="cta-text-area">
+          <div class="cta-line big">现在就试试：</div>
+          <div class="cta-line">1. 打开 Claude Code</div>
+          <div class="cta-line">2. 输入 <span style="color:#14b8a6; font-weight:700;">/capture</span> 你脑中的第一件待办</div>
+          <div class="cta-line">3. 明天早上 <span style="color:#14b8a6; font-weight:700;">/plan-day</span> 开始你的第一天</div>
+        </div>
+        <div id="cta-brand">
+          <h2>Synapse Personal Engine</h2>
+          <p>详细使用手册见 spe-user-guide.html</p>
+          <p style="margin-top:12px; color:#334155;">Janus Digital &copy; 2026</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  overlay.classList.add('visible');
+
+  showSubtitle("回顾一下 ... 4 个命令，4 个动作 ...");
+  await wait(2500);
+
+  // Animate architecture layers
+  const layers = overlay.querySelectorAll('.arch-layer');
+  const arrows = overlay.querySelectorAll('.arch-arrow-down');
+  for (let i = 0; i < layers.length; i++) {
+    layers[i].classList.add('visible');
+    if (arrows[i]) arrows[i].classList.add('visible');
+    await wait(600);
+  }
+  // last arrow
+  if (arrows[4]) arrows[4].classList.add('visible');
+
+  showSubtitle("想到就 capture ... 早上 plan-day 看今日焦点 ... 重要的事 time-block 锁进日历 ...");
+  await wait(4000);
+
+  showSubtitle("周五 weekly-review 复盘一周 ... 捕获、规划、执行、回顾 ... 一个闭环，零遗漏。");
+  await wait(4000);
+
+  // Show CTA text
+  const ctaArea = overlay.querySelector('#cta-text-area');
+  ctaArea.classList.add('visible');
+
+  const ctaLines = overlay.querySelectorAll('.cta-line');
+  for (let i = 0; i < ctaLines.length; i++) {
+    ctaLines[i].classList.add('visible');
+    await wait(1000);
+  }
+
+  showSubtitle("现在就打开 Claude Code ... 输入 /capture ... 把你脑子里第一件想到的事存进去。");
+  await wait(4000);
+
+  showSubtitle("明天早上，用 /plan-day 开始你高效的一天。");
+  await wait(3000);
+
+  hideSubtitle();
+
+  // Brand
+  const brand = overlay.querySelector('#cta-brand');
+  brand.classList.add('visible');
+
+  await wait(4000); // Hold on brand
+}
+
+
+// ============================================================
+// MAIN TIMELINE
+// ============================================================
+
+async function runAnimation() {
+  await wait(2000); // Initial delay
+
+  // Scene 1: Hook (30s)
+  await sceneHook();
+
+  // Scene 2: /capture (45s)
+  await sceneCapture();
+  await wait(500);
+
+  // Scene 3: /plan-day (60s)
+  await scenePlanDay();
+  await wait(500);
+
+  // Scene 4: /time-block (45s)
+  await sceneTimeBlock();
+  await wait(500);
+
+  // Scene 5: /weekly-review (35s)
+  await sceneWeeklyReview();
+  await wait(500);
+
+  // Scene 6: CTA (25s)
+  await sceneCTA();
+
+  // Signal animation completion for Playwright recorder
+  document.body.setAttribute('data-animation-complete', 'true');
+}
+
+// Auto-start on load
+window.addEventListener('load', () => {
+  runAnimation();
+});
+</script>
+</body>
+</html>
