@@ -185,7 +185,7 @@ Lysander 主对话：
         ↓
 【③】QA + 智囊团审查（强制，Sensor反馈）            ← Sensor: 质量门禁
         integration_qa / qa_engineer：
-          → 调用 qa_auto_review() 自动评分（≥3.5通过）
+          → 调用 qa_auto_review() 自动评分（≥4.2通过，满分6.0）
           → 代码语法检查 + YAML验证
         执行审计师：检查执行链完整性
         智囊团：评估是否达成原始目标

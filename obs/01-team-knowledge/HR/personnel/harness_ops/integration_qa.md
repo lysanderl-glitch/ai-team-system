@@ -57,7 +57,7 @@ max_concurrent_tasks: 10
 每次变更后必检：
 □ Python 文件语法检查 (ast.parse)
 □ YAML 文件格式验证 (yaml.safe_load)
-□ QA 自动评分 >= 3.5
+□ QA 自动评分 >= 4.2（满分6.0）
 □ 核心功能可用性（classify/decide/chain-check）
 □ HTML 生成正常
 ```

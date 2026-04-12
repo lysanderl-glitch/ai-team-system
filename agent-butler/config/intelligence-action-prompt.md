@@ -75,7 +75,7 @@ pip install markdown pygments 2>/dev/null
 3. `integration_qa` 运行变更验证：
    - Python语法检查 (ast.parse)
    - YAML格式验证 (yaml.safe_load)
-   - qa_auto_review() 自动评分（≥3.5通过）
+   - qa_auto_review() 自动评分（≥4.2通过，满分6.0）
    - 核心功能回归测试（classify/decide/chain-check）
 
 **doc_create 类** → **knowledge_engineer** 主导：

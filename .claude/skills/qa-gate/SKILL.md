@@ -1,7 +1,7 @@
 ---
 name: qa-gate
 description: |
-  QA 质量门禁。对任务交付物进行自动化质量评审，评分制（满分5.0，合格线3.5）。
+  QA 质量门禁。对任务交付物进行自动化质量评审，评分制（满分6.0，合格线4.2）。
   执行链【③】的强制环节，任何 M/L 级任务交付前必须通过。
   Use after completing a task to run quality review, or when code/config changes
   need validation before delivery.
@@ -21,7 +21,7 @@ argument-hint: "[deliverable description or file paths]"
 
 分析 `$ARGUMENTS` 确定审查目标。如果未指定，审查当前会话中所有已完成的工作。
 
-## 审查维度（5项，每项1.0分，满分5.0）
+## 审查维度（6项，每项1.0分，满分6.0）
 
 ### 1. 目标达成度（0-1.0分）
 - 交付物是否完整回应了总裁的原始需求？
@@ -57,6 +57,31 @@ python3 -c "import yaml; yaml.safe_load(open('$FILE'))" 2>&1 || echo "YAML INVAL
 - 敏感信息是否妥善处理？
 - 变更是否可回滚？
 
+### 6. 功能端到端完整性（0-1.0分）
+- 交付物是否经过端到端验证？
+- 核心流程（golden path）是否实际跑通？
+- 边界情况（edge case）是否覆盖？
+
+评分标准：
+- **1.0**：有 test_scenarios 定义，且冒烟测试全部通过（golden path + edge case）
+- **0.8**：有 test_scenarios，golden path 通过，edge case 部分覆盖
+- **0.5**：有 test_scenarios 但未执行冒烟测试，或冒烟测试部分失败
+- **0.3**：无 test_scenarios，但人工判断核心流程可运行
+- **0.0**：无验证，或冒烟测试失败
+
+检查要点（按交付物类型）：
+- **Skill 类**：是否在隔离环境实际执行了 golden path？工具调用链是否完整？
+- **配置类**：是否加载验证？约束是否生效？
+- **脚本类**：是否 dry-run 通过？
+- **HTML 报告**：是否渲染检查 + 数据新鲜度校验？
+- **自动化编排**：是否有心跳监控配置？
+
+验证方法：
+```bash
+# 检查交付物是否定义了 test_scenarios（如适用）
+grep -r "test_scenarios\|golden.path\|edge.case" $DELIVERABLE_DIR 2>/dev/null || echo "NO TEST SCENARIOS FOUND"
+```
+
 ## 评分输出格式
 
 ```
@@ -69,13 +94,14 @@ python3 -c "import yaml; yaml.safe_load(open('$FILE'))" 2>&1 || echo "YAML INVAL
 | 技术质量 | X.X | ... |
 | 知识沉淀 | X.X | ... |
 | 风险控制 | X.X | ... |
-| **总分** | **X.X/5.0** | |
+| 功能端到端完整性 | X.X | ... |
+| **总分** | **X.X/6.0** | |
 
 **结论：** ✅ 通过 / ❌ 未通过（需补充：...）
 ```
 
 ## 门禁规则
 
-- **>= 3.5**：通过，可交付总裁
-- **3.0 - 3.4**：条件通过，需补充后交付
-- **< 3.0**：不通过，退回执行团队修改
+- **>= 4.2**：通过，可交付总裁
+- **3.6 - 4.1**：条件通过，需补充后交付
+- **< 3.6**：不通过，退回执行团队修改
