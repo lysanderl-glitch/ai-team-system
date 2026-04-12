@@ -6,11 +6,19 @@
 
 总裁刘子杨运营数字化建筑资产管理公司，使用 Claude Code + Multi-Agent 团队体系。每天8am有一份AI技术情报日报自动生成（存储在 `obs/daily-intelligence/`），包含3-5条可行动建议。你的工作是将这些建议变为现实。
 
+## 环境准备（必须首先执行）
+
+```bash
+pip install markdown pygments 2>/dev/null
+```
+这是生成HTML报告的必需依赖，每次运行必须先安装。
+
 ## 执行管线（5个阶段，全自动）
 
 ### Phase 1: 提取与分类
 
-1. 读取最新的情报日报 `obs/daily-intelligence/` 目录下最新的 `*-report-source.md`
+1. 读取最新的情报日报 `obs/daily-intelligence/` 目录下最新的 `*-report-source.md`（注意：不要读 action-report-source，要读情报日报 report-source）
+2. 确认是当天或最近的日报（优先当天的，如果当天没有则用最近一天的）
 2. 提取所有"行动建议"和"推荐行动清单"中的条目
 3. 对每条建议分类：
    - `code_change`: 需要修改代码/配置
@@ -153,9 +161,15 @@ report_type: action
 ### Phase 6: 提交并通知
 
 ```bash
-git add -A
+git pull --rebase origin main 2>/dev/null || true
+git add obs/daily-intelligence/
 git commit -m "Intelligence Action Report YYYY-MM-DD: executed X items"
-git push
+git push origin main
+```
+如果 push 失败（冲突），执行：
+```bash
+git pull --rebase origin main
+git push origin main
 ```
 
 Slack通知：「情报行动成果报告 (YYYY-MM-DD) 已生成。今日评估X条建议，执行完成Y条。[核心成果一句话]。请查看 obs/daily-intelligence/。」
