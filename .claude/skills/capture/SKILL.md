@@ -67,13 +67,46 @@ cat agent-butler/config/personal_tasks.yaml
    - 修改内容后保留
    - 全部放弃
 
-## Step 4: 写入 personal_tasks.yaml
+## Step 4: 写入 personal_tasks.yaml（强制门禁）
 
-使用 Edit 工具将新 items 追加到 `inbox.items` 列表中：
+**GATE：此步骤是强制门禁。必须确认 Edit 工具调用成功返回后才可继续。如果 Edit 失败，重试一次，仍失败则停止并报错，绝不可跳过。**
 
-- 如果 `items: []` 是空列表，替换为带有新条目的列表
-- 如果已有条目，在列表末尾追加新条目
-- 保持 YAML 格式一致（2 空格缩进）
+使用 Edit 工具将新 items 追加到 `agent-butler/config/personal_tasks.yaml` 的 `inbox.items` 列表中。
+
+**情况 A — inbox 为空列表 `items: []`：**
+- `old_string` 匹配：`items: []`
+- `new_string` 替换为完整的条目列表，例如：
+  ```
+  items:
+      - id: "CAP-2026-0412-001"
+        content: "捕获内容"
+        source: "claude_cli"
+        captured_at: "2026-04-12T14:30:00+04:00"
+        status: "pending"
+        processed_to: ""
+  ```
+
+**情况 B — inbox 已有条目：**
+- `old_string` 匹配最后一个条目的完整内容（从 `- id:` 到 `processed_to: "..."`）
+- `new_string` 为该最后条目原文 + 换行 + 新条目（保持相同缩进）
+
+**关键要求：**
+- 保持 YAML 格式一致（2 空格缩进，items 下 4 空格缩进）
+- Edit 工具必须返回成功（确认文件已修改）
+- **未完成 Edit 不得进入 Step 4.5 或 Step 5，执行链在此阻塞直到写入成功**
+
+## Step 4.5: 验证写入成功（第二道保险）
+
+用 git diff 检查文件是否确实被修改：
+
+```!
+cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system && git diff --stat agent-butler/config/personal_tasks.yaml
+```
+
+- **diff 有输出**（文件已变更）→ 继续进入 Step 5
+- **diff 为空**（文件未变更）→ Step 4 写入失败，**必须回到 Step 4 重试一次**。如果重试后 diff 仍为空，停止执行并向用户报错："personal_tasks.yaml 写入失败，请检查文件格式或手动添加。"
+
+**绝不可在 diff 为空时继续后续步骤。**
 
 ## Step 5: 确认捕获结果
 
@@ -91,16 +124,18 @@ cat agent-butler/config/personal_tasks.yaml
 
 ## Step 6: Git 提交（条件执行）
 
-检查是否在 ai-team-system git repo 中：
+使用 `git diff --quiet` 检查文件是否有实际变更，只有变更存在时才提交：
 
 ```!
-cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system && git status --short agent-butler/config/personal_tasks.yaml
+cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system && git diff --quiet agent-butler/config/personal_tasks.yaml || (git add agent-butler/config/personal_tasks.yaml && git commit -m "capture: add inbox items via /capture")
 ```
 
-如果有变更，执行 git add + commit：
+- **文件有变更**：`git diff --quiet` 返回非零，触发 `||` 后的 add + commit
+- **文件无变更**：`git diff --quiet` 返回零，跳过提交，输出以下警告：
 
-```!
-cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system && git add agent-butler/config/personal_tasks.yaml && git commit -m "capture: add inbox items via /capture"
+```
+⚠️ 警告：personal_tasks.yaml 无变更，跳过 git commit。
+这可能意味着 Step 4 的写入未生效，请检查捕获流程是否正常完成。
 ```
 
 ---
