@@ -31,6 +31,12 @@ logs/*.log
 # Evaluation / third-party source (isolated review only)
 _eval/
 
+# Node modules (all locations)
+node_modules/
+
+# Video pipeline build artifacts
+tools/video-pipeline/output/
+
 # 加密凭证库 — 绝不上传 GitHub
 credentials.enc.md
 obs/credentials.md
