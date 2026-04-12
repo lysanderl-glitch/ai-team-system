@@ -62,12 +62,14 @@ argument-hint: "[research topic]"
 - [具体可执行的行动2]
 ```
 
-### Phase 3: 知识沉淀
+### Phase 3: 知识沉淀（GATE：验证写入成功）
 
 如果情报具有长期价值，写入 OBS 知识库：
 - 行业知识 → `obs/05-industry-knowledge/`
 - 技术情报 → `obs/05-industry-knowledge/tech/`
 - 决策相关 → `obs/04-decision-knowledge/`
+
+**GATE：使用 Write 工具写入文件后，必须确认 Write 返回成功。如果写入失败，重试一次，仍失败则在情报报告末尾标注"知识沉淀写入失败，需手动处理"，不可静默跳过。**
 
 ### Phase 4: Sources 引用
 

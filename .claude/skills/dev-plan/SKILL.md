@@ -75,7 +75,7 @@ argument-hint: "[feature or architecture description]"
 - 哪些假设未经验证？标注 `[未验证]`。
 - 哪些边界条件可能导致方案失效？
 
-## Step 4: 输出技术方案文档
+## Step 4: 输出技术方案文档（GATE：验证写入成功）
 
 将完整方案写入 Artifact 文件，供下游 `/dev-review` 和 `/dev-qa` 消费：
 
@@ -83,6 +83,10 @@ argument-hint: "[feature or architecture description]"
 文件路径：.dev-artifacts/plan-[feature-name].md
 ```
 
-## Step 5: 决策记录
+**GATE：使用 Write 工具写入方案文件后，必须确认 Write 返回成功。如果失败，重试一次，仍失败则停止并报错"方案文档写入失败"，不进入 Step 5。**
+
+## Step 5: 决策记录（GATE：验证写入成功）
 
 重大架构决策记录到 OBS：`obs/04-decision-knowledge/adr/`
+
+**GATE：使用 Write 工具写入 ADR 文件后，必须确认 Write 返回成功。如果失败，在方案文档末尾标注"ADR 写入失败，需手动补录"。**

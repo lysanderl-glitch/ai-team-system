@@ -198,7 +198,7 @@ TZ="Asia/Dubai" date +%Y-%m-%d
 
 ---
 
-## Step 5: 更新 personal_tasks.yaml
+## Step 5: 更新 personal_tasks.yaml（GATE：验证写入成功）
 
 **personal_assistant 执行：**
 
@@ -210,6 +210,8 @@ TZ="Asia/Dubai" date +%Y-%m-%d
 4. 不覆盖其他字段（personal_okrs、habits 等保持不变）
 
 写入时使用 Edit 工具精确更新对应字段，避免覆盖整个文件。
+
+**GATE：每次 Edit 调用后，必须确认 Edit 返回成功。如果失败，重试一次，仍失败则在输出中标注"任务文件更新失败，日程概览仅供参考，未持久化"，不中断整体流程但不可静默跳过。**
 
 ---
 

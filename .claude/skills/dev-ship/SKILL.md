@@ -65,7 +65,11 @@ git merge origin/main --no-edit
 
 报告整体覆盖率和本次变更的覆盖情况。
 
-## Step 4: 推送并创建 PR
+## Step 4: 推送并创建 PR（前置条件：Step 2 测试通过）
+
+**前置检查：仅当 Step 2 测试通过（或仅主分支已有的失败）时才继续。如果有本分支引入的测试失败，禁止推送。**
+
+**GATE：执行 `git push` 前，先运行 `git diff --stat origin/main` 确认有变更要推送。如果 diff 为空，停止并提示"无变更可推送"。**
 
 ```bash
 git push origin HEAD -u

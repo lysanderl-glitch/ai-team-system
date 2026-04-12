@@ -182,13 +182,15 @@ TZ="Asia/Dubai" date +%Y-%m-%d
 🔗 日历事件链接：{event_link}（如 API 返回了链接）
 ```
 
-### 联动更新 personal_tasks.yaml（可选）
+### 联动更新 personal_tasks.yaml（可选，GATE：验证写入成功）
 
 如果任务来源于 `personal_tasks.yaml` 中的已有任务（通过标题匹配），读取文件并更新该任务状态：
 - 添加 `calendar_blocked: true`
 - 添加 `blocked_time: "{TARGET_DATE} {START_TIME}-{END_TIME}"`
 
 使用 Edit 工具精确更新，不覆盖其他内容。
+
+**GATE：Edit 调用后必须确认返回成功。如果失败，重试一次，仍失败则在输出中标注"任务文件联动更新失败"，不中断时间块创建流程。**
 
 ---
 

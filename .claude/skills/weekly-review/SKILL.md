@@ -123,21 +123,34 @@ OKR 进度
 
 ## Step 5: 保存与更新
 
-### 5a: 更新 personal_tasks.yaml
-在 personal_tasks.yaml 中更新 weekly_review 字段：
+### 5a: 更新 personal_tasks.yaml（GATE：验证写入成功）
+
+**GATE：使用 Edit 工具更新 personal_tasks.yaml 的 weekly_review 字段。必须确认 Edit 返回成功。如果失败，重试一次，仍失败则在报告中标注"任务文件更新失败"，但不阻塞 5b。**
+
 ```yaml
 weekly_review:
   last_review: "YYYY-MM-DD"
   last_week: "YYYY-Wnn"
 ```
 
-### 5b: 保存报告到 OBS
-将回顾报告保存为 Markdown 文件：
+### 5b: 保存报告到 OBS（GATE：验证写入成功）
+
+**GATE：使用 Write 工具将回顾报告保存为 Markdown 文件。必须确认 Write 返回成功。如果失败，重试一次，仍失败则停止并报错，不进入 5c。**
+
 ```bash
 # Write to obs/06-daily-reports/YYYY-Wnn-weekly-review.md
 ```
 
-### 5c: Git commit
+### 5c: Git commit（前置条件：至少 5a 或 5b 成功写入）
+
+**前置检查：运行 `git diff --stat` 确认有文件变更。如果 diff 为空（5a 和 5b 均失败），不执行 git commit，向用户报告写入失败。**
+
+```bash
+cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system
+git diff --stat agent-butler/config/personal_tasks.yaml obs/06-daily-reports/
+```
+
+仅在确认有变更后执行：
 ```bash
 cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system
 git add agent-butler/config/personal_tasks.yaml obs/06-daily-reports/YYYY-Wnn-weekly-review.md

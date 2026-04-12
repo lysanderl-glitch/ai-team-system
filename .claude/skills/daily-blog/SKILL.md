@@ -86,7 +86,7 @@ ls obs/generated-articles/*$(date +%Y-%m-%d)* 2>/dev/null
 - 过度 AI 味道（"让我们深入探讨"、"在当今快速发展的"）
 - 空洞总结（"总之AI很重要"）
 
-将 Markdown 文件写入：`obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md`（知识沉淀用）
+**GATE：使用 Write 工具将 Markdown 文件写入 `obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md`。必须确认 Write 工具返回成功后才可继续。如果 Write 失败，重试一次，仍失败则停止并报错，不进入 Step 4。**
 
 ## Step 4: 发布到 lysander.bond 网站
 
@@ -96,13 +96,15 @@ ls obs/generated-articles/*$(date +%Y-%m-%d)* 2>/dev/null
 > 技术栈：Astro + Tailwind CSS
 > CI/CD：git push main → GitHub Actions → SSH deploy
 
-### 4a: 将 Markdown 转为 .astro 格式
+### 4a: 将 Markdown 转为 .astro 格式（GATE：验证写入成功）
 
 参考现有文章格式（如 `src/pages/blog/aiobsidian.astro`），创建新文件：
 
 ```
 lysander-bond/src/pages/blog/{slug}.astro
 ```
+
+**GATE：使用 Write 工具创建 .astro 文件后，必须确认 Write 返回成功。失败则重试一次，仍失败则停止并报错，不继续 4b。**
 
 格式要求：
 - 头部：`import Layout from '../../layouts/Layout.astro';`
@@ -111,7 +113,7 @@ lysander-bond/src/pages/blog/{slug}.astro
 - 标签：`<span class="px-2 py-0.5 bg-sky-500/20 text-sky-400 rounded text-xs">`
 - 底部：返回博客链接
 
-### 4b: 更新博客列表页
+### 4b: 更新博客列表页（GATE：验证编辑成功）
 
 在 `lysander-bond/src/pages/blog/index.astro` 的 `posts` 数组**头部**新增条目：
 
@@ -125,7 +127,11 @@ lysander-bond/src/pages/blog/{slug}.astro
 }
 ```
 
-### 4c: 推送发布
+**GATE：使用 Edit 工具更新 index.astro 后，必须确认 Edit 返回成功。失败则重试一次，仍失败则停止并报错，不继续 4c。**
+
+### 4c: 推送发布（前置条件：4a + 4b 均成功）
+
+**前置检查：在推送前，使用 `git diff --stat` 确认 .astro 文件和 index.astro 均已被修改。如果 diff 为空或缺少预期文件，停止并报错，不执行 git push。**
 
 **devops_engineer 执行：**
 

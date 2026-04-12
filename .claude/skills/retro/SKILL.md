@@ -81,13 +81,17 @@ git diff --stat HEAD~10 2>/dev/null | tail -5
 - 知识沉淀率：X%
 ```
 
-### Step 4: 知识沉淀
+### Step 4: 知识沉淀（GATE：验证写入成功）
 
 将有价值的经验教训写入 `obs/02-project-knowledge/retro/` 目录。
 将可复用的流程改进写入 `obs/03-process-knowledge/`。
 
-### Step 5: 更新任务状态
+**GATE：每次 Write 工具调用后，必须确认返回成功。如果失败，重试一次，仍失败则在复盘报告中标注"知识沉淀写入失败：[文件路径]"，不可静默跳过。**
+
+### Step 5: 更新任务状态（GATE：验证编辑成功）
 
 检查并更新 `agent-butler/config/active_tasks.yaml`：
 - 已完成的任务标记为 done
 - 新发现的待办写入
+
+**GATE：使用 Edit 工具更新 active_tasks.yaml 后，必须确认 Edit 返回成功。如果失败，重试一次，仍失败则提示用户手动更新任务状态。**

@@ -51,9 +51,14 @@ find obs/ -name "*.md" -type f 2>/dev/null | head -50
    - 行业知识 → `obs/05-industry-knowledge/`
 
 2. 按照 OBS 标准格式创建文档
+
+   **GATE：使用 Write 工具创建文档后，必须确认 Write 返回成功。如果失败，重试一次，仍失败则停止并报错，不进入审核环节。**
+
 3. 更新相关索引文件（如有）
 
-**knowledge_quality_expert 审核：**
+   **GATE：使用 Edit 工具更新索引后，必须确认 Edit 返回成功。失败则在报告中标注"索引更新失败"。**
+
+**knowledge_quality_expert 审核（前置条件：文档创建成功）：**
 
 4. 检查文档质量：标题、标签、内容完整性
 5. 检查是否与现有知识重复
