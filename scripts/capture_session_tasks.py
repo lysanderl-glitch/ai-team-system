@@ -240,7 +240,7 @@ def append_to_yaml(yaml_path: Path, new_items: list[str], session_id: str) -> No
         content = f.read()
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-    today = datetime.now(timezone.utc).strftime("%Y-%m%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     # 生成新的 inbox entries
     new_entries = []
