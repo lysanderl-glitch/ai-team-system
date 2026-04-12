@@ -65,6 +65,12 @@ inbox:
       captured_at: "2026-04-12T18:00:00"
       status: "pending"
       processed_to: ""
+    - id: "CAP-2026-0412-004"
+      content: "明天(4月13日)关注10点的情报管线处理建议是否有执行（已连续两天未执行），12点去审查"
+      source: "claude_cli"
+      captured_at: "2026-04-12T21:00:00"
+      status: "pending"
+      processed_to: ""
 
 # ===== 决策日志索引 =====
 # 详细决策记录在 obs/04-decision-knowledge/decision-log/ 下
