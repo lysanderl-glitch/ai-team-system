@@ -86,33 +86,74 @@ ls obs/generated-articles/*$(date +%Y-%m-%d)* 2>/dev/null
 - 过度 AI 味道（"让我们深入探讨"、"在当今快速发展的"）
 - 空洞总结（"总之AI很重要"）
 
-将 Markdown 文件写入：`obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md`
+将 Markdown 文件写入：`obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md`（知识沉淀用）
 
-## Step 4: 生成 HTML
+## Step 4: 发布到 lysander.bond 网站
 
 **publishing_ops 执行：**
 
-```bash
-cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system
-PYTHONUTF8=1 python scripts/generate-article.py obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md
+> 网站项目目录：`C:\Users\lysanderl_janusd\Claude Code\lysander-bond`
+> 技术栈：Astro + Tailwind CSS
+> CI/CD：git push main → GitHub Actions → SSH deploy
+
+### 4a: 将 Markdown 转为 .astro 格式
+
+参考现有文章格式（如 `src/pages/blog/aiobsidian.astro`），创建新文件：
+
+```
+lysander-bond/src/pages/blog/{slug}.astro
 ```
 
-验证生成的 HTML 文件存在：
+格式要求：
+- 头部：`import Layout from '../../layouts/Layout.astro';`
+- 包裹：`<Layout darkContent={true} title="..." description="...">`
+- 正文：使用 Tailwind CSS 样式类（prose prose-invert, text-white/80 等）
+- 标签：`<span class="px-2 py-0.5 bg-sky-500/20 text-sky-400 rounded text-xs">`
+- 底部：返回博客链接
+
+### 4b: 更新博客列表页
+
+在 `lysander-bond/src/pages/blog/index.astro` 的 `posts` 数组**头部**新增条目：
+
+```javascript
+{
+  slug: '{slug}',
+  title: '{标题}',
+  date: '{YYYY-MM-DD}',
+  description: '{描述}',
+  tags: ['{标签1}', '{标签2}']
+}
+```
+
+### 4c: 推送发布
+
+**devops_engineer 执行：**
 
 ```bash
-ls obs/generated-articles/*$(date +%Y-%m-%d)* 2>/dev/null
+cd "C:\Users\lysanderl_janusd\Claude Code\lysander-bond"
+git add src/pages/blog/{slug}.astro src/pages/blog/index.astro
+git commit -m "blog: {标题}"
+git push origin main
 ```
+
+GitHub Actions 自动 build + SSH deploy → lysander.bond 上线。
 
 ## Step 5: 产出确认
+
+**integration_qa 验证：**
+
+1. 检查 GitHub Actions 构建状态
+2. 访问 `https://lysander.bond/blog/{slug}` 确认文章可访问
+3. 访问 `https://lysander.bond/blog` 确认列表页已更新
 
 输出摘要：
 
 ```
-**Daily Blog Generated**
+**Daily Blog Published**
 
 Title: [文章标题]
-Topic: [主题分类]
-Words: [字数]
-Markdown: obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md
-HTML: obs/generated-articles/YYYY-MM-DD-title.html
+URL: https://lysander.bond/blog/{slug}
+Markdown (archive): obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md
+Astro: lysander-bond/src/pages/blog/{slug}.astro
+CI/CD: GitHub Actions [status]
 ```
