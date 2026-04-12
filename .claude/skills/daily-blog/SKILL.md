@@ -163,3 +163,58 @@ Markdown (archive): obs/05-industry-knowledge/blog/YYYY-MM-DD-title.md
 Astro: lysander-bond/src/pages/blog/{slug}.astro
 CI/CD: GitHub Actions [status]
 ```
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 正常博客生成与发布
+
+- **场景名称**：工作日结束后调用 /daily-blog 生成并发布博客文章
+- **输入**：`/daily-blog`（无参数，自动选题）
+- **前置条件**：
+  - 当日有 git commit 记录（`git log --since="12 hours ago"` 有输出）
+  - `lysander-bond` 项目目录存在且可 push
+  - `obs/05-industry-knowledge/blog/` 目录存在
+  - `.claude/skills/daily-blog/blog-template.md` 模板存在
+- **预期结果**：
+  - [ ] Step 1 收集到 git 活动和/或复盘报告素材
+  - [ ] Step 2 选题聚焦一个核心观点，标题有吸引力
+  - [ ] 文件创建：`obs/05-industry-knowledge/blog/YYYY-MM-DD-*.md`（Markdown 存档）
+  - [ ] 文件创建：`lysander-bond/src/pages/blog/{slug}.astro`（Astro 页面）
+  - [ ] 文件变更：`lysander-bond/src/pages/blog/index.astro`（列表页新增条目）
+  - [ ] Astro 文件包含：`import Layout from '../../layouts/Layout.astro'`
+  - [ ] index.astro 的 posts 数组**头部**新增条目（非尾部）
+  - [ ] 工具调用链：`Bash(git log) -> Read(素材) -> Write(md) -> Write(astro) -> Edit(index.astro) -> Bash(git diff --stat) -> Bash(git add + commit + push)`
+  - [ ] git commit 消息包含：`blog:`
+  - [ ] 文章长度在 800-1500 字范围内
+  - [ ] 文章不包含内部敏感信息（凭证、客户名、合同金额）
+
+#### Edge Case 1: 当天无工作记录时的降级处理
+
+- **场景名称**：无 git 活动、无复盘报告、无情报日报时的行为
+- **输入**：`/daily-blog`
+- **前置条件**：
+  - `git log --since="12 hours ago"` 输出为空
+  - `obs/06-daily-reports/` 无当日文件
+  - `obs/generated-articles/` 无当日文件
+- **预期结果**：
+  - [ ] 不强行生成空洞文章
+  - [ ] 向用户报告"今日无足够素材生成博客"
+  - [ ] 可选：建议用户提供主题焦点（`/daily-blog [topic]`）
+  - [ ] 不产生空 commit
+  - [ ] 不修改 index.astro
+
+#### Edge Case 2: 指定主题焦点
+
+- **场景名称**：用户指定博客主题而非自动选题
+- **输入**：`/daily-blog Claude Code MCP 集成实践`
+- **前置条件**：
+  - 当日有相关 git 活动（可选，有更好）
+- **预期结果**：
+  - [ ] 选题围绕用户指定主题，不偏离
+  - [ ] 仍执行完整 Step 1 素材收集（寻找相关素材辅助写作）
+  - [ ] 即使当日 git 无相关记录，也基于指定主题生成文章
+  - [ ] 其余流程（Step 3-5）与 Golden Path 一致

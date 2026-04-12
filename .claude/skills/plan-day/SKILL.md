@@ -278,3 +278,58 @@ TZ="Asia/Dubai" date +%Y-%m-%d
 - Step 1-5 为只读操作（读取日历、任务等信息源）
 - Step 6 为可选写入操作：仅在总裁明确确认后才创建日历事件
 - 除更新 personal_tasks.yaml 和创建日历事件（经确认）外，不修改任何其他文件
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 正常每日规划（四大信息源可用）
+
+- **场景名称**：总裁在工作日早晨调用 /plan-day 生成今日焦点
+- **输入**：`/plan-day`（无参数，默认今天）
+- **前置条件**：
+  - Google Calendar MCP 已认证且可用
+  - `agent-butler/config/active_tasks.yaml` 存在且有进行中任务
+  - `agent-butler/config/personal_tasks.yaml` 存在且 inbox 有未处理条目
+  - Slack MCP 可用（可选）
+- **预期结果**：
+  - [ ] 目标日期为 Dubai 时区当天日期
+  - [ ] 调用 `gcal_list_events` 获取当日事件
+  - [ ] 调用 `gcal_find_my_free_time` 获取空闲时段
+  - [ ] 读取 active_tasks.yaml 提取总裁相关任务
+  - [ ] 读取 personal_tasks.yaml 提取 inbox + OKR
+  - [ ] 输出包含完整格式：日程概览 / 可用时间块 / Big Rocks / 收件箱 / OKR 对齐度 / AI 建议
+  - [ ] 文件变更：`agent-butler/config/personal_tasks.yaml`（更新 today_focus + last_planned）
+  - [ ] 工具调用链包含：`Read(active_tasks.yaml) -> Read(personal_tasks.yaml) -> MCP(gcal) -> Edit(personal_tasks.yaml)`
+  - [ ] 输出末尾提供时间块创建交互选项
+
+#### Edge Case 1: 无日历事件 + 无 active_tasks 时的降级
+
+- **场景名称**：所有外部数据源不可用时仍能输出有用规划
+- **输入**：`/plan-day`
+- **前置条件**：
+  - Google Calendar MCP 认证过期（调用返回错误）
+  - `active_tasks.yaml` 不存在或为空
+  - `personal_tasks.yaml` 仅有 inbox 条目，无 OKR 数据
+  - Slack MCP 不可用
+- **预期结果**：
+  - [ ] 不中断整体流程（不抛错退出）
+  - [ ] 日程区域显示 `(数据源不可用，已跳过)`
+  - [ ] 团队进展区域显示 `无团队任务数据`
+  - [ ] OKR 区域省略或标注无数据
+  - [ ] 仍包含 AI 建议区块（基于日期给出通用建议）
+  - [ ] 仍读取 personal_tasks.yaml inbox 并纳入规划
+  - [ ] 跳过时间块创建交互（无日历服务）
+
+#### Edge Case 2: 指定未来日期
+
+- **场景名称**：用户为明天或指定日期做预规划
+- **输入**：`/plan-day tomorrow` 或 `/plan-day 2026-04-15`
+- **前置条件**：
+  - Google Calendar MCP 可用
+- **预期结果**：
+  - [ ] timeMin/timeMax 使用指定日期而非当天
+  - [ ] 输出标题显示指定日期
+  - [ ] personal_tasks.yaml 的 today_focus 更新为指定日期的计划

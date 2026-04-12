@@ -146,3 +146,53 @@ cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system && git diff --quiet age
 - 内容原文保留：不过度加工总裁的原话，保持上下文
 - 去重检查：与已有 inbox items 和 active_tasks 对比，避免重复捕获
 - 时间戳精确：captured_at 使用 ISO 8601 格式，精确到秒
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 手动捕获单条任务
+
+- **场景名称**：用户通过 `/capture` 手动添加一条任务到收件箱
+- **输入**：`/capture 调研 Claude Code MCP 最新文档`
+- **前置条件**：
+  - `agent-butler/config/personal_tasks.yaml` 已存在
+  - inbox.items 已有至少 1 条现有条目
+- **预期结果**：
+  - [ ] 文件变更：`agent-butler/config/personal_tasks.yaml`
+  - [ ] 新条目 ID 格式匹配：`CAP-\d{4}-\d{4}-\d{3}`
+  - [ ] 新条目 content 包含：`调研 Claude Code MCP 最新文档`
+  - [ ] 新条目 source 为：`claude_cli`
+  - [ ] 新条目 status 为：`pending`
+  - [ ] captured_at 为 ISO 8601 格式（含时区）
+  - [ ] 工具调用链：`Read(personal_tasks.yaml) -> Edit(追加条目) -> Bash(git diff --stat) -> Bash(git commit)`
+  - [ ] git commit 消息包含：`capture`
+  - [ ] 最终输出包含表格：ID / 内容 / 来源 / 状态
+
+#### Edge Case 1: inbox 为空列表时的首次捕获
+
+- **场景名称**：inbox.items 为空数组 `[]` 时捕获第一条任务
+- **输入**：`/capture 第一条测试任务`
+- **前置条件**：
+  - `personal_tasks.yaml` 存在
+  - inbox 区块为 `items: []`（空列表）
+- **预期结果**：
+  - [ ] Edit 的 old_string 匹配 `items: []`，替换为包含新条目的完整列表
+  - [ ] 新条目 ID 序号为 `001`（当日首条）
+  - [ ] Step 4.5 git diff 有输出（确认写入成功）
+  - [ ] 不应产生空 commit
+
+#### Edge Case 2: 自动提取模式（无参数）
+
+- **场景名称**：无参数调用时自动扫描会话历史提取行动项
+- **输入**：`/capture`（无参数）或 `/capture auto`
+- **前置条件**：
+  - 当前会话中存在未记录的行动项（如总裁说过"回头要..."）
+  - `active_tasks.yaml` 已存在（用于去重）
+- **预期结果**：
+  - [ ] 进入自动提取模式（Step 3B）
+  - [ ] 提取结果列表展示给用户确认后再写入
+  - [ ] 与 active_tasks.yaml 中已有任务去重
+  - [ ] 如果会话中无可提取项，输出"未发现未记录的行动项"，不产生空写入
