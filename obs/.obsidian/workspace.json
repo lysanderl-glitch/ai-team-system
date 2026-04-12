@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "770c0714d2238fc8",
+        "id": "d18e19e264c7bf1f",
         "type": "tabs",
         "children": [
           {
-            "id": "b4ef362f60b7f681",
+            "id": "548356e6d566a228",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -182,7 +182,7 @@
       "meld-encrypt:Decrypt at Cursor": false
     }
   },
-  "active": "b4ef362f60b7f681",
+  "active": "548356e6d566a228",
   "lastOpenFiles": [
     "credentials.mdenc",
     "04-decision-knowledge/synapse-product-architecture.md",
