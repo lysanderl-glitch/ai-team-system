@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "4d4b156fdb411449",
+        "id": "770c0714d2238fc8",
         "type": "tabs",
         "children": [
           {
-            "id": "7e6f6f9ccff437b3",
+            "id": "b4ef362f60b7f681",
             "type": "leaf",
             "state": {
-              "type": "meld-encrypted-view",
-              "state": {
-                "file": "credentials.mdenc",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "credentials"
+              "title": "New tab"
             }
           }
         ]
@@ -78,7 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 405.5
   },
   "right": {
     "id": "67e7696c23932a0d",
@@ -94,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "credentials.mdenc",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +99,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for credentials"
+              "title": "Backlinks"
             }
           },
           {
@@ -113,12 +108,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "credentials.mdenc",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from credentials"
+              "title": "Outgoing links"
             }
           },
           {
@@ -156,13 +150,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "credentials.mdenc",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of credentials"
+              "title": "Outline"
             }
           }
         ]
@@ -189,8 +182,9 @@
       "meld-encrypt:Decrypt at Cursor": false
     }
   },
-  "active": "7e6f6f9ccff437b3",
+  "active": "b4ef362f60b7f681",
   "lastOpenFiles": [
+    "credentials.mdenc",
     "04-decision-knowledge/synapse-product-architecture.md",
     "01-team-knowledge/HR/evolution-log/changelog.yaml",
     "01-team-knowledge/HR/evolution-log",
@@ -225,7 +219,6 @@
     "01-team-knowledge/HR/personnel/harness_ops/integration_qa.md",
     "01-team-knowledge/HR/personnel/harness_ops/knowledge_engineer.md",
     "01-team-knowledge/HR/personnel/harness_ops/ai_systems_dev.md",
-    "01-team-knowledge/HR/personnel/harness_ops/harness_engineer.md",
-    "daily-intelligence/2026-04-10-action-report-source.md"
+    "01-team-knowledge/HR/personnel/harness_ops/harness_engineer.md"
   ]
 }
