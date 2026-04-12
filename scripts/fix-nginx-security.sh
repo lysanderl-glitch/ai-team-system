@@ -199,36 +199,40 @@ info "3c. 配置 OCSP Stapling..."
 if grep -qP '^\s*ssl_stapling\s+on' "$NGINX_SITE_CONF"; then
     info "OCSP Stapling 已存在，跳过"
 else
-    # 构建 OCSP 配置块
-    OCSP_BLOCK="
-    # OCSP Stapling
-    ssl_stapling on;
-    ssl_stapling_verify on;"
+    # 构建 OCSP 配置块，写入临时文件（避免 sed 多行变量转义问题）
+    OCSP_TMP=$(mktemp /tmp/ocsp_config.XXXXXX)
 
-    # 如果有 ssl_trusted_certificate 就使用它，否则使用 ssl_certificate
+    # 确定 trusted certificate 路径
+    TRUSTED_CERT=""
     if [ -n "$SSL_CERT" ]; then
-        # Let's Encrypt fullchain.pem 通常可以同时用作 trusted certificate
         TRUSTED_CERT="$SSL_CERT"
-        # 检查是否存在 chain.pem（同目录）
         CERT_DIR=$(dirname "$SSL_CERT")
         if [ -f "$CERT_DIR/chain.pem" ]; then
             TRUSTED_CERT="$CERT_DIR/chain.pem"
         fi
-        OCSP_BLOCK="${OCSP_BLOCK}
-    ssl_trusted_certificate ${TRUSTED_CERT};"
     fi
 
-    OCSP_BLOCK="${OCSP_BLOCK}
-    resolver 8.8.8.8 8.8.4.4 valid=300s;
-    resolver_timeout 5s;"
+    # 将 OCSP 配置写入临时文件
+    {
+        echo "    # OCSP Stapling"
+        echo "    ssl_stapling on;"
+        echo "    ssl_stapling_verify on;"
+        if [ -n "$TRUSTED_CERT" ]; then
+            echo "    ssl_trusted_certificate ${TRUSTED_CERT};"
+        fi
+        echo "    resolver 8.8.8.8 8.8.4.4 valid=300s;"
+        echo "    resolver_timeout 5s;"
+    } > "$OCSP_TMP"
 
-    # 在 ssl_certificate_key 行后面插入 OCSP 配置
+    # 使用 sed 的 r 命令在匹配行后读入临时文件（安全处理多行+特殊字符）
     if grep -qP '^\s*ssl_certificate_key' "$NGINX_SITE_CONF"; then
-        sudo sed -i "/ssl_certificate_key/a\\${OCSP_BLOCK}" "$NGINX_SITE_CONF"
+        sudo sed -i "/ssl_certificate_key/r ${OCSP_TMP}" "$NGINX_SITE_CONF"
     else
         # 在第一个 server 块的 listen 443 行后面插入
-        sudo sed -i "/listen.*443.*ssl/a\\${OCSP_BLOCK}" "$NGINX_SITE_CONF"
+        sudo sed -i "/listen.*443.*ssl/r ${OCSP_TMP}" "$NGINX_SITE_CONF"
     fi
+
+    rm -f "$OCSP_TMP"
     success "已配置 OCSP Stapling"
 fi
 
@@ -239,24 +243,35 @@ info "3d. 添加安全响应头..."
 if grep -qP '^\s*add_header\s+Strict-Transport-Security' "$NGINX_SITE_CONF"; then
     info "安全头已存在，跳过"
 else
-    SECURITY_HEADERS='
+    # 将安全头配置写入临时文件（避免 sed 多行变量转义问题）
+    HEADERS_TMP=$(mktemp /tmp/security_headers.XXXXXX)
+    cat > "$HEADERS_TMP" << 'HEADERS_EOF'
     # Security Headers
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;'
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+HEADERS_EOF
 
     # 找到 server 块中的 location / 之前插入，或在 server 块开头插入
     # 策略：在第一个 location 块之前插入安全头
     FIRST_LOCATION_LINE=$(grep -nP '^\s*location\s' "$NGINX_SITE_CONF" | head -1 | cut -d: -f1)
     if [ -n "$FIRST_LOCATION_LINE" ]; then
-        sudo sed -i "${FIRST_LOCATION_LINE}i\\${SECURITY_HEADERS}" "$NGINX_SITE_CONF"
+        # 使用 sed 的 r 命令在指定行前插入：先在该行前插入临时文件内容
+        # sed 的 r 只能在匹配行后插入，所以用 awk 实现"行前插入"
+        sudo awk -v line="$FIRST_LOCATION_LINE" -v file="$HEADERS_TMP" '
+            NR == line { while ((getline tmp < file) > 0) print tmp; close(file) }
+            { print }
+        ' "$NGINX_SITE_CONF" | sudo tee "${NGINX_SITE_CONF}.tmp" > /dev/null
+        sudo mv "${NGINX_SITE_CONF}.tmp" "$NGINX_SITE_CONF"
     else
         # 在 server_name 行后面插入
-        sudo sed -i "/server_name/a\\${SECURITY_HEADERS}" "$NGINX_SITE_CONF"
+        sudo sed -i "/server_name/r ${HEADERS_TMP}" "$NGINX_SITE_CONF"
     fi
+
+    rm -f "$HEADERS_TMP"
     success "已添加全套安全响应头"
 fi
 
