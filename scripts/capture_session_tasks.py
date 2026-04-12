@@ -168,9 +168,10 @@ def extract_action_items(messages: list[dict]) -> list[str]:
     return result
 
 
-def load_existing_inbox(yaml_path: Path) -> list[str]:
+def load_existing_inbox(yaml_path: Path) -> list[dict]:
     """
-    简单解析 personal_tasks.yaml 中已有的 inbox items 的 content 字段。
+    简单解析 personal_tasks.yaml 中已有的 inbox items。
+    返回 dict 列表，每个 dict 包含 id 和 content 字段。
     使用简单字符串匹配而非完整 YAML 解析（避免依赖 PyYAML）。
     """
     existing = []
@@ -181,9 +182,9 @@ def load_existing_inbox(yaml_path: Path) -> list[str]:
         with open(yaml_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        # 简单提取 inbox items 中的 content 值
-        # 匹配 content: "..." 或 content: '...' 或 content: ...
+        # 简单提取 inbox items 中的 id 和 content 值
         in_inbox = False
+        current_item = {}
         for line in content.split("\n"):
             stripped = line.strip()
             if stripped.startswith("inbox:"):
@@ -191,28 +192,40 @@ def load_existing_inbox(yaml_path: Path) -> list[str]:
                 continue
             if in_inbox and not line.startswith(" ") and not line.startswith("\t") and stripped:
                 # 退出 inbox 区域
+                if current_item.get("content"):
+                    existing.append(current_item)
+                    current_item = {}
                 in_inbox = False
                 continue
+            if in_inbox and "id:" in stripped:
+                # 保存前一个 item
+                if current_item.get("content"):
+                    existing.append(current_item)
+                current_item = {}
+                val = stripped.split("id:", 1)[1].strip().strip("\"'")
+                current_item["id"] = val
             if in_inbox and "content:" in stripped:
-                # 提取 content 值
                 val = stripped.split("content:", 1)[1].strip()
-                # 去除引号
                 val = val.strip("\"'")
                 if val:
-                    existing.append(val)
+                    current_item["content"] = val
+        # 保存最后一个 item
+        if current_item.get("content"):
+            existing.append(current_item)
     except Exception:
         pass
 
     return existing
 
 
-def deduplicate(candidates: list[str], existing: list[str]) -> list[str]:
+def deduplicate(candidates: list[str], existing: list[dict]) -> list[str]:
     """
     去重：排除已存在于 inbox 中的项目。
     使用子串匹配（因为格式可能略有不同）。
+    existing 是 dict 列表，每个 dict 包含 id 和 content 字段。
     """
     new_items = []
-    existing_lower = [e.lower() for e in existing]
+    existing_lower = [e.get("content", "").lower() for e in existing]
 
     for item in candidates:
         item_lower = item.lower()
@@ -228,10 +241,33 @@ def deduplicate(candidates: list[str], existing: list[str]) -> list[str]:
     return new_items
 
 
-def append_to_yaml(yaml_path: Path, new_items: list[str], session_id: str) -> None:
+def get_max_cap_seq(existing: list[dict], today_str: str) -> int:
+    """
+    从已有 inbox items 中找到当日 CAP ID 的最大序号。
+    CAP ID 格式：CAP-YYYY-MM-DD-NNN
+    返回最大序号（int），如果没有当日 CAP 则返回 0。
+    """
+    prefix = f"CAP-{today_str}-"
+    max_seq = 0
+    for item in existing:
+        item_id = item.get("id", "")
+        if item_id.startswith(prefix):
+            try:
+                seq_str = item_id[len(prefix):]
+                seq = int(seq_str)
+                if seq > max_seq:
+                    max_seq = seq
+            except (ValueError, IndexError):
+                continue
+    return max_seq
+
+
+def append_to_yaml(yaml_path: Path, new_items: list[str], session_id: str,
+                   existing: list[dict] | None = None) -> None:
     """
     将新行动项追加到 personal_tasks.yaml 的 inbox.items 中。
     使用字符串操作而非 YAML 库（避免格式改动）。
+    existing 用于计算 CAP ID 的起始序号，避免与已有 ID 重复。
     """
     if not yaml_path.exists():
         return
@@ -242,10 +278,13 @@ def append_to_yaml(yaml_path: Path, new_items: list[str], session_id: str) -> No
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
+    # 计算当日已有 CAP ID 的最大序号，新 items 从 max+1 开始
+    start_seq = get_max_cap_seq(existing or [], today) + 1
+
     # 生成新的 inbox entries
     new_entries = []
-    for i, item in enumerate(new_items, 1):
-        seq = str(i).zfill(3)
+    for i, item in enumerate(new_items):
+        seq = str(start_seq + i).zfill(3)
         entry_id = f"CAP-{today}-{seq}"
         # 转义引号
         safe_content = item.replace('"', '\\"')
@@ -396,8 +435,8 @@ def main():
             print("0")
             return
 
-        # 5. 写入 personal_tasks.yaml
-        append_to_yaml(yaml_path, new_items, session_id)
+        # 5. 写入 personal_tasks.yaml（传入 existing 用于 CAP ID 去重）
+        append_to_yaml(yaml_path, new_items, session_id, existing)
 
         # 6. Git commit
         git_commit(repo_root, yaml_path, len(new_items))

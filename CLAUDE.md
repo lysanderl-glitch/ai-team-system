@@ -311,6 +311,8 @@ Lysander 主对话：
 
 - **`/capture [描述]`** — 快速捕获任务到 personal_tasks.yaml 收件箱
 - **`/plan-day [日期]`** — 综合四大信息源生成每日焦点计划
+- **`/time-block [任务] [时长] [日期]`** — 为任务创建 Google Calendar 时间块
+- **`/weekly-review [周次]`** — 生成结构化每周回顾报告
 
 #### 每次会话结束前（SPE 补充）
 
@@ -360,6 +362,11 @@ Lysander 应持续观察总裁的工作模式，在 memory 系统中记录发现
                    │ 恢复阻塞已解除的任务
                    │ 续接未完成工作
                    ↓
+  6:15am Dubai ── SPE日历同步Agent
+                   │ 读取 Google Calendar + 任务状态
+                   │ 生成今日规划 → 更新 personal_tasks.yaml
+                   │ Slack 推送今日焦点给总裁
+                   ↓
   8:00am Dubai ── 情报日报Agent
                    │ 搜索AI前沿动态
                    │ 筛选实践价值内容
@@ -369,6 +376,11 @@ Lysander 应持续观察总裁的工作模式，在 memory 系统中记录发现
                    │ 提取日报建议 → 4专家评估 → 评审决策
                    │ Harness Ops团队执行批准项
                    │ 生成行动成果报告 → HTML → git push
+                   ↓
+ 20:00pm Dubai ── SPE日终复盘Agent
+                   │ 对比今日计划 vs 实际执行
+                   │ 标记 carry-over 任务
+                   │ 更新周回顾数据
                    ↓
   完成 ────────── Slack通知总裁
 ```
