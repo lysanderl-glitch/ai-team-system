@@ -1,0 +1,47 @@
+# Synapse Agent 能力变更日志
+# 每次 Agent 能力更新时由 evolution_engine 自动追加记录
+# 用于追踪：谁/什么时间/因为什么/新增了什么能力
+
+version: "1.0"
+created: "2026-04-12"
+
+# 变更记录
+changes:
+  - date: "2026-04-12"
+    agent: evolution_engine
+    team: graphify
+    change_type: agent_created
+    description: "新增进化引擎角色 — Synapse自成长体系核心协调者"
+    trigger: "总裁指示建立自成长模式"
+    approved_by: hr_director
+    score_after: 94
+
+  - date: "2026-04-11"
+    agent: ai_visual_creator
+    team: content_ops
+    change_type: agent_created
+    description: "新增AI视觉创作师 — 品牌化插画/漫画创作"
+    trigger: "官网需要定制化视觉资产"
+    approved_by: hr_director
+    score_after: 95
+
+  - date: "2026-04-11"
+    agent: visual_designer
+    team: content_ops
+    change_type: capability_upgraded
+    description: "从'视觉设计专家（排版师）'升级为'UI/UX设计师'"
+    trigger: "官网全深色方案暴露Web UI设计能力缺失"
+    capabilities_added:
+      - "Web UI/UX 设计与用户体验"
+      - "明暗主题场景决策"
+      - "Tailwind CSS 实战"
+    approved_by: capability_architect
+    score_before: 93
+    score_after: 93
+
+# 统计
+summary:
+  total_changes: 3
+  agents_created: 2
+  capabilities_upgraded: 1
+  capabilities_added_total: 3

@@ -191,6 +191,9 @@
   },
   "active": "7e6f6f9ccff437b3",
   "lastOpenFiles": [
+    "01-team-knowledge/HR/evolution-log/changelog.yaml",
+    "01-team-knowledge/HR/evolution-log",
+    "01-team-knowledge/HR/personnel/graphify/evolution_engine.md",
     "04-decision-knowledge/synapse-self-evolution-feasibility.md",
     "personal/blog-wechat-publish-sop.md.tmp.32696.1775976610429",
     "04-decision-knowledge/website-visual-v2-plan.md",
@@ -211,7 +214,6 @@
     "04-decision-knowledge/website-strategy.md",
     "03-process-knowledge/synapse-practitioner-course-outline.md",
     "generated-articles/harness-engineering-practice-blog.md",
-    "generated-articles/2026-04-11-daily-ai-intelligence.html",
     "generated-articles/synapse-consulting-one-pager.md",
     "01-team-knowledge/HR/personnel/content_ops/training_designer.md",
     "01-team-knowledge/HR/personnel/growth/community_manager.md",
@@ -224,8 +226,6 @@
     "01-team-knowledge/HR/personnel/harness_ops/knowledge_engineer.md",
     "01-team-knowledge/HR/personnel/harness_ops/ai_systems_dev.md",
     "01-team-knowledge/HR/personnel/harness_ops/harness_engineer.md",
-    "daily-intelligence/2026-04-10-action-report-source.md",
-    "03-process-knowledge/harness-engineering-methodology.md",
-    "daily-intelligence/2026-04-10-report-source.md"
+    "daily-intelligence/2026-04-10-action-report-source.md"
   ]
 }

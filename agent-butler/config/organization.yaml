@@ -149,6 +149,7 @@ teams:
       - decision_advisor        # 决策顾问 - 决策支持、选项评估
       - execution_auditor       # 执行审计师 - 任务分级、执行链审计、跨会话状态
       - ai_tech_researcher     # AI技术研究员 - AI前沿追踪、实践价值筛选、每日情报
+      - evolution_engine        # 进化引擎 - 自成长闭环协调、GAP分析、能力版本管理
     capabilities:
       - 战略分析
       - 关联发现
@@ -161,6 +162,8 @@ teams:
       - 跨会话状态管理
       - AI技术前沿追踪
       - 每日技术情报
+      - 体系自进化闭环协调
+      - Agent能力GAP分析与进化规划
     access_key: "graphify"
 
   hr:
