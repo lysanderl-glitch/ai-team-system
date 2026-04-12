@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1">
+<title>Terminal Tutorial</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--bg-color, #0f172a);
+  color: #e2e8f0;
+  font-family: var(--font-family, 'JetBrains Mono', monospace);
+}
+
+:root {
+  --accent: #14b8a6;
+  --bg-color: #0f172a;
+  --font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#app {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+}
+
+/* --- Progress bar (top-left) --- */
+#progress-bar {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  gap: 12px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+#progress-bar.visible { opacity: 1; }
+
+.prog-item {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.06);
+  color: #64748b;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.4s;
+}
+.prog-item.active {
+  background: rgba(20,184,166,0.18);
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(20,184,166,0.25);
+}
+.prog-item.done {
+  background: rgba(20,184,166,0.10);
+  color: var(--accent);
+  border-color: rgba(20,184,166,0.3);
+}
+
+/* --- Main content area --- */
+#main-area {
+  position: absolute;
+  top: 70px;
+  left: 32px;
+  width: 1856px;
+  height: 920px;
+  display: flex;
+  gap: 24px;
+}
+
+/* --- Terminal panel (left ~65%) --- */
+#terminal-panel {
+  flex: 0 0 1200px;
+  background: #0a0e1a;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#terminal-titlebar {
+  height: 40px;
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.dot { width:12px; height:12px; border-radius:50%; }
+.dot-r { background:#ef4444; }
+.dot-y { background:#eab308; }
+.dot-g { background:#22c55e; }
+
+#terminal-title {
+  margin-left: 12px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+#terminal-body {
+  flex: 1;
+  padding: 20px 24px;
+  overflow: hidden;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+#terminal-content {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* cursor */
+#cursor {
+  display: inline-block;
+  width: 10px;
+  height: 20px;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* prompt */
+.prompt { color: var(--accent); }
+.cmd-text { color: #f8fafc; }
+.output-line { color: #94a3b8; }
+.highlight-green { color: #22c55e; }
+.highlight-yellow { color: #eab308; }
+.highlight-red { color: #ef4444; }
+.highlight-cyan { color: #14b8a6; }
+.highlight-blue { color: #38bdf8; }
+.highlight-purple { color: #a78bfa; }
+.dim { color: #475569; }
+.bold { font-weight: 700; }
+
+/* --- Sidebar panel (right ~30%) --- */
+#sidebar-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* sidebar card */
+.sidebar-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 24px;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.5s ease-out;
+}
+.sidebar-card.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-card h3 {
+  font-size: 18px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-card p, .sidebar-card li {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.8;
+}
+
+.sidebar-card ul { list-style: none; padding-left: 4px; }
+.sidebar-card ul li::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 10px; vertical-align: middle; }
+
+.sidebar-highlight {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(20,184,166,0.15);
+  border-radius: 4px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* flow steps */
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease-out;
+}
+.flow-step.visible { opacity: 1; transform: translateY(0); }
+
+.flow-num {
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(20,184,166,0.2);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.flow-label { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
+.flow-arrow {
+  width: 2px;
+  height: 12px;
+  background: rgba(20,184,166,0.3);
+  margin-left: 13px;
+  margin-bottom: 4px;
+}
+
+/* color swatch card */
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* PDCA ring */
+.pdca-container {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+.pdca-ring {
+  width: 240px;
+  height: 240px;
+  position: relative;
+}
+.pdca-quad {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.5s;
+  opacity: 0.5;
+}
+.pdca-quad.active { opacity: 1; box-shadow: 0 0 16px rgba(20,184,166,0.3); }
+.pdca-p { top:0; left:0; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); }
+.pdca-d { top:0; right:0; background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); }
+.pdca-c { bottom:0; right:0; background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); }
+.pdca-a { bottom:0; left:0; background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); }
+
+/* --- Subtitle bar (bottom) --- */
+#subtitle-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1920px;
+  height: 90px;
+  background: linear-gradient(transparent, rgba(15,23,42,0.95) 30%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#subtitle-text {
+  font-size: 22px;
+  color: #e2e8f0;
+  text-align: center;
+  max-width: 1400px;
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#subtitle-text.visible { opacity: 1; }
+
+/* ============================================================
+   SCENE OVERLAYS
+   ============================================================ */
+
+/* Hook scene overlay */
+#hook-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-color, #0f172a);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.8s;
+}
+
+/* Chaotic notes for hook */
+.chaos-note {
+  position: absolute;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+/* Title animation */
+#hook-title {
+  font-size: 52px;
+  font-weight: 700;
+  color: #f8fafc;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 1s ease-out;
+  z-index: 10;
+  text-align: center;
+}
+#hook-title.visible { opacity: 1; transform: scale(1); }
+
+#hook-subtitle {
+  font-size: 24px;
+  color: var(--accent);
+  margin-top: 16px;
+  opacity: 0;
+  transition: opacity 0.8s;
+  z-index: 10;
+}
+#hook-subtitle.visible { opacity: 1; }
+
+/* command cards at bottom of hook */
+#hook-cards {
+  position: absolute;
+  bottom: 120px;
+  display: flex;
+  gap: 20px;
+  z-index: 10;
+}
+
+.hook-card {
+  padding: 12px 24px;
+  background: rgba(20,184,166,0.1);
+  border: 1px solid rgba(20,184,166,0.3);
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.5s ease-out;
+}
+.hook-card.visible { opacity: 1; transform: translateY(0); }
+
+/* CTA scene overlay */
+#cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-color, #0f172a);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#cta-overlay.visible { opacity: 1; pointer-events: auto; }
+
+/* Architecture diagram for CTA */
+.arch-layer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.5s ease-out;
+}
+.arch-layer.visible { opacity: 1; transform: translateX(0); }
+
+.arch-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.arch-label { font-size: 18px; color: #cbd5e1; }
+.arch-cmd { font-size: 16px; color: var(--accent); font-weight: 700; margin-left: 8px; }
+.arch-arrow-down {
+  margin-left: 22px;
+  font-size: 20px;
+  color: #334155;
+  margin-bottom: 6px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.arch-arrow-down.visible { opacity: 1; }
+
+#cta-text-area {
+  margin-top: 48px;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+#cta-text-area.visible { opacity: 1; }
+
+.cta-line {
+  font-size: 20px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.5s ease-out;
+}
+.cta-line.visible { opacity: 1; transform: translateY(0); }
+.cta-line.big { font-size: 26px; color: #f8fafc; font-weight: 700; }
+
+#cta-brand {
+  margin-top: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s;
+}
+#cta-brand.visible { opacity: 1; }
+#cta-brand h2 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+#cta-brand p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* inbox triage highlight */
+.triage-highlight {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0 4px;
+  transition: background 0.4s;
+}
+.triage-decision { background: rgba(168,85,247,0.2); }
+.triage-delegate { background: rgba(56,189,248,0.2); }
+.triage-personal { background: rgba(34,197,94,0.2); }
+.triage-reference { background: rgba(234,179,8,0.2); }
+
+/* glitch effect */
+@keyframes glitch {
+  0% { transform: translate(0); filter: none; }
+  20% { transform: translate(-4px, 2px); filter: hue-rotate(90deg); }
+  40% { transform: translate(4px, -2px); filter: hue-rotate(-90deg); }
+  60% { transform: translate(-2px, -4px); filter: hue-rotate(180deg); }
+  80% { transform: translate(2px, 4px); filter: none; }
+  100% { transform: translate(0); filter: none; }
+}
+.glitch { animation: glitch 0.3s ease-in-out; }
+
+/* highlight flash */
+@keyframes flash-green {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(34,197,94,0.2); }
+}
+.flash-green { animation: flash-green 0.6s ease-in-out 2; border-radius: 4px; }
+
+/* inbox flow sidebar diagram */
+.inbox-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+}
+.inbox-box {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+.inbox-arrows {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.inbox-arrow { color: #475569; font-size: 16px; }
+.inbox-bucket {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Progress Bar (populated dynamically) -->
+  <div id="progress-bar"></div>
+
+  <!-- Main Area -->
+  <div id="main-area">
+    <!-- Terminal -->
+    <div id="terminal-panel">
+      <div id="terminal-titlebar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span id="terminal-title">terminal</span>
+      </div>
+      <div id="terminal-body">
+        <div id="terminal-content"></div><span id="cursor"></span>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar-panel"></div>
+  </div>
+
+  <!-- Subtitle -->
+  <div id="subtitle-bar">
+    <div id="subtitle-text"></div>
+  </div>
+
+  <!-- Hook Overlay (built dynamically) -->
+  <div id="hook-overlay"></div>
+
+  <!-- CTA Overlay (built dynamically) -->
+  <div id="cta-overlay"></div>
+
+</div>
+
+<script>
+// ============================================================
+// SCENES DATA — injected by video-gen.py at build time
+// ============================================================
+const SCENES_CONFIG = /*SCENES_DATA*/null;
+
+// ============================================================
+// ENGINE
+// ============================================================
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// Terminal state
+const termContent = $('#terminal-content');
+const cursorEl = $('#cursor');
+
+function termClear() {
+  termContent.innerHTML = '';
+}
+
+function termAppend(html) {
+  termContent.insertAdjacentHTML('beforeend', html);
+  termContent.parentElement.appendChild(cursorEl);
+  const body = $('#terminal-body');
+  body.scrollTop = body.scrollHeight;
+}
+
+async function typeText(text, className, charDelay) {
+  charDelay = charDelay || 55;
+  const span = document.createElement('span');
+  if (className) span.className = className;
+  termContent.appendChild(span);
+  termContent.parentElement.appendChild(cursorEl);
+  for (let i = 0; i < text.length; i++) {
+    span.textContent += text[i];
+    const body = $('#terminal-body');
+    body.scrollTop = body.scrollHeight;
+    await wait(charDelay + Math.random() * 25);
+  }
+}
+
+async function typeCommand(cmd) {
+  termAppend('<span class="prompt">$ </span>');
+  await typeText(cmd, 'cmd-text', 55);
+  termAppend('\n');
+}
+
+async function showOutputLines(lines, lineDelay) {
+  lineDelay = lineDelay || 150;
+  for (const line of lines) {
+    termAppend(line + '\n');
+    await wait(lineDelay);
+  }
+}
+
+// Subtitle
+function showSubtitle(text) {
+  const el = $('#subtitle-text');
+  el.textContent = text;
+  el.classList.add('visible');
+}
+function hideSubtitle() {
+  $('#subtitle-text').classList.remove('visible');
+}
+
+// Progress bar
+let progressItems = [];
+
+function buildProgressBar(scenes) {
+  const bar = $('#progress-bar');
+  bar.innerHTML = '';
+  progressItems = [];
+  scenes.forEach(scene => {
+    if (scene.progress_label) {
+      const item = document.createElement('div');
+      item.className = 'prog-item';
+      item.textContent = scene.progress_label;
+      item.dataset.id = scene.id;
+      bar.appendChild(item);
+      progressItems.push({ id: scene.id, el: item });
+    }
+  });
+}
+
+function setProgressBySceneId(activeSceneId) {
+  let foundActive = false;
+  let allDone = activeSceneId === '__ALL_DONE__';
+  progressItems.forEach(item => {
+    item.el.classList.remove('active', 'done');
+    if (allDone) {
+      item.el.classList.add('done');
+    } else if (item.id === activeSceneId) {
+      item.el.classList.add('active');
+      foundActive = true;
+    } else if (!foundActive) {
+      item.el.classList.add('done');
+    }
+  });
+}
+
+// Sidebar
+function clearSidebar() {
+  $('#sidebar-panel').innerHTML = '';
+}
+
+function addSidebarCard(html, delayMs) {
+  const card = document.createElement('div');
+  card.className = 'sidebar-card';
+  card.innerHTML = html;
+  $('#sidebar-panel').appendChild(card);
+  setTimeout(() => card.classList.add('visible'), delayMs || 100);
+  return card;
+}
+
+function buildSidebarFromConfig(sidebarConfig) {
+  if (!sidebarConfig) return null;
+
+  const type = sidebarConfig.type || 'info-card';
+  const title = sidebarConfig.title || '';
+
+  if (type === 'info-card') {
+    return addSidebarCard(`<h3>${title}</h3>${sidebarConfig.content || ''}`, 200);
+  }
+
+  if (type === 'flow-steps') {
+    const stepsHtml = (sidebarConfig.steps || []).map((step, i) =>
+      `<div class="flow-step" data-step="${i}"><div class="flow-num">${i+1}</div><div class="flow-label">${step}</div></div>` +
+      (i < sidebarConfig.steps.length - 1 ? '<div class="flow-arrow"></div>' : '')
+    ).join('');
+    const card = addSidebarCard(`<h3>${title}</h3><div id="flow-steps">${stepsHtml}</div>`, 200);
+    // Animate steps in
+    setTimeout(async () => {
+      const steps = card.querySelectorAll('.flow-step');
+      for (let i = 0; i < steps.length; i++) {
+        steps[i].classList.add('visible');
+        await wait(500);
+      }
+    }, 600);
+    return card;
+  }
+
+  if (type === 'color-legend') {
+    const itemsHtml = (sidebarConfig.items || []).map(item =>
+      `<div class="color-row"><div class="color-swatch" style="background:${item.color};"></div><span style="color:${item.color}; font-weight:700;">${item.label}</span><span style="color:#94a3b8;"> — ${item.description}</span></div>`
+    ).join('');
+    return addSidebarCard(`<h3>${title}</h3><div style="margin-top:12px;">${itemsHtml}</div>`, 300);
+  }
+
+  if (type === 'pdca') {
+    const pdcaHtml = `
+      <div class="pdca-container">
+        <div class="pdca-ring">
+          <div class="pdca-quad pdca-p" id="pdca-p">P<br><span style="font-size:11px;">Plan</span></div>
+          <div class="pdca-quad pdca-d" id="pdca-d">D<br><span style="font-size:11px;">Do</span></div>
+          <div class="pdca-quad pdca-c active" id="pdca-c">C<br><span style="font-size:11px;">Check</span></div>
+          <div class="pdca-quad pdca-a" id="pdca-a">A<br><span style="font-size:11px;">Act</span></div>
+        </div>
+      </div>
+      <p style="text-align:center; font-size:13px; color:var(--accent); margin-top:8px;">weekly-review = Check</p>
+    `;
+    const card = addSidebarCard(`<h3>${title}</h3>${pdcaHtml}`, 200);
+    // Animate PDCA cycle
+    setTimeout(async () => {
+      const pdcaEls = ['pdca-p', 'pdca-d', 'pdca-c', 'pdca-a'];
+      await wait(2000);
+      for (let i = 0; i < pdcaEls.length; i++) {
+        pdcaEls.forEach(id => document.getElementById(id)?.classList.remove('active'));
+        document.getElementById(pdcaEls[i])?.classList.add('active');
+        await wait(600);
+      }
+      pdcaEls.forEach(id => document.getElementById(id)?.classList.remove('active'));
+      document.getElementById('pdca-c')?.classList.add('active');
+      document.getElementById('pdca-p')?.classList.add('active');
+    }, 0);
+    return card;
+  }
+
+  // Fallback: render as info-card
+  return addSidebarCard(`<h3>${title}</h3><p>${JSON.stringify(sidebarConfig)}</p>`, 200);
+}
+
+// ============================================================
+// SCENE RUNNERS
+// ============================================================
+
+async function runHookScene(scene) {
+  const overlay = $('#hook-overlay');
+  overlay.style.display = 'flex';
+  overlay.style.opacity = '1';
+
+  // Build hook content
+  const titleEl = document.createElement('div');
+  titleEl.id = 'hook-title';
+  titleEl.textContent = scene.title || 'Tutorial';
+  overlay.appendChild(titleEl);
+
+  const subtitleEl = document.createElement('div');
+  subtitleEl.id = 'hook-subtitle';
+  subtitleEl.textContent = scene.subtitle || '';
+  overlay.appendChild(subtitleEl);
+
+  const cardsContainer = document.createElement('div');
+  cardsContainer.id = 'hook-cards';
+  (scene.hook_cards || []).forEach(cardText => {
+    const card = document.createElement('div');
+    card.className = 'hook-card';
+    card.textContent = cardText;
+    cardsContainer.appendChild(card);
+  });
+  overlay.appendChild(cardsContainer);
+
+  // Create chaos notes
+  const chaosItems = scene.chaos_items || [];
+  const chaosColors = [
+    { bg: "rgba(239,68,68,0.15)", color: "#ef4444" },
+    { bg: "rgba(234,179,8,0.15)", color: "#eab308" },
+    { bg: "rgba(56,189,248,0.15)", color: "#38bdf8" },
+    { bg: "rgba(168,85,247,0.15)", color: "#a855f7" },
+    { bg: "rgba(34,197,94,0.15)", color: "#22c55e" },
+    { bg: "rgba(249,115,22,0.15)", color: "#f97316" },
+    { bg: "rgba(20,184,166,0.15)", color: "#14b8a6" },
+  ];
+
+  const noteEls = [];
+  chaosItems.forEach((text, i) => {
+    const el = document.createElement('div');
+    el.className = 'chaos-note';
+    const colorSet = chaosColors[i % chaosColors.length];
+    const x = 150 + Math.random() * 1500;
+    const y = 100 + Math.random() * 600;
+    const rot = -7 + Math.random() * 14;
+    el.textContent = text;
+    el.style.cssText = `left:${x}px; top:${y}px; background:${colorSet.bg}; color:${colorSet.color}; border:1px solid ${colorSet.color}; transform:rotate(${rot}deg);`;
+    overlay.appendChild(el);
+    noteEls.push(el);
+  });
+
+  // Animate narration subtitle
+  const narrationParts = (scene.narration || '').split(/[。！？]/);
+  if (narrationParts[0]) showSubtitle(narrationParts[0].trim());
+
+  // Animate chaos notes in
+  for (let i = 0; i < noteEls.length; i++) {
+    noteEls[i].style.opacity = '1';
+    await wait(200);
+  }
+  await wait(2000);
+
+  if (narrationParts[1]) {
+    showSubtitle(narrationParts[1].trim());
+    await wait(3000);
+  }
+
+  // Glitch transition
+  overlay.classList.add('glitch');
+  await wait(300);
+  overlay.classList.remove('glitch');
+
+  noteEls.forEach(el => { el.style.opacity = '0'; el.style.transition = 'all 0.4s'; });
+  await wait(500);
+
+  // Show title
+  titleEl.classList.add('visible');
+  if (narrationParts[2]) showSubtitle(narrationParts[2].trim());
+  await wait(2000);
+
+  subtitleEl.classList.add('visible');
+  if (narrationParts[3]) showSubtitle(narrationParts[3].trim());
+  await wait(2000);
+
+  // Show command cards
+  const cards = cardsContainer.querySelectorAll('.hook-card');
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].classList.add('visible');
+    await wait(400);
+  }
+  await wait(2000);
+
+  // Transition out
+  overlay.style.transition = 'opacity 0.8s';
+  overlay.style.opacity = '0';
+  await wait(400);
+  $('#progress-bar').classList.add('visible');
+  await wait(500);
+  overlay.style.display = 'none';
+  hideSubtitle();
+}
+
+
+async function runTerminalDemoScene(scene) {
+  if (scene.progress_label) {
+    setProgressBySceneId(scene.id);
+  }
+
+  const commands = scene.commands || [];
+  const hasNewTerminalContent = commands.length > 0 && (commands[0].clear_before || scene._isFirstTermScene);
+
+  if (commands.length > 0 && commands[0].clear_before) {
+    termClear();
+    clearSidebar();
+  }
+
+  if (scene.subtitle) {
+    showSubtitle(scene.subtitle);
+    await wait(3000);
+  }
+
+  // Build sidebar
+  if (scene.sidebar) {
+    clearSidebar();
+    buildSidebarFromConfig(scene.sidebar);
+  }
+  if (scene.sidebar_cards) {
+    if (!scene.sidebar) clearSidebar();
+    for (const sc of scene.sidebar_cards) {
+      buildSidebarFromConfig(sc);
+      await wait(300);
+    }
+  }
+
+  // Animate commands
+  for (const cmd of commands) {
+    if (cmd.clear_before) {
+      termClear();
+    }
+    if (cmd.delay_before) {
+      await wait(cmd.delay_before);
+    }
+    if (cmd.input) {
+      await typeCommand(cmd.input);
+      await wait(600);
+    }
+    if (cmd.output && cmd.output.length > 0) {
+      await showOutputLines(cmd.output, 150);
+    }
+    if (cmd.delay_after) {
+      await wait(cmd.delay_after);
+    }
+  }
+
+  // Hold for remaining narration time
+  const holdTime = (scene.duration || 10000) - (commands.length * 3000);
+  if (holdTime > 0 && commands.length > 0) {
+    await wait(Math.min(holdTime, 4000));
+  }
+
+  hideSubtitle();
+  await wait(500);
+}
+
+
+async function runCtaScene(scene) {
+  setProgressBySceneId('__ALL_DONE__');
+
+  const overlay = $('#cta-overlay');
+
+  // Build architecture diagram
+  const archLayers = scene.arch_layers || [];
+  const ctaLines = scene.cta_lines || [];
+
+  let archHtml = '';
+  archLayers.forEach((layer, i) => {
+    archHtml += `<div class="arch-layer" data-i="${i}"><div class="arch-icon" style="background:${layer.color}; color:${layer.color?.replace('0.2', '1') || 'var(--accent)'};">${layer.icon}</div><div><div class="arch-label">${layer.label}</div><div class="arch-cmd">${layer.command}</div></div></div>`;
+    archHtml += `<div class="arch-arrow-down">${i < archLayers.length - 1 ? '\u2193' : '\u2191 \u95ed\u73af \u2191'}</div>`;
+  });
+
+  let ctaHtml = '';
+  ctaLines.forEach((line, i) => {
+    const cls = i === 0 ? 'cta-line big' : 'cta-line';
+    // Highlight commands in the line
+    const highlighted = line.replace(/\/\w+[-\w]*/g, '<span style="color:var(--accent); font-weight:700;">$&</span>');
+    ctaHtml += `<div class="${cls}">${highlighted}</div>`;
+  });
+
+  overlay.innerHTML = `
+    <div style="display:flex; gap:64px; align-items:flex-start;">
+      <div id="arch-diagram" style="min-width:320px;">${archHtml}</div>
+      <div>
+        <div id="cta-text-area">${ctaHtml}</div>
+        <div id="cta-brand">
+          <h2>${scene.brand_title || 'Tutorial'}</h2>
+          <p>${scene.brand_subtitle || ''}</p>
+          <p style="margin-top:12px; color:#334155;">${SCENES_CONFIG?.meta?.brand?.company || ''} &copy; ${SCENES_CONFIG?.meta?.brand?.copyright_year || new Date().getFullYear()}</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  overlay.classList.add('visible');
+
+  if (scene.subtitle) showSubtitle(scene.subtitle);
+  await wait(2500);
+
+  // Animate architecture layers
+  const layers = overlay.querySelectorAll('.arch-layer');
+  const arrows = overlay.querySelectorAll('.arch-arrow-down');
+  for (let i = 0; i < layers.length; i++) {
+    layers[i].classList.add('visible');
+    if (arrows[i]) arrows[i].classList.add('visible');
+    await wait(600);
+  }
+
+  // Split narration for subtitles
+  const narrationParts = (scene.narration || '').split(/[。！？]/).filter(Boolean);
+  for (let i = 0; i < Math.min(narrationParts.length, 3); i++) {
+    showSubtitle(narrationParts[i].trim());
+    await wait(4000);
+  }
+
+  // Show CTA text
+  const ctaArea = overlay.querySelector('#cta-text-area');
+  if (ctaArea) ctaArea.classList.add('visible');
+
+  const ctaLineEls = overlay.querySelectorAll('.cta-line');
+  for (let i = 0; i < ctaLineEls.length; i++) {
+    ctaLineEls[i].classList.add('visible');
+    await wait(1000);
+  }
+
+  if (narrationParts.length > 3) {
+    showSubtitle(narrationParts[3].trim());
+    await wait(4000);
+  }
+
+  hideSubtitle();
+
+  // Brand
+  const brand = overlay.querySelector('#cta-brand');
+  if (brand) brand.classList.add('visible');
+
+  await wait(4000);
+}
+
+
+async function runInfoScreenScene(scene) {
+  // Generic info screen — just show subtitle and sidebar
+  termClear();
+  clearSidebar();
+
+  if (scene.sidebar) {
+    buildSidebarFromConfig(scene.sidebar);
+  }
+
+  if (scene.subtitle) {
+    showSubtitle(scene.subtitle);
+  }
+
+  await wait(scene.duration || 10000);
+  hideSubtitle();
+  await wait(500);
+}
+
+
+// ============================================================
+// MAIN TIMELINE
+// ============================================================
+
+async function runAnimation() {
+  if (!SCENES_CONFIG) {
+    document.body.innerHTML = '<div style="padding:40px;color:#ef4444;font-size:24px;">ERROR: No scenes data injected. Run video-gen.py to build this template.</div>';
+    return;
+  }
+
+  const scenes = SCENES_CONFIG.scenes || [];
+  const meta = SCENES_CONFIG.meta || {};
+
+  // Apply brand overrides
+  if (meta.brand) {
+    if (meta.brand.accent_color) document.documentElement.style.setProperty('--accent', meta.brand.accent_color);
+    if (meta.brand.bg_color) document.documentElement.style.setProperty('--bg-color', meta.brand.bg_color);
+    if (meta.brand.font_family) document.documentElement.style.setProperty('--font-family', meta.brand.font_family);
+  }
+
+  // Build progress bar
+  buildProgressBar(scenes);
+
+  // Set terminal title from meta
+  $('#terminal-title').textContent = meta.title ? meta.title.split(' — ')[0].split(' - ')[0] : 'terminal';
+
+  await wait(2000); // Initial delay
+
+  let isFirstTermScene = true;
+
+  for (const scene of scenes) {
+    const type = scene.type || 'terminal-demo';
+
+    if (type === 'hook') {
+      await runHookScene(scene);
+    } else if (type === 'terminal-demo') {
+      scene._isFirstTermScene = isFirstTermScene;
+      isFirstTermScene = false;
+      await runTerminalDemoScene(scene);
+    } else if (type === 'cta') {
+      await runCtaScene(scene);
+    } else if (type === 'info-screen') {
+      await runInfoScreenScene(scene);
+    }
+
+    await wait(500); // gap between scenes
+  }
+
+  // Signal animation completion for Playwright recorder
+  document.body.setAttribute('data-animation-complete', 'true');
+}
+
+// Auto-start on load
+window.addEventListener('load', () => {
+  runAnimation();
+});
+</script>
+</body>
+</html>

@@ -1,12 +1,18 @@
 /**
- * SPE Video Tutorial - Playwright HTML Animation Recorder
+ * Video Tutorial Pipeline - Playwright HTML Animation Recorder
  *
- * Records the SPE video animation HTML page to WebM video using Playwright.
+ * Records an HTML animation page to WebM video using Playwright.
  *
  * Usage:
- *   node record.mjs [path-to-html]
+ *   node record.mjs --html path/to/animation.html --output output/recording.webm
+ *   node record.mjs --html page.html --width 1920 --height 1080
+ *   node record.mjs path/to/animation.html   (legacy positional arg)
  *
- * Defaults to: obs/03-process-knowledge/spe-video-animation.html
+ * Defaults:
+ *   --html    obs/03-process-knowledge/spe-video-animation.html
+ *   --output  output/recording.webm
+ *   --width   1920
+ *   --height  1080
  */
 
 import { chromium } from 'playwright';
@@ -28,29 +34,73 @@ const DEFAULT_HTML = path.join(
   'spe-video-animation.html'
 );
 
-// Output directory
-const OUTPUT_DIR = path.join(__dirname, 'output');
+// ---------------------------------------------------------------------------
+// Argument parsing
+// ---------------------------------------------------------------------------
 
-async function record(htmlPath) {
-  const resolvedPath = path.resolve(htmlPath || DEFAULT_HTML);
+function parseArgs(argv) {
+  const args = {
+    html: null,
+    output: null,
+    width: 1920,
+    height: 1080,
+  };
 
-  if (!fs.existsSync(resolvedPath)) {
-    console.error(`ERROR: HTML file not found: ${resolvedPath}`);
-    console.error('Please provide a valid path or ensure the default animation file exists.');
+  let i = 0;
+  while (i < argv.length) {
+    const arg = argv[i];
+    if (arg === '--html' && i + 1 < argv.length) {
+      args.html = argv[++i];
+    } else if (arg === '--output' && i + 1 < argv.length) {
+      args.output = argv[++i];
+    } else if (arg === '--width' && i + 1 < argv.length) {
+      args.width = parseInt(argv[++i], 10);
+    } else if (arg === '--height' && i + 1 < argv.length) {
+      args.height = parseInt(argv[++i], 10);
+    } else if (!arg.startsWith('--') && !args.html) {
+      // Legacy positional argument
+      args.html = arg;
+    }
+    i++;
+  }
+
+  return args;
+}
+
+// ---------------------------------------------------------------------------
+// Recorder
+// ---------------------------------------------------------------------------
+
+async function record(options) {
+  const htmlPath = path.resolve(options.html || DEFAULT_HTML);
+  const outputDir = options.output
+    ? path.dirname(path.resolve(options.output))
+    : path.join(__dirname, 'output');
+  const outputName = options.output
+    ? path.basename(options.output)
+    : 'recording.webm';
+  const finalPath = path.join(outputDir, outputName);
+  const width = options.width || 1920;
+  const height = options.height || 1080;
+
+  if (!fs.existsSync(htmlPath)) {
+    console.error(`ERROR: HTML file not found: ${htmlPath}`);
+    console.error('Please provide a valid path with --html or as a positional argument.');
     process.exit(1);
   }
 
   // Ensure output directory exists
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
   }
 
   // Convert to file:// URL (works on both Windows and Linux)
-  const fileUrl = `file:///${resolvedPath.replace(/\\/g, '/')}`;
+  const fileUrl = `file:///${htmlPath.replace(/\\/g, '/')}`;
 
-  console.log('=== SPE Video Recorder ===');
-  console.log(`HTML source: ${resolvedPath}`);
-  console.log(`Output dir:  ${OUTPUT_DIR}`);
+  console.log('=== Video Recorder ===');
+  console.log(`HTML source: ${htmlPath}`);
+  console.log(`Output:      ${finalPath}`);
+  console.log(`Resolution:  ${width}x${height}`);
   console.log(`URL:         ${fileUrl}`);
   console.log('');
 
@@ -61,10 +111,10 @@ async function record(htmlPath) {
 
   console.log('[2/5] Creating context with video recording...');
   const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
+    viewport: { width, height },
     recordVideo: {
-      dir: OUTPUT_DIR,
-      size: { width: 1920, height: 1080 },
+      dir: outputDir,
+      size: { width, height },
     },
     // Disable animations that might interfere with controlled playback
     reducedMotion: null,
@@ -84,7 +134,7 @@ async function record(htmlPath) {
 
   try {
     await page.waitForSelector('body[data-animation-complete="true"]', {
-      timeout: 300000, // 5 minutes - animation is ~4 minutes
+      timeout: 300000, // 5 minutes
       state: 'attached',
     });
     console.log('       Animation completed!');
@@ -102,12 +152,13 @@ async function record(htmlPath) {
   await context.close();
   await browser.close();
 
-  // Rename the video file to a predictable name
-  const finalPath = path.join(OUTPUT_DIR, 'recording.webm');
-  if (fs.existsSync(finalPath)) {
+  // Rename the video file to the desired output name
+  if (fs.existsSync(finalPath) && finalPath !== videoPath) {
     fs.unlinkSync(finalPath);
   }
-  fs.renameSync(videoPath, finalPath);
+  if (videoPath !== finalPath) {
+    fs.renameSync(videoPath, finalPath);
+  }
 
   console.log('');
   console.log(`Recording saved: ${finalPath}`);
@@ -117,8 +168,8 @@ async function record(htmlPath) {
 }
 
 // Run
-const htmlArg = process.argv[2];
-record(htmlArg).catch((err) => {
+const args = parseArgs(process.argv.slice(2));
+record(args).catch((err) => {
   console.error('Recording failed:', err);
   process.exit(1);
 });
