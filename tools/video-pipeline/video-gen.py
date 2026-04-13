@@ -67,6 +67,13 @@ def find_ffmpeg() -> str | None:
         # Also check chocolatey
         choco = Path(os.environ.get("ChocolateyInstall", "C:/ProgramData/chocolatey"))
         candidates.append(choco / "bin" / "ffmpeg.exe")
+        # Check WinGet Packages directories (glob for versioned package paths)
+        winget_pkgs = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "WinGet" / "Packages"
+        if winget_pkgs.is_dir():
+            for pkg_dir in winget_pkgs.iterdir():
+                if "FFmpeg" in pkg_dir.name:
+                    for bin_path in pkg_dir.rglob("ffmpeg.exe"):
+                        candidates.append(bin_path)
     elif platform.system() == "Darwin":
         candidates += [
             Path("/opt/homebrew/bin/ffmpeg"),
@@ -172,7 +179,8 @@ def _convert_screenshot_images_to_base64(scenes_data: dict, config_dir: Path) ->
         for ss in scene.get("screenshots", []):
             if "image_path" not in ss:
                 continue
-            img_path = (config_dir / ss["image_path"]).resolve()
+            raw = ss["image_path"]
+            img_path = Path(raw).resolve() if Path(raw).is_absolute() else (config_dir / raw).resolve()
             if not img_path.is_file():
                 print(f"  WARNING: Screenshot image not found: {img_path}")
                 continue

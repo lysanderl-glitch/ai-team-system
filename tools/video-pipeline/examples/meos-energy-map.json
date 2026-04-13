@@ -5,7 +5,7 @@
     "resolution": [1920, 1080],
     "voice": "zh-CN-YunxiNeural",
     "voice_rate": "+5%",
-    "template": "screenshot-tutorial.html",
+    "template": "terminal-tutorial.html",
     "brand": {
       "accent_color": "#1677ff",
       "bg_color": "#f0f5ff",
