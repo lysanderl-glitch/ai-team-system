@@ -178,6 +178,7 @@ def run_skill_test(
     allowed_tools: Optional[list[str]] = None,
     timeout: int = DEFAULT_TIMEOUT,
     model: Optional[str] = None,
+    skip_permissions: bool = False,
 ) -> SkillTestResult:
     """
     Execute a single Skill test via ``claude -p`` in an isolated directory.
@@ -201,6 +202,9 @@ def run_skill_test(
     model : str | None
         Model to use. ``None`` reads ``SYNAPSE_TEST_MODEL`` env var or falls
         back to DEFAULT_MODEL.
+    skip_permissions : bool
+        If True, pass ``--dangerously-skip-permissions`` to the CLI. Only
+        enable this in controlled CI/test environments. Defaults to False.
 
     Returns
     -------
@@ -239,9 +243,10 @@ def run_skill_test(
         "--model", model,
         "--output-format", "stream-json",
         "--verbose",
-        "--dangerously-skip-permissions",
         "--max-turns", str(max_turns),
     ]
+    if skip_permissions:
+        args.append("--dangerously-skip-permissions")
     # Append each allowed tool as a separate argument
     if allowed_tools:
         args.append("--allowed-tools")
