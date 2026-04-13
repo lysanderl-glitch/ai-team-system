@@ -5,7 +5,7 @@
 
 version: "0.1"
 last_updated: "2026-04-13"
-feedback_count: 0  # 累计反馈次数，用于追踪收敛进度
+feedback_count: 3  # 累计反馈次数，用于追踪收敛进度
 
 # ===== 内容偏好 =====
 content_preferences:
@@ -71,12 +71,19 @@ briefing_template:
 
 # ===== 反馈规则库 =====
 # 总裁的明确指令（口头反馈），优先级最高，立即生效
-explicit_rules: []
-  # 示例格式：
-  # - rule: "晨报不要放团队运营细节"
-  #   source: "口头指令"
-  #   date: "2026-04-15"
-  #   applied_to: ["midday_12", "evening_18", "night_22"]
+explicit_rules:
+  - rule: "演示/分享资料必须支持中英文双语切换"
+    source: "口头指令"
+    date: "2026-04-13"
+    applied_to: ["presentation", "sharing_materials"]
+  - rule: "内容按主题聚合排列，不按时间顺序。同类主题归组（体系建设/技术基础设施/质量与安全/运营自动化等），避免跳跃感"
+    source: "口头指令"
+    date: "2026-04-13"
+    applied_to: ["presentation", "briefing", "sharing_materials"]
+  - rule: "降低文字密度，PPT风格呈现。使用结构化图标/可视化元素替代大段文字，每个要点一句话+图标，细节用数据而非段落"
+    source: "口头指令"
+    date: "2026-04-13"
+    applied_to: ["presentation", "briefing", "sharing_materials"]
 
 # ===== 收敛追踪 =====
 convergence_tracking:
@@ -85,5 +92,5 @@ convergence_tracking:
   # calibrating: 6-15次反馈
   # converging: 16-25次反馈
   # stable: 25+次反馈，修改率<5%
-  total_feedbacks: 0
+  total_feedbacks: 3
   satisfaction_scores: []  # 历史满意度评分
