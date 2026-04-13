@@ -79,6 +79,24 @@ tasks:
       lysander.bond申诉可尝试但成功率低（20-30%）
       申诉入口：https://urlsec.qq.com/complain.html
 
+  - id: n8n-intelligence-pipeline
+    title: "情报管线迁移到 n8n（lysander-server + Claude API + GitHub API）"
+    status: pending
+    scheduled: "2026-04-18 10:00 Dubai"
+    priority: P1
+    owner: Lysander + RD团队
+    context: |
+      当前方案：本地 Windows 定时任务（临时方案，已部署）
+      目标方案：n8n on lysander-server + Claude API + GitHub API
+      优势：不依赖电脑开机、GitHub API 原子写入无冲突、内置监控+Slack告警
+      前提：lysander-server 安装 n8n Docker、配置 Claude API Key + GitHub Token
+      总裁指示：周六上午处理
+    next_steps:
+      - lysander-server 安装 n8n (Docker)
+      - 设计 n8n workflow（cron → Claude API → GitHub API → Slack通知）
+      - 迁移情报日报 + 情报行动两条管线
+      - 验证 + 关停本地定时任务和远程 Agent
+
   - id: pbs-system-build
     title: "PBS 总裁简报服务体系建设（Phase 0-4）"
     status: in_progress
