@@ -28,7 +28,7 @@ import subprocess
 import tempfile
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
@@ -457,6 +457,133 @@ def _extract_cost_estimate(result_line: Optional[dict]) -> CostEstimate:
         estimated_cost=result_line.get("total_cost_usd", 0.0),
         turns_used=result_line.get("num_turns", 0),
     )
+
+
+def get_all_skill_names() -> list[str]:
+    """
+    Scan ``.claude/skills/*/SKILL.md`` and return a sorted list of all Skill
+    directory names.
+
+    The function walks upward from this file's location to find the repository
+    root (the directory containing ``.claude/``), then globs for Skill
+    directories.
+
+    Returns
+    -------
+    list[str]
+        Sorted, deduplicated Skill names (directory basenames).
+    """
+    # Walk up from this file to find the repo root containing .claude/
+    current = Path(__file__).resolve()
+    repo_root: Optional[Path] = None
+    for parent in current.parents:
+        if (parent / ".claude").is_dir():
+            repo_root = parent
+            break
+
+    if repo_root is None:
+        logger.warning("Could not locate .claude/ directory from %s", current)
+        return []
+
+    skills_dir = repo_root / ".claude" / "skills"
+    if not skills_dir.is_dir():
+        logger.warning("Skills directory not found: %s", skills_dir)
+        return []
+
+    names: set[str] = set()
+    for skill_md in skills_dir.glob("*/SKILL.md"):
+        names.add(skill_md.parent.name)
+
+    return sorted(names)
+
+
+# Global-trigger patterns: changes to these paths trigger ALL skills
+_GLOBAL_TRIGGER_PATTERNS = [
+    "CLAUDE.md",
+    "agent-butler/config",
+    "obs/01-team-knowledge/HR",
+]
+
+
+def filter_skills_by_changes(changed_files: list[str] | None = None) -> list[str]:
+    """
+    Return Skill names that need smoke testing based on git-changed files.
+
+    Directory-level coarse matching rules:
+
+    - ``.claude/skills/{name}/*`` changed  --> return that ``{name}``
+    - ``CLAUDE.md`` changed                --> return **all** Skills
+    - ``agent-butler/config/*`` changed    --> return **all** Skills
+    - ``obs/01-team-knowledge/HR/*`` changed --> return **all** Skills
+      (org-structure changes affect dispatch routing)
+    - Any other file changed               --> no test triggered
+
+    Parameters
+    ----------
+    changed_files : list[str] | None
+        Explicit list of changed file paths (repo-relative, forward-slash).
+        If ``None``, the function runs
+        ``git diff --name-only HEAD~1`` to obtain the list automatically.
+
+    Returns
+    -------
+    list[str]
+        Sorted, deduplicated Skill names that should be tested.
+    """
+    if changed_files is None:
+        try:
+            proc = subprocess.run(
+                ["git", "diff", "--name-only", "HEAD~1"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            changed_files = [
+                line.strip()
+                for line in proc.stdout.strip().split("\n")
+                if line.strip()
+            ]
+        except Exception as exc:
+            logger.error("Failed to get git diff: %s", exc)
+            return []
+
+    if not changed_files:
+        return []
+
+    skills_prefix = PurePosixPath(".claude/skills")
+    matched: set[str] = set()
+
+    for raw_path in changed_files:
+        # Normalise to forward-slash POSIX-style for consistent matching
+        p = PurePosixPath(raw_path.replace("\\", "/"))
+
+        # Rule 1: direct skill file change  .claude/skills/{name}/...
+        try:
+            rel = p.relative_to(skills_prefix)
+            # rel.parts[0] is the skill name
+            if rel.parts:
+                matched.add(rel.parts[0])
+            continue
+        except ValueError:
+            pass
+
+        # Rule 2-4: global triggers
+        for pattern in _GLOBAL_TRIGGER_PATTERNS:
+            pattern_path = PurePosixPath(pattern)
+            # Match the file itself (e.g. CLAUDE.md) or anything under it
+            if p == pattern_path or _is_under(p, pattern_path):
+                return get_all_skill_names()
+
+    return sorted(matched)
+
+
+def _is_under(file_path: PurePosixPath, dir_path: PurePosixPath) -> bool:
+    """Return True if *file_path* is equal to or nested under *dir_path*."""
+    try:
+        file_path.relative_to(dir_path)
+        return True
+    except ValueError:
+        return False
 
 
 def _prepare_preconditions(tmp_dir: str, preconditions: dict[str, Any]) -> None:
