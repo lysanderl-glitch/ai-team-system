@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "title": "MEOS 用能地图 - 一眼看清建筑能耗分布",
+    "duration_target": 51,
+    "resolution": [1920, 1080],
+    "voice": "zh-CN-YunxiNeural",
+    "voice_rate": "+5%",
+    "template": "screenshot-tutorial.html",
+    "brand": {
+      "accent_color": "#1677ff",
+      "bg_color": "#f0f5ff",
+      "font_family": "'PingFang SC', 'Microsoft YaHei', sans-serif",
+      "company": "AMC MEOS",
+      "product": "智能能源运维平台",
+      "copyright_year": "2026"
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene_1_hook",
+      "type": "hook",
+      "duration": 8000,
+      "title": "MEOS 用能地图",
+      "subtitle": "一眼看清整栋建筑的能源消耗分布",
+      "hook_cards": [
+        "树状热力图可视化",
+        "多层级下钻分析",
+        "偏差图例识别",
+        "自定义视图保存"
+      ],
+      "brand_logo": "MEOS",
+      "brand_tagline": "AMC 智能能源运维平台",
+      "narration": "管一栋楼的能耗，最怕的是看不清哪里在浪费。今天带你上手 MEOS 用能地图，一张图看清整栋建筑每个区域的能源消耗分布。"
+    },
+    {
+      "id": "scene_2_overview",
+      "type": "screenshot-demo",
+      "duration": 12000,
+      "progress_label": "用能地图",
+      "screenshots": [
+        {
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-01-usage-map-overview.png",
+          "caption": "用能地图 -- 树状图总览",
+          "annotations": [
+            {
+              "type": "red-box",
+              "position": { "top": "2%", "left": "30%", "width": "12%", "height": "4%" },
+              "label": "Usage Map 导航入口",
+              "step": 1,
+              "delay": 1500
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "8%", "left": "2%", "width": "55%", "height": "5%" },
+              "label": "四大功能模块导航区",
+              "step": 2,
+              "delay": 3500
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "15%", "left": "10%", "width": "80%", "height": "70%" },
+              "label": "树状热力图主区域（Treemap）",
+              "step": 3,
+              "delay": 6000
+            }
+          ],
+          "duration": 12000
+        }
+      ],
+      "sidebar": {
+        "type": "info-card",
+        "title": "用能地图功能说明",
+        "content": "<p>用能地图以<strong>树状热力图（Treemap）</strong>可视化展示能耗的层级分布。</p><ul><li><span style=\"color:#1677ff;font-weight:700;\">Total 总能耗</span> -- 显示当前周期总 kWh</li><li><span style=\"color:#1677ff;font-weight:700;\">Proportion 占比</span> -- 各区域能耗占总量百分比</li><li><span style=\"color:#1677ff;font-weight:700;\">YoY 同比</span> -- 与去年同期对比变化率</li></ul><p style=\"margin-top:12px;font-size:13px;color:#8c8c8c;\">导航路径：能效基准 > 用能地图</p>"
+      },
+      "subtitle": "打开用能地图 ... 顶部可以看到总能耗和同比指标 ... 中间就是树状热力图主区域。",
+      "narration": "进入能效基准模块，点击用能地图。页面顶部显示项目名称、总能耗、占比和同比指标。中间这一大块，就是树状热力图，面积越大，说明这个区域的能耗占比越高，一眼就能看出谁是用电大户。"
+    },
+    {
+      "id": "scene_3_drilldown",
+      "type": "screenshot-demo",
+      "duration": 15000,
+      "progress_label": "用能地图",
+      "screenshots": [
+        {
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-02-drill-down-result.png",
+          "caption": "下钻操作 -- 查看子项能耗",
+          "annotations": [
+            {
+              "type": "red-box",
+              "position": { "top": "1%", "left": "30%", "width": "18%", "height": "4%" },
+              "label": "Visualization Dashboard 导航",
+              "step": 1,
+              "delay": 1500
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "1%", "left": "52%", "width": "14%", "height": "4%" },
+              "label": "Evaluation Dashboard 切换",
+              "step": 2,
+              "delay": 4000
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "6%", "left": "10%", "width": "80%", "height": "85%" },
+              "label": "下钻后的子项能耗分布区域",
+              "step": 3,
+              "delay": 7000
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "1%", "left": "82%", "width": "16%", "height": "4%" },
+              "label": "项目名称：Keppel South Central",
+              "step": 4,
+              "delay": 10000
+            }
+          ],
+          "duration": 15000
+        }
+      ],
+      "sidebar": {
+        "type": "flow-steps",
+        "title": "下钻操作步骤",
+        "steps": [
+          "在树状图中选中目标区域（如 Public）",
+          "点击工具栏的 Drill Down 按钮",
+          "系统展开下一层级子项（如 AC、照明等）",
+          "每个色块面积代表该子项能耗占比",
+          "可继续下钻查看更细颗粒度数据"
+        ]
+      },
+      "subtitle": "选中一个区域 ... 点击 Drill Down ... 就能看到这个区域里面，具体每个子系统的能耗分布。",
+      "narration": "看到一个高能耗区域后，怎么进一步分析？选中它，然后点击 Drill Down 按钮。系统会自动展开下一层级，比如空调系统、照明系统、动力系统，每个子项的能耗占比一目了然。发现 AC 空调色块最大？那就是用电大户，可以继续下钻，追踪到具体设备。"
+    },
+    {
+      "id": "scene_4_legend",
+      "type": "screenshot-demo",
+      "duration": 10000,
+      "progress_label": "用能地图",
+      "screenshots": [
+        {
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-03-legend-controls.png",
+          "caption": "图例与控制面板",
+          "annotations": [
+            {
+              "type": "red-box",
+              "position": { "top": "8%", "left": "2%", "width": "30%", "height": "6%" },
+              "label": "Keppel South Central 项目标题",
+              "step": 1,
+              "delay": 1500
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "7%", "left": "55%", "width": "15%", "height": "6%" },
+              "label": "Roster / Asset 视图切换",
+              "step": 2,
+              "delay": 3500
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "7%", "left": "72%", "width": "26%", "height": "80%" },
+              "label": "Equipment by Specialty 设备分类面板",
+              "step": 3,
+              "delay": 6000
+            }
+          ],
+          "duration": 10000
+        }
+      ],
+      "sidebar": {
+        "type": "info-card",
+        "title": "图例与控制说明",
+        "content": "<p>用能地图提供多种控制功能：</p><ul><li><span style=\"color:#ff4d4f;font-weight:700;\">Positive Deviation</span> -- 红色标记，实际能耗超出基准</li><li><span style=\"color:#faad14;font-weight:700;\">Focus Attention</span> -- 黄色标记，需重点关注项</li><li><span style=\"color:#1677ff;font-weight:700;\">Set View</span> -- 自定义显示视图</li><li><span style=\"color:#1677ff;font-weight:700;\">Set Level</span> -- 设置显示层级深度</li><li><span style=\"color:#1677ff;font-weight:700;\">Save as Default</span> -- 保存为默认视图</li></ul><p style=\"margin-top:12px;font-size:13px;color:#8c8c8c;\">点击 More Legend 查看完整图例</p>"
+      },
+      "subtitle": "右侧面板按专业分类展示设备 ... 颜色图例帮你快速识别能耗偏差。",
+      "narration": "右侧面板按专业分类展示设备清单，包括电气、暖通、消防、给排水等。颜色图例帮你快速识别偏差，红色代表能耗超标，黄色是需要重点关注的。你还可以用 Set Level 调整显示层级，配置好了点 Save as Default View，下次打开就是你习惯的视角。"
+    },
+    {
+      "id": "scene_5_cta",
+      "type": "cta",
+      "duration": 6000,
+      "title": "AMC MEOS 用能地图",
+      "cta_lines": [
+        "立即体验用能地图：",
+        "1. 进入能效基准模块",
+        "2. 选择用能地图（Usage Map）",
+        "3. 点击 Drill Down 逐层分析能耗分布"
+      ],
+      "brand_title": "AMC MEOS",
+      "brand_subtitle": "智能能源运维平台 -- 让建筑能耗管理更透明",
+      "subtitle": "AMC MEOS ... 让建筑能耗管理更透明。",
+      "narration": "AMC MEOS 用能地图，一张图看清整栋建筑的能耗分布，从全局到设备，层层下钻，精准定位。现在就去试试吧。"
+    }
+  ]
+}

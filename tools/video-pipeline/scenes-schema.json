@@ -94,7 +94,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["hook", "terminal-demo", "cta", "info-screen"],
+            "enum": ["hook", "terminal-demo", "screenshot-demo", "cta", "info-screen"],
             "description": "Scene type determining layout and animation behavior."
           },
           "duration": {
@@ -116,6 +116,70 @@
           "progress_label": {
             "type": "string",
             "description": "Label shown in the progress bar for this scene."
+          },
+
+          "screenshots": {
+            "type": "array",
+            "description": "(screenshot-demo type) Array of screenshot slides with annotations.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "image_path": {
+                  "type": "string",
+                  "description": "Relative path to the screenshot image file (resolved from config directory). Converted to base64 at build time."
+                },
+                "image_base64": {
+                  "type": "string",
+                  "description": "Base64 data URI of the screenshot image. Auto-generated from image_path by video-gen.py, or provided directly."
+                },
+                "caption": {
+                  "type": "string",
+                  "description": "Caption text displayed as subtitle while this screenshot is shown."
+                },
+                "duration": {
+                  "type": "integer",
+                  "default": 6000,
+                  "description": "How long this screenshot is displayed in milliseconds."
+                },
+                "annotations": {
+                  "type": "array",
+                  "description": "Visual annotations overlaid on the screenshot.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["red-box", "arrow", "step-badge", "spotlight"],
+                        "description": "Annotation visual type."
+                      },
+                      "position": {
+                        "type": "object",
+                        "description": "CSS position values (top, left, width, height) as percentage strings.",
+                        "properties": {
+                          "top": { "type": "string" },
+                          "left": { "type": "string" },
+                          "width": { "type": "string" },
+                          "height": { "type": "string" }
+                        }
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "Text label displayed near the annotation."
+                      },
+                      "step": {
+                        "type": "integer",
+                        "description": "Step number shown inside step-badge annotations."
+                      },
+                      "delay": {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Milliseconds after screenshot appears before this annotation is shown."
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
 
           "chaos_items": {

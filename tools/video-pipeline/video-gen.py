@@ -20,6 +20,7 @@ Dependencies:
 
 import argparse
 import asyncio
+import base64
 import json
 import os
 import platform
@@ -159,8 +160,39 @@ async def generate_narration(scenes: list[dict], voice: str, rate: str, volume: 
 # HTML Template Injection
 # ---------------------------------------------------------------------------
 
-def inject_scenes_into_template(template_path: Path, scenes_data: dict, output_html: Path) -> Path:
+def _convert_screenshot_images_to_base64(scenes_data: dict, config_dir: Path) -> None:
+    """For screenshot-demo scenes, convert image_path references to inline base64 data URIs.
+
+    This keeps the generated HTML self-contained (single-file).
+    Modifies scenes_data in place.
+    """
+    for scene in scenes_data.get("scenes", []):
+        if scene.get("type") != "screenshot-demo":
+            continue
+        for ss in scene.get("screenshots", []):
+            if "image_path" not in ss:
+                continue
+            img_path = (config_dir / ss["image_path"]).resolve()
+            if not img_path.is_file():
+                print(f"  WARNING: Screenshot image not found: {img_path}")
+                continue
+            with open(img_path, "rb") as f:
+                b64 = base64.b64encode(f.read()).decode()
+            ext = img_path.suffix.lstrip(".").lower()
+            # Normalise common extensions to MIME subtypes
+            mime_map = {"jpg": "jpeg", "svg": "svg+xml"}
+            mime_ext = mime_map.get(ext, ext)
+            ss["image_base64"] = f"data:image/{mime_ext};base64,{b64}"
+            size_kb = len(b64) * 3 / 4 / 1024
+            print(f"  Embedded screenshot: {ss['image_path']} ({size_kb:.0f} KB)")
+
+
+def inject_scenes_into_template(template_path: Path, scenes_data: dict, output_html: Path, config_dir: Path | None = None) -> Path:
     """Read template HTML, inject scenes JSON, write to output_html."""
+    # Convert screenshot image paths to base64 before injection
+    if config_dir:
+        _convert_screenshot_images_to_base64(scenes_data, config_dir)
+
     template_text = template_path.read_text(encoding="utf-8")
 
     # Replace the placeholder with actual data
@@ -404,7 +436,7 @@ def resolve_html_source(config: dict, config_path: Path) -> Path:
         sys.exit(1)
 
     output_html = DEFAULT_OUTPUT_DIR / "generated-animation.html"
-    return inject_scenes_into_template(template_path, config, output_html)
+    return inject_scenes_into_template(template_path, config, output_html, config_dir=config_path.parent)
 
 
 def main():

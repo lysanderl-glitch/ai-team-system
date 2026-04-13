@@ -480,6 +480,126 @@ html, body {
 .triage-personal { background: rgba(34,197,94,0.2); }
 .triage-reference { background: rgba(234,179,8,0.2); }
 
+/* ============================================================
+   SCREENSHOT-DEMO SCENE
+   ============================================================ */
+
+/* Screenshot container — replaces terminal area, occupies left panel space */
+.screenshot-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0e1a;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.screenshot-container img {
+  max-width: 95%;
+  max-height: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  transition: opacity 0.5s ease;
+}
+
+/* Annotation layer */
+.annotation-layer {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+}
+
+/* Red-box annotation */
+.anno-red-box {
+  position: absolute;
+  border: 2.5px dashed #ef4444;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.anno-red-box.visible {
+  opacity: 1;
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: #ef4444; }
+  50% { border-color: #f87171; }
+}
+
+/* Step badge annotation */
+.anno-step-badge {
+  position: absolute;
+  width: 28px; height: 28px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family, 'JetBrains Mono', monospace);
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s ease;
+}
+
+.anno-step-badge.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Annotation text label */
+.anno-label {
+  position: absolute;
+  background: rgba(0,0,0,0.85);
+  color: #e2e8f0;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: var(--font-family, 'JetBrains Mono', monospace);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.anno-label.visible { opacity: 1; }
+
+/* Arrow annotation (CSS triangle) */
+.anno-arrow {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.anno-arrow.visible { opacity: 1; }
+
+.anno-arrow::after {
+  content: '';
+  display: block;
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #ef4444;
+}
+
+/* Spotlight overlay */
+.spotlight-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.spotlight-overlay.visible { opacity: 1; }
+
 /* glitch effect */
 @keyframes glitch {
   0% { transform: translate(0); filter: none; }
@@ -562,6 +682,15 @@ html, body {
 
   <!-- CTA Overlay (built dynamically) -->
   <div id="cta-overlay"></div>
+
+  <!-- Screenshot Demo Container (reuses left panel position, toggled by scene type) -->
+  <div id="screenshot-panel" style="display:none; position:absolute; top:70px; left:32px; width:1200px; height:920px; z-index:50;">
+    <div class="screenshot-container" id="screenshot-container">
+      <img id="screenshot-img" src="" alt="screenshot">
+      <div class="annotation-layer" id="annotation-layer"></div>
+      <div class="spotlight-overlay" id="spotlight-overlay"></div>
+    </div>
+  </div>
 
 </div>
 
@@ -1021,6 +1150,212 @@ async function runInfoScreenScene(scene) {
 
 
 // ============================================================
+// SCREENSHOT-DEMO SCENE
+// ============================================================
+
+async function runScreenshotDemoScene(scene) {
+  if (scene.progress_label) {
+    setProgressBySceneId(scene.id);
+  }
+
+  const screenshotPanel = $('#screenshot-panel');
+  const terminalPanel = $('#terminal-panel');
+  const imgEl = $('#screenshot-img');
+  const annoLayer = $('#annotation-layer');
+  const spotlightOverlay = $('#spotlight-overlay');
+
+  // Hide terminal, show screenshot panel
+  terminalPanel.style.display = 'none';
+  screenshotPanel.style.display = 'block';
+
+  // Build sidebar (reuses existing sidebar system)
+  if (scene.sidebar) {
+    clearSidebar();
+    buildSidebarFromConfig(scene.sidebar);
+  }
+  if (scene.sidebar_cards) {
+    if (!scene.sidebar) clearSidebar();
+    for (const sc of scene.sidebar_cards) {
+      buildSidebarFromConfig(sc);
+      await wait(300);
+    }
+  }
+
+  // Show subtitle
+  if (scene.subtitle) {
+    showSubtitle(scene.subtitle);
+  }
+
+  const screenshots = scene.screenshots || [];
+
+  for (let sIdx = 0; sIdx < screenshots.length; sIdx++) {
+    const ss = screenshots[sIdx];
+
+    // Clear previous annotations
+    annoLayer.innerHTML = '';
+    spotlightOverlay.classList.remove('visible');
+    spotlightOverlay.style.background = 'rgba(0,0,0,0.6)';
+
+    // Load image (base64 or path)
+    const imgSrc = ss.image_base64 || ss.image_path || '';
+    imgEl.style.opacity = '0';
+    imgEl.src = imgSrc;
+
+    // Wait for image load then fade in
+    await new Promise((resolve) => {
+      if (imgEl.complete && imgEl.naturalWidth > 0) {
+        resolve();
+      } else {
+        imgEl.onload = resolve;
+        imgEl.onerror = resolve;
+      }
+    });
+    imgEl.style.opacity = '1';
+
+    // Update caption as subtitle if provided
+    if (ss.caption) {
+      showSubtitle(ss.caption);
+    }
+
+    // Schedule annotations by delay
+    const annotations = ss.annotations || [];
+    const annoTimers = [];
+
+    // We need to track actual annotation elements to handle spotlight
+    const annoElements = [];
+
+    for (const anno of annotations) {
+      const delay = anno.delay || 0;
+      const pos = anno.position || {};
+
+      const timerPromise = (async () => {
+        await wait(delay);
+
+        if (anno.type === 'red-box') {
+          const box = document.createElement('div');
+          box.className = 'anno-red-box';
+          box.style.top = pos.top || '0';
+          box.style.left = pos.left || '0';
+          if (pos.width) box.style.width = pos.width;
+          if (pos.height) box.style.height = pos.height;
+          annoLayer.appendChild(box);
+          annoElements.push(box);
+          // Trigger reflow then make visible
+          void box.offsetWidth;
+          box.classList.add('visible');
+
+          // Add label below the box if provided
+          if (anno.label) {
+            const label = document.createElement('div');
+            label.className = 'anno-label';
+            const topVal = parseFloat(pos.top) || 0;
+            const heightVal = parseFloat(pos.height) || 0;
+            label.style.top = (topVal + heightVal + 1) + '%';
+            label.style.left = pos.left || '0';
+            label.textContent = anno.label;
+            annoLayer.appendChild(label);
+            void label.offsetWidth;
+            label.classList.add('visible');
+          }
+        }
+
+        else if (anno.type === 'step-badge') {
+          const badge = document.createElement('div');
+          badge.className = 'anno-step-badge';
+          badge.style.top = pos.top || '0';
+          badge.style.left = pos.left || '0';
+          badge.textContent = anno.step || '';
+          annoLayer.appendChild(badge);
+          annoElements.push(badge);
+          void badge.offsetWidth;
+          badge.classList.add('visible');
+
+          // Add label to the right of the badge
+          if (anno.label) {
+            const label = document.createElement('div');
+            label.className = 'anno-label';
+            label.style.top = pos.top || '0';
+            const leftVal = parseFloat(pos.left) || 0;
+            label.style.left = (leftVal + 3) + '%';
+            label.textContent = anno.label;
+            annoLayer.appendChild(label);
+            void label.offsetWidth;
+            label.classList.add('visible');
+          }
+        }
+
+        else if (anno.type === 'arrow') {
+          const arrow = document.createElement('div');
+          arrow.className = 'anno-arrow';
+          arrow.style.top = pos.top || '0';
+          arrow.style.left = pos.left || '0';
+          annoLayer.appendChild(arrow);
+          annoElements.push(arrow);
+          void arrow.offsetWidth;
+          arrow.classList.add('visible');
+
+          if (anno.label) {
+            const label = document.createElement('div');
+            label.className = 'anno-label';
+            const topVal = parseFloat(pos.top) || 0;
+            label.style.top = (topVal + 3) + '%';
+            label.style.left = pos.left || '0';
+            label.textContent = anno.label;
+            annoLayer.appendChild(label);
+            void label.offsetWidth;
+            label.classList.add('visible');
+          }
+        }
+
+        else if (anno.type === 'spotlight') {
+          // Spotlight uses a radial gradient mask to highlight a region
+          const cx = (parseFloat(pos.left) || 0) + (parseFloat(pos.width) || 0) / 2;
+          const cy = (parseFloat(pos.top) || 0) + (parseFloat(pos.height) || 0) / 2;
+          const rx = (parseFloat(pos.width) || 20) / 2;
+          const ry = (parseFloat(pos.height) || 20) / 2;
+          spotlightOverlay.style.background =
+            `radial-gradient(ellipse ${rx}% ${ry}% at ${cx}% ${cy}%, transparent 80%, rgba(0,0,0,0.6) 100%)`;
+          spotlightOverlay.classList.add('visible');
+
+          if (anno.label) {
+            const label = document.createElement('div');
+            label.className = 'anno-label';
+            const topVal = (parseFloat(pos.top) || 0) + (parseFloat(pos.height) || 0) + 1;
+            label.style.top = topVal + '%';
+            label.style.left = pos.left || '0';
+            label.textContent = anno.label;
+            annoLayer.appendChild(label);
+            void label.offsetWidth;
+            label.classList.add('visible');
+          }
+        }
+      })();
+
+      annoTimers.push(timerPromise);
+    }
+
+    // Wait for all annotation timers to fire, then hold for remaining duration
+    const ssDuration = ss.duration || 6000;
+    await wait(ssDuration);
+
+    // Fade out if there is a next screenshot
+    if (sIdx < screenshots.length - 1) {
+      imgEl.style.opacity = '0';
+      annoLayer.innerHTML = '';
+      spotlightOverlay.classList.remove('visible');
+      await wait(500);
+    }
+  }
+
+  // Cleanup: restore terminal panel, hide screenshot panel
+  screenshotPanel.style.display = 'none';
+  terminalPanel.style.display = 'flex';
+  hideSubtitle();
+  await wait(500);
+}
+
+
+// ============================================================
 // MAIN TIMELINE
 // ============================================================
 
@@ -1059,6 +1394,8 @@ async function runAnimation() {
       scene._isFirstTermScene = isFirstTermScene;
       isFirstTermScene = false;
       await runTerminalDemoScene(scene);
+    } else if (type === 'screenshot-demo') {
+      await runScreenshotDemoScene(scene);
     } else if (type === 'cta') {
       await runCtaScene(scene);
     } else if (type === 'info-screen') {
