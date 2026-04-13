@@ -1,14 +1,14 @@
 {
   "meta": {
-    "title": "MEOS 用能地图 - 一眼看清建筑能耗分布",
-    "duration_target": 51,
+    "title": "MEOS 能源管理模块 — 操作指南",
+    "duration_target": 70,
     "resolution": [1920, 1080],
     "voice": "zh-CN-YunxiNeural",
     "voice_rate": "+5%",
     "template": "terminal-tutorial.html",
     "brand": {
       "accent_color": "#1677ff",
-      "bg_color": "#f0f5ff",
+      "bg_color": "#0f172a",
       "font_family": "'PingFang SC', 'Microsoft YaHei', sans-serif",
       "company": "AMC MEOS",
       "product": "智能能源运维平台",
@@ -20,49 +20,48 @@
       "id": "scene_1_hook",
       "type": "hook",
       "duration": 8000,
-      "title": "MEOS 用能地图",
-      "subtitle": "一眼看清整栋建筑的能源消耗分布",
+      "title": "MEOS 能源管理",
+      "subtitle": "数据驱动的智能能耗运维",
       "hook_cards": [
-        "树状热力图可视化",
-        "多层级下钻分析",
-        "偏差图例识别",
-        "自定义视图保存"
+        "能源预算 KPI 看板",
+        "年度趋势与子项分析",
+        "桑基图能量流向",
+        "能流模型配置"
       ],
       "brand_logo": "MEOS",
       "brand_tagline": "AMC 智能能源运维平台",
-      "narration": "管一栋楼的能耗，最怕的是看不清哪里在浪费。今天带你上手 MEOS 用能地图，一张图看清整栋建筑每个区域的能源消耗分布。"
+      "narration": "管理建筑能源，关键是看得清、管得住。今天带你了解 MEOS 能源管理模块，从预算总览到能量流向，全面掌握能耗数据。"
     },
     {
-      "id": "scene_2_overview",
+      "id": "scene_2_budget_overview",
       "type": "screenshot-demo",
       "duration": 12000,
-      "progress_label": "用能地图",
-      "_screenshot_quality_note": "NEEDS RE-CAPTURE: ch4-01 shows nav mega-menu overlay instead of treemap. Run: npx playwright test tests/screenshot-energy.spec.ts --workers=1 with longer wait times.",
+      "progress_label": "能源预算",
       "screenshots": [
         {
-          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-01-usage-map-overview.png",
-          "caption": "用能地图 -- 树状图总览",
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch2-01-energy-budget-overview.png",
+          "caption": "能源预算总览 — KPI 仪表盘",
           "annotations": [
             {
               "type": "red-box",
-              "position": { "top": "1%", "left": "28%", "width": "8%", "height": "3.5%" },
-              "label": "Usage Map 导航入口",
+              "position": { "top": "4%", "left": "2%", "width": "92%", "height": "14%" },
+              "label": "四大管理模块：数据管理 / 资产管理 / 运维监控 / 风险管理",
               "step": 1,
               "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "5%", "left": "1%", "width": "96%", "height": "15%" },
-              "label": "四大功能模块导航区",
+              "position": { "top": "20%", "left": "2%", "width": "22%", "height": "30%" },
+              "label": "年度能耗总览与达标率 (24.83%)",
               "step": 2,
-              "delay": 3500
+              "delay": 4000
             },
             {
               "type": "red-box",
-              "position": { "top": "22%", "left": "5%", "width": "90%", "height": "65%" },
-              "label": "树状热力图主区域（Treemap）-- 当前未加载",
+              "position": { "top": "52%", "left": "2%", "width": "92%", "height": "45%" },
+              "label": "每日能耗与计划对比柱状图",
               "step": 3,
-              "delay": 6000
+              "delay": 7000
             }
           ],
           "duration": 12000
@@ -70,128 +69,162 @@
       ],
       "sidebar": {
         "type": "info-card",
-        "title": "用能地图功能说明",
-        "content": "<p>用能地图以<strong>树状热力图（Treemap）</strong>可视化展示能耗的层级分布。</p><ul><li><span style=\"color:#1677ff;font-weight:700;\">Total 总能耗</span> -- 显示当前周期总 kWh</li><li><span style=\"color:#1677ff;font-weight:700;\">Proportion 占比</span> -- 各区域能耗占总量百分比</li><li><span style=\"color:#1677ff;font-weight:700;\">YoY 同比</span> -- 与去年同期对比变化率</li></ul><p style=\"margin-top:12px;font-size:13px;color:#8c8c8c;\">导航路径：能效基准 > 用能地图</p>"
+        "title": "能源预算管理",
+        "content": "<p>能源消耗预算（Energy Consumption Budget）是 MEOS 的核心 KPI 看板：</p><ul><li><span style=\"color:#1677ff;font-weight:700;\">Annual Energy Overview</span> — 年度总能耗与达标率环形图</li><li><span style=\"color:#1677ff;font-weight:700;\">Daily Energy & Plan</span> — 每日实际能耗 vs 预算计划</li><li><span style=\"color:#1677ff;font-weight:700;\">四大模块导航</span> — 数据管理、资产管理、运维监控、风险管理</li></ul><p style=\"margin-top:12px;font-size:13px;color:#8c8c8c;\">导航路径：Energy & Carbon Management > Budget Settlement > Energy Consumption Budget</p>"
       },
-      "subtitle": "打开用能地图 ... 顶部可以看到总能耗和同比指标 ... 中间就是树状热力图主区域。",
-      "narration": "进入能效基准模块，点击用能地图。页面顶部显示项目名称、总能耗、占比和同比指标。中间这一大块，就是树状热力图，面积越大，说明这个区域的能耗占比越高，一眼就能看出谁是用电大户。"
+      "subtitle": "打开能源预算看板 ... 左侧是年度能耗总览和达标率 ... 下方是每日能耗趋势图。",
+      "narration": "进入能源预算模块，首先看到四大管理模块的导航入口。左侧年度能耗总览显示当前达标率百分之二十四点八三。下方的柱状图展示每日实际能耗和计划对比，蓝色柱子代表每日用电量，一目了然。"
     },
     {
-      "id": "scene_3_drilldown",
+      "id": "scene_3_subitem_table",
       "type": "screenshot-demo",
-      "duration": 15000,
-      "progress_label": "用能地图",
-      "_screenshot_quality_note": "NEEDS RE-CAPTURE: ch4-02 shows only nav bar with blank page body (17KB file). Treemap drill-down never loaded.",
+      "duration": 12000,
+      "progress_label": "子项分析",
       "screenshots": [
         {
-          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-02-drill-down-result.png",
-          "caption": "下钻操作 -- 查看子项能耗",
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch2-03-subitem-table.png",
+          "caption": "子项能耗预算表 — 各系统能耗分布",
           "annotations": [
             {
               "type": "red-box",
-              "position": { "top": "0%", "left": "0%", "width": "3%", "height": "3%" },
-              "label": "MEOS Logo",
+              "position": { "top": "20%", "left": "2%", "width": "92%", "height": "16%" },
+              "label": "子项月度能耗趋势条形图",
               "step": 1,
               "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "0%", "left": "8%", "width": "22%", "height": "3%" },
-              "label": "Comprehensive Data Management 面包屑",
+              "position": { "top": "42%", "left": "2%", "width": "35%", "height": "8%" },
+              "label": "Public 公共区域总能耗 208,457.7 kWh",
               "step": 2,
               "delay": 4000
             },
             {
               "type": "red-box",
-              "position": { "top": "0%", "left": "31%", "width": "14%", "height": "3%" },
-              "label": "Visualization Dashboard（当前激活）",
+              "position": { "top": "50%", "left": "2%", "width": "92%", "height": "38%" },
+              "label": "子项明细：AC / MWF / Lift / Lighting",
               "step": 3,
               "delay": 7000
+            }
+          ],
+          "duration": 12000
+        }
+      ],
+      "sidebar": {
+        "type": "info-card",
+        "title": "子项能耗分析",
+        "content": "<p>Sub-Item Energy & Plan 表提供多维数据视角：</p><ul><li><span style=\"color:#1677ff;font-weight:700;\">Annual Energy</span> — 各子系统年度总能耗（kWh）</li><li><span style=\"color:#1677ff;font-weight:700;\">Contract Value</span> — 合同约定能耗上限</li><li><span style=\"color:#1677ff;font-weight:700;\">Target Month %</span> — 月度目标达成率</li><li><span style=\"color:#1677ff;font-weight:700;\">Control Value %</span> — 管控阈值百分比</li></ul><p style=\"margin-top:12px;font-size:13px;color:#8c8c8c;\">通过子项拆解，精准定位高能耗系统，AC 空调是最大能耗项。</p>"
+      },
+      "subtitle": "切换到子项视图 ... 表格列出每个系统的能耗和预算对比 ... AC 空调系统是最大能耗项。",
+      "narration": "切换到子项能耗表，可以看到每个系统的详细数据。公共区域总能耗二十万八千度。往下看，AC 空调系统十四万七千度，是最大的用电大户。表格还显示合同值和达标率，帮你判断哪个系统需要节能优化。"
+    },
+    {
+      "id": "scene_4_sankey",
+      "type": "screenshot-demo",
+      "duration": 15000,
+      "progress_label": "能流图",
+      "screenshots": [
+        {
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch6-01-sankey-overview.png",
+          "caption": "能流图（桑基图） — 能量流向可视化",
+          "annotations": [
+            {
+              "type": "red-box",
+              "position": { "top": "8%", "left": "1%", "width": "16%", "height": "80%" },
+              "label": "能流模型导航面板",
+              "step": 1,
+              "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "0%", "left": "82%", "width": "18%", "height": "3%" },
-              "label": "Keppel South Central 项目",
-              "step": 4,
-              "delay": 10000
+              "position": { "top": "35%", "left": "18%", "width": "22%", "height": "12%" },
+              "label": "总电力输入 1,521,119.96 kWh",
+              "step": 2,
+              "delay": 4500
+            },
+            {
+              "type": "red-box",
+              "position": { "top": "15%", "left": "42%", "width": "55%", "height": "75%" },
+              "label": "桑基图：能量从总电力流向 AC / 冷机 / 电梯 / 通风等",
+              "step": 3,
+              "delay": 8000
             }
           ],
           "duration": 15000
         }
       ],
       "sidebar": {
-        "type": "flow-steps",
-        "title": "下钻操作步骤",
-        "steps": [
-          "在树状图中选中目标区域（如 Public）",
-          "点击工具栏的 Drill Down 按钮",
-          "系统展开下一层级子项（如 AC、照明等）",
-          "每个色块面积代表该子项能耗占比",
-          "可继续下钻查看更细颗粒度数据"
-        ]
+        "type": "info-card",
+        "title": "能流图（Sankey Diagram）",
+        "content": "<p>桑基图（Sankey Diagram）直观展示能量的流入、转化和消耗路径：</p><ul><li><span style=\"color:#1677ff;font-weight:700;\">左侧</span> — 总电力输入（Total Power）</li><li><span style=\"color:#1677ff;font-weight:700;\">中间</span> — Public / 传输损耗率（Transmission Loss Rate）</li><li><span style=\"color:#1677ff;font-weight:700;\">右侧</span> — 终端消耗：AC 空调、冷机、水泵、电梯、通风、其他</li></ul><p style=\"margin-top:12px;\"><strong>如何解读：</strong>流线越粗，能耗越大。关注最粗的流线（AC 空调）和异常的传输损耗率。</p><p style=\"margin-top:8px;font-size:13px;color:#8c8c8c;\">导航路径：Energy Benchmarking > Historical Energy Flow Diagram</p>"
       },
-      "subtitle": "选中一个区域 ... 点击 Drill Down ... 就能看到这个区域里面，具体每个子系统的能耗分布。",
-      "narration": "看到一个高能耗区域后，怎么进一步分析？选中它，然后点击 Drill Down 按钮。系统会自动展开下一层级，比如空调系统、照明系统、动力系统，每个子项的能耗占比一目了然。发现 AC 空调色块最大？那就是用电大户，可以继续下钻，追踪到具体设备。"
+      "subtitle": "这是桑基图 ... 左侧是总电力输入 ... 右侧展示每个终端系统的能耗占比。",
+      "narration": "进入能流图页面，这张桑基图展示了整栋建筑的能量流向。左侧总电力输入一百五十二万度。能量经过 Public 公共区域分配，流向右侧各个终端系统。流线越粗说明能耗越高。可以看到 AC 空调的流线最粗，和预算表的数据完全吻合。传输损耗率也清晰标注在每段流线上。"
     },
     {
-      "id": "scene_4_legend",
+      "id": "scene_5_flow_model",
       "type": "screenshot-demo",
       "duration": 10000,
-      "progress_label": "用能地图",
-      "_screenshot_quality_note": "NEEDS RE-CAPTURE: ch4-03 shows loading spinner in center. Equipment sidebar visible on right but treemap not loaded.",
+      "progress_label": "模型配置",
       "screenshots": [
         {
-          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-03-legend-controls.png",
-          "caption": "图例与控制面板",
+          "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch5-01-energy-analysis-overview.png",
+          "caption": "能耗分析 — 趋势对比与仪表选择",
           "annotations": [
             {
               "type": "red-box",
-              "position": { "top": "9%", "left": "1%", "width": "28%", "height": "5%" },
-              "label": "Keppel South Central 项目标题",
+              "position": { "top": "18%", "left": "1%", "width": "16%", "height": "55%" },
+              "label": "能耗仪表选择器（按系统分组）",
               "step": 1,
               "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "9%", "left": "42%", "width": "16%", "height": "5%" },
-              "label": "Roster / Asset 视图切换",
+              "position": { "top": "18%", "left": "18%", "width": "55%", "height": "70%" },
+              "label": "月度能耗趋势柱状图",
               "step": 2,
-              "delay": 3500
+              "delay": 4000
             },
             {
               "type": "red-box",
-              "position": { "top": "9%", "left": "60%", "width": "38%", "height": "82%" },
-              "label": "Equipment by Specialty 设备分类面板",
+              "position": { "top": "18%", "left": "75%", "width": "24%", "height": "30%" },
+              "label": "参考信息：8921.6 kVa / 同比 +0.407%",
               "step": 3,
-              "delay": 6000
+              "delay": 7000
             }
           ],
           "duration": 10000
         }
       ],
       "sidebar": {
-        "type": "info-card",
-        "title": "图例与控制说明",
-        "content": "<p>用能地图提供多种控制功能：</p><ul><li><span style=\"color:#ff4d4f;font-weight:700;\">Positive Deviation</span> -- 红色标记，实际能耗超出基准</li><li><span style=\"color:#faad14;font-weight:700;\">Focus Attention</span> -- 黄色标记，需重点关注项</li><li><span style=\"color:#1677ff;font-weight:700;\">Set View</span> -- 自定义显示视图</li><li><span style=\"color:#1677ff;font-weight:700;\">Set Level</span> -- 设置显示层级深度</li><li><span style=\"color:#1677ff;font-weight:700;\">Save as Default</span> -- 保存为默认视图</li></ul><p style=\"margin-top:12px;font-size:13px;color:#8c8c8c;\">点击 More Legend 查看完整图例</p>"
+        "type": "flow-steps",
+        "title": "能耗分析操作步骤",
+        "steps": [
+          "在左侧面板选择能耗仪表（Public / AC / Lift 等）",
+          "选择分析维度：能耗趋势 或 能耗对比",
+          "查看月度柱状图，识别用电高峰月份",
+          "参考右侧信息面板，关注同比变化率",
+          "导出数据或切换到其他分析视图"
+        ]
       },
-      "subtitle": "右侧面板按专业分类展示设备 ... 颜色图例帮你快速识别能耗偏差。",
-      "narration": "右侧面板按专业分类展示设备清单，包括电气、暖通、消防、给排水等。颜色图例帮你快速识别偏差，红色代表能耗超标，黄色是需要重点关注的。你还可以用 Set Level 调整显示层级，配置好了点 Save as Default View，下次打开就是你习惯的视角。"
+      "subtitle": "能耗分析页面 ... 左侧选择仪表 ... 右侧查看同比变化和参考信息。",
+      "narration": "最后看能耗分析页面。左侧选择要分析的仪表，比如 Public 公共区域。中间柱状图展示月度能耗趋势，方便识别用电高峰。右侧参考信息显示当前值八千九百二十一度，同比上升百分之零点四。这些数据帮你做出精准的节能决策。"
     },
     {
-      "id": "scene_5_cta",
+      "id": "scene_6_cta",
       "type": "cta",
       "duration": 6000,
-      "title": "AMC MEOS 用能地图",
+      "title": "AMC MEOS 能源管理",
       "cta_lines": [
-        "立即体验用能地图：",
-        "1. 进入能效基准模块",
-        "2. 选择用能地图（Usage Map）",
-        "3. 点击 Drill Down 逐层分析能耗分布"
+        "立即体验能源管理模块：",
+        "1. 能源预算看板 — 掌握全局 KPI",
+        "2. 子项能耗分析 — 定位高能耗系统",
+        "3. 桑基能流图 — 可视化能量流向"
       ],
       "brand_title": "AMC MEOS",
-      "brand_subtitle": "智能能源运维平台 -- 让建筑能耗管理更透明",
-      "subtitle": "AMC MEOS ... 让建筑能耗管理更透明。",
-      "narration": "AMC MEOS 用能地图，一张图看清整栋建筑的能耗分布，从全局到设备，层层下钻，精准定位。现在就去试试吧。"
+      "brand_subtitle": "智能能源运维平台 — 让建筑能耗管理更透明",
+      "subtitle": "AMC MEOS ... 智能能源运维平台。",
+      "narration": "AMC MEOS 能源管理模块，从预算总览到能量流向分析，让你全面掌握建筑能耗。数据驱动决策，实现精准节能。现在就开始体验吧。"
     }
   ]
 }
