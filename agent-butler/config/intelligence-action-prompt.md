@@ -160,19 +160,15 @@ report_type: action
 
 ### Phase 6: 提交并通知
 
+本地执行模式 — Obsidian Git 会自动同步，无需手动 git push。
+只需确保文件已正确写入 `obs/daily-intelligence/` 目录即可。
+
 ```bash
-git pull --rebase origin main 2>/dev/null || true
 git add obs/daily-intelligence/
 git commit -m "Intelligence Action Report YYYY-MM-DD: executed X items"
-git push origin main
-```
-如果 push 失败（冲突），执行：
-```bash
-git pull --rebase origin main
-git push origin main
 ```
 
-Slack通知：「情报行动成果报告 (YYYY-MM-DD) 已生成。今日评估X条建议，执行完成Y条。[核心成果一句话]。请查看 obs/daily-intelligence/。」
+完成后输出摘要：「情报行动成果报告 (YYYY-MM-DD) 已生成。今日评估X条建议，执行完成Y条。[核心成果一句话]。请查看 obs/daily-intelligence/。」
 
 ## 执行纪律
 
