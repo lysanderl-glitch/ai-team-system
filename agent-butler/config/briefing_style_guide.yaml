@@ -1,0 +1,89 @@
+# PBS Briefing Style Guide — 总裁简报风格配置
+# 版本: 0.1 (初始版，将通过总裁反馈渐进迭代)
+# 创建: 2026-04-13
+# 维护者: style_calibrator
+
+version: "0.1"
+last_updated: "2026-04-13"
+feedback_count: 0  # 累计反馈次数，用于追踪收敛进度
+
+# ===== 内容偏好 =====
+content_preferences:
+  # 板块权重（0-1，基于总裁阅读行为动态调整）
+  weights:
+    task_progress: 0.90        # 任务进度 — 高关注
+    ai_industry_news: 0.85     # AI行业动态 — 高关注
+    team_achievements: 0.80    # 团队成就 — 较高关注
+    financial_metrics: 0.70    # 财务指标 — 中等关注
+    team_operations: 0.40      # 团队运营细节 — 低关注（已委托Lysander）
+
+  # 每日时段差异化内容
+  time_slot_focus:
+    midday_12:
+      primary: "上午完成项与进度追踪"
+      secondary: "异常与调整建议"
+      max_items: 5
+    evening_18:
+      primary: "今日叙事成就"
+      secondary: "趋势洞察与模式发现"
+      max_items: 5
+    night_22:
+      primary: "明日预告与准备事项"
+      secondary: "反思与周目标关联"
+      max_items: 3
+
+# ===== 格式偏好 =====
+format_preferences:
+  preferred_length: "concise"   # concise | balanced | detailed
+  structure: "bluf_first"       # bluf_first | narrative | hybrid
+  data_visualization: "inline"  # inline | charts | tables
+  paragraph_max_sentences: 3
+  sentence_avg_length: "15-25字"
+
+# ===== 语言风格 =====
+language_style:
+  language: "zh-CN"
+  formality: 0.8                # 0=随意 1=极正式
+  humor_tolerance: 0.2          # 低 — 商务场景
+  emoji_usage: false            # 总裁偏好无emoji
+  action_orientation: 0.9       # 高 — 偏好有行动建议
+
+  forbidden_words: []           # 总裁标记的禁用词（待反馈填充）
+  preferred_terms: {}           # 总裁偏好用语映射（待反馈填充）
+
+  tone_description: "自信、简洁、专业，数据驱动，每个观点附带行动建议"
+
+# ===== 简报模板结构 =====
+briefing_template:
+  # 三层递进阅读设计
+  layer_1_bluf:
+    description: "一句话核心结论"
+    max_length: "50字"
+    reading_time: "10秒"
+  layer_2_bullets:
+    description: "3-5个金字塔结构要点"
+    max_items: 5
+    reading_time: "1分钟"
+  layer_3_detail:
+    description: "SCQA完整叙事 + 数据支撑"
+    max_paragraphs: 6
+    reading_time: "5分钟"
+
+# ===== 反馈规则库 =====
+# 总裁的明确指令（口头反馈），优先级最高，立即生效
+explicit_rules: []
+  # 示例格式：
+  # - rule: "晨报不要放团队运营细节"
+  #   source: "口头指令"
+  #   date: "2026-04-15"
+  #   applied_to: ["midday_12", "evening_18", "night_22"]
+
+# ===== 收敛追踪 =====
+convergence_tracking:
+  phase: "cold_start"  # cold_start | calibrating | converging | stable
+  # cold_start: 0-5次反馈
+  # calibrating: 6-15次反馈
+  # converging: 16-25次反馈
+  # stable: 25+次反馈，修改率<5%
+  total_feedbacks: 0
+  satisfaction_scores: []  # 历史满意度评分

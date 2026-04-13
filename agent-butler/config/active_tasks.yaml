@@ -79,8 +79,64 @@ tasks:
       lysander.bond申诉可尝试但成功率低（20-30%）
       申诉入口：https://urlsec.qq.com/complain.html
 
+  - id: pbs-system-build
+    title: "PBS 总裁简报服务体系建设（Phase 0-4）"
+    status: in_progress
+    priority: P1
+    owner: Lysander + PDG + Harness Ops + Content Ops
+    context: |
+      总裁2026-04-13批准PSL体系方案。PBS = Presidential Briefing Service。
+      PSL = SPE(规划) + PBS(呈现)，两条线共享数据层和风格模型。
+      新增Agent: executive_briefer + style_calibrator（PDG虚拟小组）
+      定时简报: 12:00午报 / 18:00晚报 / 22:00夜报
+      风格学习: 三期建设（口头→评分→行为推断）
+    phases:
+      phase_0:
+        title: "会议分享资料制作"
+        status: in_progress
+        deliverable: "synapse-achievements-presentation-20260413.html"
+        deadline: "2026-04-13（今天完成，明天下午会议使用）"
+      phase_1:
+        title: "基础设施搭建"
+        status: in_progress
+        deliverables:
+          - "executive_briefer + style_calibrator HR入职卡片"
+          - "organization.yaml PDG团队配置"
+          - "briefing_style_guide.yaml 初始配置"
+          - "PSL方法论文档沉淀到OBS"
+      phase_2:
+        title: "简报模板 + 定时Agent配置"
+        status: pending
+        deliverables:
+          - "3x简报Prompt模板（午报/晚报/夜报）"
+          - "远程定时Agent配置（12:00/18:00/22:00）"
+          - "数据采集管线（git log + active_tasks + Calendar + Slack）"
+        blocked_by: phase_1
+      phase_3:
+        title: "3x定时简报上线 + 反馈第一期"
+        status: pending
+        deliverables:
+          - "3x/天定时简报正式运行"
+          - "口头反馈→style_guide写入机制"
+          - "简报质量门禁（integration_qa）"
+        blocked_by: phase_2
+      phase_4:
+        title: "品牌内容条线 + 成就组合 + 反馈迭代"
+        status: pending
+        deliverables:
+          - "品牌内容管线（选题→初稿→编辑→发布）"
+          - "成就组合自动累积（日→周→月）"
+          - "反馈第二期（评分通道）"
+        blocked_by: phase_3
+    next_steps:
+      - "Phase 0: 完成会议分享资料HTML"
+      - "Phase 1: HR入职 + 配置文件 + 方法论文档"
+      - "Phase 2: 简报模板设计 + 定时Agent配置"
+
 notes:
   - "SSH配置已修复BOM问题，可通过 ssh lysander-server 访问服务器"
   - "Obsidian Git推送已恢复正常（API Key已从历史清除）"
   - "synapsehd.com 域名含义：HD=黄帝，源自《黄帝内经》，中西方信号系统隐喻"
   - "usesynapse.com 2026-04-15到期，可关注是否释放抢注"
+  - "PBS体系2026-04-13总裁全量批准启动，PSL=SPE+PBS双条线服务总裁"
+  - "PDG虚拟小组（executive_briefer + style_calibrator）已启动HR入职流程"

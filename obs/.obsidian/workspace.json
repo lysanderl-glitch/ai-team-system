@@ -184,6 +184,10 @@
   },
   "active": "548356e6d566a228",
   "lastOpenFiles": [
+    "generated-articles/synapse-achievements-presentation-20260413.html",
+    "03-process-knowledge/psl-presidential-service-layer.md",
+    "01-team-knowledge/HR/personnel/pdg/style_calibrator.md",
+    "01-team-knowledge/HR/personnel/pdg/executive_briefer.md",
     "01-team-knowledge/HR/personnel/pdg",
     "03-process-knowledge/quality-assurance-framework.md",
     "03-process-knowledge/index.md",
@@ -207,7 +211,6 @@
     "04-decision-knowledge/decision-log",
     "credentials.mdenc",
     "04-decision-knowledge/synapse-product-architecture.md",
-    "01-team-knowledge/HR/evolution-log/changelog.yaml",
     "01-team-knowledge/HR/personnel/graphify/evolution_engine.md",
     "04-decision-knowledge/synapse-self-evolution-feasibility.md",
     "04-decision-knowledge/website-visual-v2-plan.md",
@@ -216,9 +219,6 @@
     "generated-articles/illustration-prompts.md",
     "04-decision-knowledge/gstack-strategic-evaluation-2026-04-11.md",
     "01-team-knowledge/HR/personnel/content_ops/ai_visual_creator.md",
-    "04-decision-knowledge/website-technical-plan.md",
-    "04-decision-knowledge/website-strategy.md",
-    "03-process-knowledge/synapse-practitioner-course-outline.md",
-    "generated-articles/harness-engineering-practice-blog.md"
+    "04-decision-knowledge/website-technical-plan.md"
   ]
 }

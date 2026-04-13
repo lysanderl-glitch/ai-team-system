@@ -191,6 +191,23 @@ teams:
       - Agent Prompt/Backstory工程
     access_key: "hr"
 
+  pdg:
+    name: "总裁直属小组 (Presidential Direct Group)"
+    description: "总裁直属小组 - 直接服务总裁个人的专项团队，负责每日简报、风格管理、成就展示。隶属PSL（Presidential Service Layer）体系，与SPE条线并行。"
+    specialists:
+      - executive_briefer      # 高管简报师 - 多源数据融合简报/三层递进设计/定时推送
+      - style_calibrator       # 风格校准师 - 用户风格建模/Style Guide构建/反馈处理
+    capabilities:
+      - 基于金字塔原理的三层递进简报生成（BLUF/要点/详情）
+      - 多源数据融合摘要（SPE+active_tasks+情报日报+Calendar+Slack）
+      - 任务→叙事成就转化与成就组合累积
+      - 用户风格建模与Style Guide渐进构建
+      - 四通道反馈处理（口头/内联/评分/行为推断）
+      - 3x/天定时简报编排（午报/晚报/夜报）
+      - 日→周→月递进式汇聚报告
+      - 分享/演示资料自动生成
+    access_key: "pdg"
+
   harness_ops:
     name: "驾驭运维团队 (Harness Ops)"
     description: "Harness Ops团队 - 负责AI团队Harness体系的配置维护、代码开发、知识沉淀和质量保证。情报行动管线的专属执行团队。"
@@ -360,6 +377,34 @@ task_routing:
       - integration_qa
     "变更验证":
       - integration_qa
+
+    # PDG 总裁直属小组关键词
+    "简报":
+      - pdg
+    "摘要":
+      - executive_briefer
+    "午报":
+      - executive_briefer
+    "晚报":
+      - executive_briefer
+    "夜报":
+      - executive_briefer
+    "今日成就":
+      - executive_briefer
+    "成果展示":
+      - executive_briefer
+    "分享资料":
+      - executive_briefer
+    "风格":
+      - style_calibrator
+    "调性":
+      - style_calibrator
+    "偏好":
+      - style_calibrator
+    "style guide":
+      - style_calibrator
+    "品牌一致性":
+      - style_calibrator
 
     # Janus项目交付团队关键词
     "WBS":
@@ -579,6 +624,11 @@ task_routing:
     - { keywords: ["UAT", "验收"], experts: ["janus_qa", "janus_pm", "janus_cde"] }
     - { keywords: ["阶段门", "评审"], experts: ["janus_qa", "janus_pm"] }
     - { keywords: ["施工", "交付"], experts: ["janus_pm", "janus_de"] }
+
+    # PDG 总裁直属小组组合
+    - { keywords: ["简报", "风格"], experts: ["executive_briefer", "style_calibrator"] }
+    - { keywords: ["成果", "展示"], experts: ["executive_briefer", "content_strategist"] }
+    - { keywords: ["分享", "资料"], experts: ["executive_briefer", "content_creator", "visual_designer"] }
 
     # 股票交易系统项目组合
     - { keywords: ["股票", "交易"], experts: ["trader", "quant_researcher"] }

@@ -204,8 +204,14 @@ def inject_scenes_into_template(template_path: Path, scenes_data: dict, output_h
     template_text = template_path.read_text(encoding="utf-8")
 
     # Replace the placeholder with actual data
+    # Template uses: const SCENES_CONFIG = /*SCENES_DATA*/null;
+    # We must replace "/*SCENES_DATA*/null" (including the fallback null) to avoid
+    # generating invalid JS like "{ ... }null;"
     json_str = json.dumps(scenes_data, ensure_ascii=False, indent=2)
-    injected = template_text.replace("/*SCENES_DATA*/", json_str, 1)
+    if "/*SCENES_DATA*/null" in template_text:
+        injected = template_text.replace("/*SCENES_DATA*/null", json_str, 1)
+    else:
+        injected = template_text.replace("/*SCENES_DATA*/", json_str, 1)
 
     output_html.parent.mkdir(parents=True, exist_ok=True)
     output_html.write_text(injected, encoding="utf-8")
