@@ -37,6 +37,7 @@
       "type": "screenshot-demo",
       "duration": 12000,
       "progress_label": "用能地图",
+      "_screenshot_quality_note": "NEEDS RE-CAPTURE: ch4-01 shows nav mega-menu overlay instead of treemap. Run: npx playwright test tests/screenshot-energy.spec.ts --workers=1 with longer wait times.",
       "screenshots": [
         {
           "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-01-usage-map-overview.png",
@@ -44,22 +45,22 @@
           "annotations": [
             {
               "type": "red-box",
-              "position": { "top": "2%", "left": "30%", "width": "12%", "height": "4%" },
+              "position": { "top": "1%", "left": "28%", "width": "8%", "height": "3.5%" },
               "label": "Usage Map 导航入口",
               "step": 1,
               "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "8%", "left": "2%", "width": "55%", "height": "5%" },
+              "position": { "top": "5%", "left": "1%", "width": "96%", "height": "15%" },
               "label": "四大功能模块导航区",
               "step": 2,
               "delay": 3500
             },
             {
               "type": "red-box",
-              "position": { "top": "15%", "left": "10%", "width": "80%", "height": "70%" },
-              "label": "树状热力图主区域（Treemap）",
+              "position": { "top": "22%", "left": "5%", "width": "90%", "height": "65%" },
+              "label": "树状热力图主区域（Treemap）-- 当前未加载",
               "step": 3,
               "delay": 6000
             }
@@ -80,6 +81,7 @@
       "type": "screenshot-demo",
       "duration": 15000,
       "progress_label": "用能地图",
+      "_screenshot_quality_note": "NEEDS RE-CAPTURE: ch4-02 shows only nav bar with blank page body (17KB file). Treemap drill-down never loaded.",
       "screenshots": [
         {
           "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-02-drill-down-result.png",
@@ -87,29 +89,29 @@
           "annotations": [
             {
               "type": "red-box",
-              "position": { "top": "1%", "left": "30%", "width": "18%", "height": "4%" },
-              "label": "Visualization Dashboard 导航",
+              "position": { "top": "0%", "left": "0%", "width": "3%", "height": "3%" },
+              "label": "MEOS Logo",
               "step": 1,
               "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "1%", "left": "52%", "width": "14%", "height": "4%" },
-              "label": "Evaluation Dashboard 切换",
+              "position": { "top": "0%", "left": "8%", "width": "22%", "height": "3%" },
+              "label": "Comprehensive Data Management 面包屑",
               "step": 2,
               "delay": 4000
             },
             {
               "type": "red-box",
-              "position": { "top": "6%", "left": "10%", "width": "80%", "height": "85%" },
-              "label": "下钻后的子项能耗分布区域",
+              "position": { "top": "0%", "left": "31%", "width": "14%", "height": "3%" },
+              "label": "Visualization Dashboard（当前激活）",
               "step": 3,
               "delay": 7000
             },
             {
               "type": "red-box",
-              "position": { "top": "1%", "left": "82%", "width": "16%", "height": "4%" },
-              "label": "项目名称：Keppel South Central",
+              "position": { "top": "0%", "left": "82%", "width": "18%", "height": "3%" },
+              "label": "Keppel South Central 项目",
               "step": 4,
               "delay": 10000
             }
@@ -136,6 +138,7 @@
       "type": "screenshot-demo",
       "duration": 10000,
       "progress_label": "用能地图",
+      "_screenshot_quality_note": "NEEDS RE-CAPTURE: ch4-03 shows loading spinner in center. Equipment sidebar visible on right but treemap not loaded.",
       "screenshots": [
         {
           "image_path": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-03-legend-controls.png",
@@ -143,21 +146,21 @@
           "annotations": [
             {
               "type": "red-box",
-              "position": { "top": "8%", "left": "2%", "width": "30%", "height": "6%" },
+              "position": { "top": "9%", "left": "1%", "width": "28%", "height": "5%" },
               "label": "Keppel South Central 项目标题",
               "step": 1,
               "delay": 1500
             },
             {
               "type": "red-box",
-              "position": { "top": "7%", "left": "55%", "width": "15%", "height": "6%" },
+              "position": { "top": "9%", "left": "42%", "width": "16%", "height": "5%" },
               "label": "Roster / Asset 视图切换",
               "step": 2,
               "delay": 3500
             },
             {
               "type": "red-box",
-              "position": { "top": "7%", "left": "72%", "width": "26%", "height": "80%" },
+              "position": { "top": "9%", "left": "60%", "width": "38%", "height": "82%" },
               "label": "Equipment by Specialty 设备分类面板",
               "step": 3,
               "delay": 6000
