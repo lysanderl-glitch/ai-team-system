@@ -184,6 +184,7 @@
   },
   "active": "548356e6d566a228",
   "lastOpenFiles": [
+    "01-team-knowledge/HR/personnel/pdg",
     "03-process-knowledge/quality-assurance-framework.md",
     "03-process-knowledge/index.md",
     "03-process-knowledge/video-production-pipeline-knowledge.md",
@@ -218,7 +219,6 @@
     "04-decision-knowledge/website-technical-plan.md",
     "04-decision-knowledge/website-strategy.md",
     "03-process-knowledge/synapse-practitioner-course-outline.md",
-    "generated-articles/harness-engineering-practice-blog.md",
-    "generated-articles/synapse-consulting-one-pager.md"
+    "generated-articles/harness-engineering-practice-blog.md"
   ]
 }
