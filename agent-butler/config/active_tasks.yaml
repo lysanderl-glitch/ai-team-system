@@ -151,6 +151,50 @@ tasks:
       - "Phase 1: HR入职 + 配置文件 + 方法论文档"
       - "Phase 2: 简报模板设计 + 定时Agent配置"
 
+  - task_id: "SYNAPSE-FORGE-001"
+    title: "Synapse Forge 产品化"
+    status: "in_progress"
+    priority: "L"
+    created: "2026-04-12"
+    updated: "2026-04-13"
+    assigned_team: "RD + Harness Ops + Content Ops"
+    current_phase: "Phase 1-2 完成，待启动 Forge 产品化执行"
+
+    completed:
+      - "模块化重构完成：13模块 49 Agent（synapse-core/）"
+      - "配置生成引擎：generator.py + validator.py 已验证"
+      - "能力差距补齐：+harness_ops +compliance模块，10张卡片升级"
+      - "合规部设计：核心3人 + active_regions地区插件机制（china/uae已建）"
+      - "Synapse Forge 产品化方案：CEO评审通过，待总裁批准启动"
+      - "HTML方案报告：synapse-core/docs/synapse-forge-proposal.html"
+      - "Slack已通知总裁"
+
+    next_steps:
+      - "Phase 1: synapse 公开 GitHub 仓库初始化 + CI + export-catalog.py"
+      - "Phase 2: lysander.bond/synapse/ 网站页面（Landing + 模块市场 + 预设）"
+      - "Phase 3: 文档中心 + SEO"
+      - "Phase 4: 在线配置生成器 + 社区生态"
+
+    key_decisions:
+      - "产品命名：Synapse Forge（锻造你的AI团队）"
+      - "仓库策略：synapse Monorepo（公开）+ lysander-bond网站（独立）+ ai-team-system（私有）"
+      - "网站URL：lysander.bond/synapse/"
+      - "技术栈：Astro 6 + Tailwind 4（沿用）"
+      - "数据同步：catalog.json + GitHub Actions repository_dispatch"
+      - "合规部：方案A+（核心+地区插件，active_regions控制）"
+
+    artifacts:
+      - "synapse-core/：C:/Users/lysanderl_janusd/Claude Code/synapse-core/"
+      - "HTML报告：synapse-core/docs/synapse-forge-proposal.html"
+      - "Git: 4 commits (201edd7 → c1f0443 → bfb3731 → 906a6e3)"
+
+    blockers: []
+
+    follow_up:
+      date: "2026-04-13"
+      message: "总裁已批准Synapse Forge方案，等待总裁指示启动产品化执行（Phase 1: GitHub仓库+CI）"
+      assigned_team: "RD + Harness Ops"
+
 notes:
   - "SSH配置已修复BOM问题，可通过 ssh lysander-server 访问服务器"
   - "Obsidian Git推送已恢复正常（API Key已从历史清除）"
