@@ -5,7 +5,7 @@
 
 version: "0.1"
 last_updated: "2026-04-13"
-feedback_count: 3  # 累计反馈次数，用于追踪收敛进度
+feedback_count: 5  # 累计反馈次数，用于追踪收敛进度
 
 # ===== 内容偏好 =====
 content_preferences:
@@ -84,6 +84,14 @@ explicit_rules:
     source: "口头指令"
     date: "2026-04-13"
     applied_to: ["presentation", "briefing", "sharing_materials"]
+  - rule: "个人技术工作（如网站维护、服务器配置）不纳入团队成果展示，仅展示体系级/团队级成就"
+    source: "口头指令"
+    date: "2026-04-13"
+    applied_to: ["presentation", "sharing_materials", "achievement_portfolio"]
+  - rule: "演示资料中每个成就必须占独立一整页，保证内容深度和讲解空间，不要过度压缩到一个小卡片"
+    source: "口头指令"
+    date: "2026-04-13"
+    applied_to: ["presentation", "sharing_materials"]
 
 # ===== 收敛追踪 =====
 convergence_tracking:
@@ -92,5 +100,5 @@ convergence_tracking:
   # calibrating: 6-15次反馈
   # converging: 16-25次反馈
   # stable: 25+次反馈，修改率<5%
-  total_feedbacks: 3
+  total_feedbacks: 5
   satisfaction_scores: []  # 历史满意度评分
