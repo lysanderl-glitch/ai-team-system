@@ -5,6 +5,14 @@ Synapse Health Monitor
 Monitors the health of scheduled remote Agents and the intelligence pipeline.
 Checks execution recency via git log and file modification times.
 
+Includes a mixed-mode Slack alert system with three severity levels:
+  - P0 (Critical): >48h no heartbeat — immediate Slack push
+  - P1 (Warning):  >24h no heartbeat — folded into /plan-day morning check
+  - P2 (Info):     informational — weekly summary only
+
+Alert functions generate action lists; they do **not** call Slack directly.
+The calling layer (scheduled Agent / plan-day Skill) is responsible for dispatch.
+
 Part of the Synapse Quality Assurance Framework.
 
 Usage:
@@ -12,18 +20,30 @@ Usage:
         check_scheduled_agents,
         check_intelligence_pipeline,
         generate_health_report,
+        AlertLevel,
+        format_slack_alert,
+        generate_alert_actions,
+        get_morning_check_items,
     )
 
     report = generate_health_report()
-    for entry in report["agents"]:
+    for entry in report.agents:
         print(f"{entry.agent_name}: {entry.status} — {entry.message}")
+
+    # Generate alert actions (does not send anything)
+    actions = generate_alert_actions(report)
+
+    # Get items for /plan-day morning check
+    morning_items = get_morning_check_items()
 """
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -409,15 +429,274 @@ def generate_health_report() -> HealthReport:
 
 
 # ---------------------------------------------------------------------------
+# Alert Level Classification
+# ---------------------------------------------------------------------------
+
+class AlertLevel:
+    """Alert severity levels for the mixed-mode notification system.
+
+    - P0_CRITICAL: >48h no heartbeat — immediate Slack push
+    - P1_WARNING:  >24h no heartbeat — folded into plan-day morning check
+    - P2_INFO:     informational — included in weekly summary only
+    """
+
+    P0_CRITICAL = "P0"  # >48h no heartbeat, immediate Slack push
+    P1_WARNING = "P1"   # >24h no heartbeat, fold into plan-day morning check
+    P2_INFO = "P2"      # informational, weekly summary
+
+
+_STATUS_TO_ALERT: dict[str, str] = {
+    "critical": AlertLevel.P0_CRITICAL,
+    "warning": AlertLevel.P1_WARNING,
+    "healthy": AlertLevel.P2_INFO,
+    "unknown": AlertLevel.P0_CRITICAL,  # unknown treated as critical
+}
+
+_ALERT_EMOJI: dict[str, str] = {
+    AlertLevel.P0_CRITICAL: "\U0001f6a8",  # 🚨
+    AlertLevel.P1_WARNING: "\u26a0\ufe0f",  # ⚠️
+    AlertLevel.P2_INFO: "\u2139\ufe0f",     # ℹ️
+}
+
+
+def _classify_alert_level(status: str) -> str:
+    """Map a health status string to an AlertLevel constant."""
+    return _STATUS_TO_ALERT.get(status, AlertLevel.P0_CRITICAL)
+
+
+# ---------------------------------------------------------------------------
+# Slack Alert Formatting
+# ---------------------------------------------------------------------------
+
+def format_slack_alert(health_report: HealthReport) -> Optional[str]:
+    """Generate a Slack alert message from a health report.
+
+    Only returns a message when the report contains P0 (critical) items.
+    Returns ``None`` if there is nothing urgent to report.
+
+    The message uses Slack mrkdwn formatting.
+    """
+    critical_items: list[HealthStatus] = [
+        a for a in health_report.agents if a.status in ("critical", "unknown")
+    ]
+
+    # Also check pipeline components
+    if health_report.pipeline:
+        for entry in (health_report.pipeline.daily_report,
+                      health_report.pipeline.action_report):
+            if entry.status in ("critical", "unknown"):
+                critical_items.append(entry)
+
+    if not critical_items:
+        return None
+
+    lines: list[str] = []
+    lines.append("\U0001f6a8 *Synapse System Alert*")
+    lines.append("")
+    lines.append(f"*Status*: {health_report.overall.upper()}")
+    lines.append(f"*Time*: {health_report.timestamp:%Y-%m-%d %H:%M:%S UTC}")
+    lines.append("")
+    lines.append("*Failing items:*")
+
+    for item in critical_items:
+        since = (
+            item.last_execution.strftime("%Y-%m-%d %H:%M")
+            if item.last_execution
+            else "never"
+        )
+        lines.append(
+            f"\u2022 *{item.agent_name}* \u2014 {item.status}: "
+            f"{item.message} (last: {since})"
+        )
+
+    lines.append("")
+    lines.append("*Suggested actions:*")
+    lines.append("1. Check remote Agent configuration on `https://claude.ai/code/scheduled`")
+    lines.append("2. Run `/schedule list` to verify scheduled task status")
+    lines.append("3. Review git log for recent execution artifacts")
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Alert Action Generation
+# ---------------------------------------------------------------------------
+
+def generate_alert_actions(health_report: HealthReport) -> list[dict]:
+    """Generate a list of alert actions based on the health report.
+
+    Returns a list of action dicts that the caller (scheduled Agent or
+    plan-day Skill) can use to dispatch notifications.  This function does
+    **not** call any external API itself — it only produces the action plan.
+
+    Each action dict has the shape::
+
+        {
+            "level": "P0" | "P1" | "P2",
+            "action": "slack_send" | "include_in_plan_day" | "include_in_weekly",
+            "channel": str | None,
+            "message": str | None,
+            "items": list[dict] | None,
+            "immediate": bool,
+        }
+    """
+    actions: list[dict] = []
+
+    # Collect items by alert level
+    p0_items: list[HealthStatus] = []
+    p1_items: list[HealthStatus] = []
+    p2_items: list[HealthStatus] = []
+
+    all_entries: list[HealthStatus] = list(health_report.agents)
+    if health_report.pipeline:
+        all_entries.append(health_report.pipeline.daily_report)
+        all_entries.append(health_report.pipeline.action_report)
+
+    for entry in all_entries:
+        level = _classify_alert_level(entry.status)
+        if level == AlertLevel.P0_CRITICAL:
+            p0_items.append(entry)
+        elif level == AlertLevel.P1_WARNING:
+            p1_items.append(entry)
+        else:
+            p2_items.append(entry)
+
+    # P0 — immediate Slack push
+    if p0_items:
+        slack_message = format_slack_alert(health_report)
+        actions.append({
+            "level": AlertLevel.P0_CRITICAL,
+            "action": "slack_send",
+            "channel": "#synapse-alerts",
+            "message": slack_message,
+            "items": [
+                {
+                    "agent": item.agent_name,
+                    "status": item.status,
+                    "message": item.message,
+                    "last_execution": (
+                        item.last_execution.isoformat()
+                        if item.last_execution
+                        else None
+                    ),
+                }
+                for item in p0_items
+            ],
+            "immediate": True,
+        })
+
+    # P1 — fold into plan-day morning check
+    if p1_items:
+        actions.append({
+            "level": AlertLevel.P1_WARNING,
+            "action": "include_in_plan_day",
+            "channel": None,
+            "message": None,
+            "items": [
+                {
+                    "agent": item.agent_name,
+                    "status": item.status,
+                    "message": item.message,
+                    "last_execution": (
+                        item.last_execution.isoformat()
+                        if item.last_execution
+                        else None
+                    ),
+                }
+                for item in p1_items
+            ],
+            "immediate": False,
+        })
+
+    # P2 — weekly summary only
+    if p2_items:
+        actions.append({
+            "level": AlertLevel.P2_INFO,
+            "action": "include_in_weekly",
+            "channel": None,
+            "message": None,
+            "items": [
+                {
+                    "agent": item.agent_name,
+                    "status": item.status,
+                    "message": item.message,
+                    "last_execution": (
+                        item.last_execution.isoformat()
+                        if item.last_execution
+                        else None
+                    ),
+                }
+                for item in p2_items
+            ],
+            "immediate": False,
+        })
+
+    return actions
+
+
+# ---------------------------------------------------------------------------
+# Plan-Day Morning Check Interface
+# ---------------------------------------------------------------------------
+
+def get_morning_check_items() -> list[dict]:
+    """Return P1 + P2 items for the /plan-day morning check.
+
+    Runs a full health check and returns a list of attention items at
+    warning or info level (P0 critical items are handled via immediate
+    Slack push and are excluded here to avoid duplication).
+
+    Each item has the shape::
+
+        {
+            "level": "P1" | "P2",
+            "agent": str,
+            "message": str,
+            "since": str | None,   # ISO timestamp of last execution
+        }
+    """
+    report = generate_health_report()
+
+    items: list[dict] = []
+    all_entries: list[HealthStatus] = list(report.agents)
+    if report.pipeline:
+        all_entries.append(report.pipeline.daily_report)
+        all_entries.append(report.pipeline.action_report)
+
+    for entry in all_entries:
+        level = _classify_alert_level(entry.status)
+        if level in (AlertLevel.P1_WARNING, AlertLevel.P2_INFO):
+            items.append({
+                "level": level,
+                "agent": entry.agent_name,
+                "message": entry.message,
+                "since": (
+                    entry.last_execution.isoformat()
+                    if entry.last_execution
+                    else None
+                ),
+            })
+
+    return items
+
+
+# ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    """Print a health report to stdout."""
+    """Print a health report to stdout.
+
+    Usage::
+
+        python -m test_runner.health_monitor            # report only
+        python -m test_runner.health_monitor --alert     # report + alert actions JSON
+    """
+    alert_mode = "--alert" in sys.argv
+
     report = generate_health_report()
 
     print("=" * 60)
-    print(f"  Synapse Health Report  —  {report.timestamp:%Y-%m-%d %H:%M:%S UTC}")
+    print(f"  Synapse Health Report  \u2014  {report.timestamp:%Y-%m-%d %H:%M:%S UTC}")
     print(f"  Overall: {report.overall.upper()}")
     print("=" * 60)
 
@@ -440,6 +719,20 @@ def main() -> None:
         print(f"  Pipeline overall: {report.pipeline.overall.upper()}")
 
     print(f"\nSummary: {report.summary}")
+
+    if alert_mode:
+        actions = generate_alert_actions(report)
+        print("\n--- Alert Actions (JSON) ---")
+        print(json.dumps(actions, indent=2, ensure_ascii=False, default=str))
+
+        # Also show the Slack message preview if there is one
+        slack_msg = format_slack_alert(report)
+        if slack_msg:
+            print("\n--- Slack Message Preview ---")
+            print(slack_msg)
+        else:
+            print("\n(No P0 alerts — no immediate Slack message needed)")
+
     print()
 
 

@@ -3,52 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Synapse 体系成果展示 — Janus Digital AI 团队会议 2026.04.14</title>
+<title>Synapse Achievements — Janus Digital 2026.04.14</title>
 <style>
 /* ── Design Tokens ── */
 :root {
-  --deep-blue: #0A1628;
-  --navy: #0D2847;
-  --accent-blue: #1565C0;
-  --light-blue: #2196F3;
-  --sky: #42A5F5;
-  --cyan: #028CDC;
-  --white: #FFFFFF;
-  --off-white: #F4F6FA;
-  --gray-100: #E8ECF2;
-  --gray-200: #C5CDD8;
-  --gray-300: #8E95A7;
-  --gray-600: #4A5568;
-  --gray-800: #2D3748;
-  --gold: #FCAD2A;
-  --green: #43A047;
-  --red: #E53935;
-  --card-shadow: 0 4px 24px rgba(10, 22, 40, 0.08);
-  --card-shadow-hover: 0 8px 40px rgba(10, 22, 40, 0.14);
+  --bg-primary: #0a0e27;
+  --bg-secondary: #0f1535;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.08);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255,255,255,0.7);
+  --text-muted: rgba(255,255,255,0.45);
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --gradient-arch: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  --gradient-prod: linear-gradient(135deg, #f59e0b, #f97316);
+  --gradient-ops: linear-gradient(135deg, #06b6d4, #10b981);
+  --gradient-infra: linear-gradient(135deg, #f43f5e, #ec4899);
+  --nav-height: 64px;
+  --section-padding: 100px 0;
 }
 
-/* ── Reset & Base ── */
+/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-}
+html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: var(--off-white);
-  color: var(--gray-800);
-  line-height: 1.7;
+  font-family: -apple-system, "SF Pro Display", "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* ── Hero Section ── */
+/* ── Navigation ── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background: rgba(10, 14, 39, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.nav-logo {
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--gradient-arch);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.06);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── Language Switcher ── */
+.lang-switcher {
+  display: flex;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.lang-btn.active {
+  background: rgba(59, 130, 246, 0.3);
+  color: var(--text-primary);
+}
+
+.lang-btn:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+/* ── Language Toggle ── */
+[data-lang="en"] { display: none; }
+body.lang-en [data-lang="zh"] { display: none; }
+body.lang-en [data-lang="en"] { display: block; }
+body.lang-en span[data-lang="en"],
+body.lang-en a[data-lang="en"] { display: inline; }
+body.lang-en span[data-lang="zh"],
+body.lang-en a[data-lang="zh"] { display: none; }
+span[data-lang="zh"] { display: inline; }
+span[data-lang="en"] { display: none; }
+
+/* Flex items need flex display */
+body.lang-en .stat-card[data-lang="en"] { display: flex; }
+body.lang-en .stat-card[data-lang="zh"] { display: none; }
+.stat-card[data-lang="en"] { display: none; }
+.stat-card[data-lang="zh"] { display: flex; }
+
+body.lang-en .achievement-card[data-lang="en"] { display: flex; }
+body.lang-en .achievement-card[data-lang="zh"] { display: none; }
+.achievement-card[data-lang="en"] { display: none; }
+.achievement-card[data-lang="zh"] { display: flex; }
+
+body.lang-en .future-card[data-lang="en"] { display: flex; }
+body.lang-en .future-card[data-lang="zh"] { display: none; }
+.future-card[data-lang="en"] { display: none; }
+.future-card[data-lang="zh"] { display: flex; }
+
+/* ── Hero ── */
 .hero {
-  background: linear-gradient(135deg, var(--deep-blue) 0%, var(--navy) 40%, var(--accent-blue) 100%);
-  color: var(--white);
-  padding: 80px 40px 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  padding: 120px 40px 80px;
   position: relative;
   overflow: hidden;
 }
@@ -56,1109 +171,1434 @@ body {
 .hero::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 30% 50%, rgba(33, 150, 243, 0.08) 0%, transparent 50%),
-              radial-gradient(circle at 70% 80%, rgba(252, 173, 42, 0.06) 0%, transparent 40%);
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(139,92,246,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6,182,212,0.08) 0%, transparent 50%);
   pointer-events: none;
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 960px;
 }
 
-.hero-label {
-  display: inline-block;
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 24px;
-  padding: 6px 20px;
-  border: 1px solid rgba(252, 173, 42, 0.3);
-  border-radius: 20px;
+  color: var(--accent-amber);
+  margin-bottom: 32px;
+  padding: 8px 20px;
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 24px;
+  background: rgba(245,158,11,0.06);
 }
 
 .hero h1 {
-  font-size: 42px;
+  font-size: clamp(36px, 5vw, 64px);
   font-weight: 800;
-  line-height: 1.25;
-  margin-bottom: 16px;
-  letter-spacing: -0.5px;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
 }
 
-.hero h1 .accent { color: var(--gold); }
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 .hero-subtitle {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 700px;
-  margin: 0 auto 40px;
-  line-height: 1.8;
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-secondary);
+  margin-bottom: 60px;
+  font-weight: 400;
 }
 
-/* ── BLUF Summary ── */
-.bluf {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 28px 32px;
-  max-width: 800px;
-  margin: 0 auto 40px;
-  text-align: left;
-}
-
-.bluf-statement {
-  font-size: 17px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.7;
-  margin-bottom: 4px;
-}
-
-.bluf-statement strong {
-  color: var(--gold);
-}
-
-/* ── Metrics Bar ── */
-.metrics {
+/* ── Hero Stats ── */
+.hero-stats {
   display: flex;
   justify-content: center;
-  gap: 48px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  min-width: 180px;
+}
+
+.stat-number {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-number.blue { background: var(--gradient-arch); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-number.cyan { background: var(--gradient-ops); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-number.purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── Sections ── */
+.section {
+  padding: var(--section-padding);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-icon.arch { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2)); }
+.section-icon.prod { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.2)); }
+.section-icon.ops { background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2)); }
+.section-icon.infra { background: linear-gradient(135deg, rgba(244,63,94,0.2), rgba(236,72,153,0.2)); }
+
+.section-icon svg { width: 28px; height: 28px; }
+
+.section-number {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.section-number.arch { color: var(--accent-blue); }
+.section-number.prod { color: var(--accent-amber); }
+.section-number.ops { color: var(--accent-cyan); }
+.section-number.infra { color: var(--accent-rose); }
+
+.section-title {
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Achievement Cards ── */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.achievement-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 36px;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.achievement-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.achievement-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-4px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icon.arch { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2)); }
+.card-icon.prod { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.2)); }
+.card-icon.ops { background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2)); }
+.card-icon.infra { background: linear-gradient(135deg, rgba(244,63,94,0.2), rgba(236,72,153,0.2)); }
+
+.card-icon svg { width: 22px; height: 22px; }
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.card-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* ── Metrics Row ── */
+.metrics-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
 .metric {
+  flex: 1;
+  min-width: 90px;
   text-align: center;
+  padding: 14px 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
 }
 
-.metric-number {
-  font-size: 48px;
-  font-weight: 900;
-  color: var(--white);
-  line-height: 1;
+.metric-value {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
   margin-bottom: 4px;
 }
 
-.metric-unit {
-  font-size: 14px;
-  color: var(--gold);
-  font-weight: 600;
-  letter-spacing: 1px;
-}
+.metric-value.arch { background: var(--gradient-arch); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.metric-value.prod { background: var(--gradient-prod); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.metric-value.ops { background: var(--gradient-ops); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.metric-value.infra { background: var(--gradient-infra); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-.metric-note {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 4px;
-}
-
-/* ── Navigation / TOC ── */
-.toc-wrapper {
-  background: var(--white);
-  border-bottom: 1px solid var(--gray-100);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
-
-.toc {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.toc-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--gray-300);
-  letter-spacing: 2px;
+.metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
   text-transform: uppercase;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-right: 8px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
 }
 
-.toc a {
-  display: inline-block;
+/* ── Before/After ── */
+.before-after {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 10px;
+  margin-bottom: 16px;
   font-size: 13px;
-  font-weight: 500;
-  color: var(--gray-600);
-  text-decoration: none;
-  padding: 6px 14px;
-  border-radius: 20px;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
 }
 
-.toc a:hover {
-  color: var(--accent-blue);
-  background: rgba(21, 101, 192, 0.06);
-  border-color: rgba(21, 101, 192, 0.15);
+.ba-before {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  flex: 1;
 }
 
-/* ── Main Content Area ── */
-.main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 48px 24px 80px;
-}
-
-/* ── Achievement Card ── */
-.achievement {
-  background: var(--white);
-  border-radius: 16px;
-  box-shadow: var(--card-shadow);
-  margin-bottom: 40px;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease;
-  border: 1px solid var(--gray-100);
-}
-
-.achievement:hover {
-  box-shadow: var(--card-shadow-hover);
-}
-
-.achievement-header {
-  background: linear-gradient(135deg, var(--deep-blue), var(--navy));
-  color: var(--white);
-  padding: 28px 36px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.achievement-number {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(252, 173, 42, 0.15);
-  border: 1px solid rgba(252, 173, 42, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--gold);
+.ba-arrow {
   flex-shrink: 0;
 }
 
-.achievement-title {
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.3;
+.ba-arrow svg { width: 20px; height: 20px; }
+
+.ba-after {
+  color: var(--accent-emerald);
+  font-weight: 600;
+  flex: 1;
+  text-align: right;
 }
 
-.achievement-body {
-  padding: 32px 36px;
+/* ── Insight ── */
+.card-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(59,130,246,0.06);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 0 10px 10px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: auto;
 }
 
-/* ── SAIR Sections ── */
-.sair-grid {
+.card-insight.prod-insight { background: rgba(245,158,11,0.06); border-left-color: var(--accent-amber); }
+.card-insight.ops-insight { background: rgba(6,182,212,0.06); border-left-color: var(--accent-cyan); }
+.card-insight.infra-insight { background: rgba(244,63,94,0.06); border-left-color: var(--accent-rose); }
+
+.insight-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.insight-icon svg { width: 14px; height: 14px; }
+
+/* ── Future Section ── */
+.future-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 24px;
 }
 
-.sair-block {
-  padding: 20px 24px;
-  border-radius: 12px;
-  border: 1px solid var(--gray-100);
-  background: var(--off-white);
-}
-
-.sair-label {
-  display: inline-flex;
+.future-card {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  padding: 3px 10px;
-  border-radius: 4px;
+  text-align: center;
+  padding: 40px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(30px);
 }
 
-.sair-label.situation {
-  color: var(--accent-blue);
-  background: rgba(21, 101, 192, 0.08);
+.future-card.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.sair-label.approach {
-  color: var(--green);
-  background: rgba(67, 160, 71, 0.08);
+.future-card:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
 }
 
-.sair-label.impact {
-  color: var(--gold);
-  background: rgba(252, 173, 42, 0.12);
-}
-
-.sair-label.reflection {
-  color: #7B1FA2;
-  background: rgba(123, 31, 162, 0.08);
-}
-
-.sair-text {
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--gray-600);
-}
-
-.sair-text strong {
-  color: var(--gray-800);
-  font-weight: 600;
-}
-
-.sair-text .highlight {
-  color: var(--accent-blue);
-  font-weight: 600;
-}
-
-.sair-text .metric-inline {
-  display: inline-block;
-  background: linear-gradient(135deg, var(--deep-blue), var(--accent-blue));
-  color: var(--white);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 2px 10px;
-  border-radius: 4px;
-  margin: 0 2px;
-}
-
-/* ── Before/After Comparison ── */
-.ba-compare {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 16px;
-  align-items: stretch;
-  margin-top: 16px;
-  grid-column: 1 / -1;
-}
-
-.ba-box {
-  padding: 18px 22px;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.ba-box.before {
-  background: rgba(229, 57, 53, 0.04);
-  border: 1px solid rgba(229, 57, 53, 0.15);
-}
-
-.ba-box.after {
-  background: rgba(67, 160, 71, 0.04);
-  border: 1px solid rgba(67, 160, 71, 0.15);
-}
-
-.ba-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.ba-box.before .ba-label { color: var(--red); }
-.ba-box.after .ba-label { color: var(--green); }
-
-.ba-arrow {
+.future-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  color: var(--gray-200);
-  font-weight: 300;
+  margin-bottom: 20px;
 }
 
-/* ── Outlook Section ── */
-.outlook {
-  background: linear-gradient(135deg, var(--deep-blue) 0%, var(--navy) 50%, var(--accent-blue) 100%);
-  color: var(--white);
-  border-radius: 16px;
-  padding: 48px 48px;
-  margin-top: 60px;
-  position: relative;
-  overflow: hidden;
-}
+.future-icon svg { width: 28px; height: 28px; }
 
-.outlook::before {
-  content: '';
-  position: absolute;
-  top: -30%;
-  right: -10%;
-  width: 50%;
-  height: 160%;
-  background: radial-gradient(circle, rgba(252, 173, 42, 0.06) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-.outlook-content {
-  position: relative;
-  z-index: 1;
-}
-
-.outlook h2 {
-  font-size: 28px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.outlook h2 .accent { color: var(--gold); }
-
-.outlook-subtitle {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 32px;
-}
-
-.outlook-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.outlook-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 24px;
-}
-
-.outlook-card-title {
-  font-size: 16px;
+.future-title {
+  font-size: 18px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: var(--gold);
 }
 
-.outlook-card-text {
+.future-desc {
   font-size: 14px;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 /* ── Footer ── */
 .footer {
   text-align: center;
-  padding: 40px 24px;
+  padding: 60px 40px;
+  color: var(--text-muted);
   font-size: 13px;
-  color: var(--gray-300);
+  border-top: 1px solid var(--glass-border);
 }
 
 .footer-brand {
+  font-size: 16px;
   font-weight: 700;
-  color: var(--gray-600);
-}
-
-/* ── Print Styles ── */
-@media print {
-  body { background: white; }
-
-  .toc-wrapper { display: none; }
-
-  .hero {
-    background: var(--deep-blue) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    padding: 40px 32px 32px;
-  }
-
-  .hero h1 { font-size: 32px; }
-  .metric-number { font-size: 36px; }
-
-  .main { padding: 24px 16px; }
-
-  .achievement {
-    break-inside: avoid;
-    box-shadow: none;
-    border: 1px solid #ddd;
-    margin-bottom: 24px;
-  }
-
-  .achievement-header {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  .sair-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .ba-compare {
-    grid-template-columns: 1fr auto 1fr;
-  }
-
-  .outlook {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    break-inside: avoid;
-  }
+  background: var(--gradient-arch);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .hero { padding: 48px 20px 40px; }
-  .hero h1 { font-size: 28px; }
-  .hero-subtitle { font-size: 15px; }
-  .metrics { gap: 24px; }
-  .metric-number { font-size: 36px; }
-
-  .sair-grid { grid-template-columns: 1fr; }
-  .ba-compare { grid-template-columns: 1fr; }
-  .ba-arrow { transform: rotate(90deg); }
-
-  .achievement-header { padding: 20px 24px; }
-  .achievement-body { padding: 24px; }
-  .achievement-title { font-size: 18px; }
-
-  .outlook { padding: 32px 24px; }
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 20px 60px; }
+  .hero-stats { gap: 16px; }
+  .stat-card { padding: 20px 24px; min-width: 140px; }
+  .stat-number { font-size: 40px; }
+  .section { padding: 60px 20px; }
+  .achievements-grid { grid-template-columns: 1fr; }
+  .future-grid { grid-template-columns: 1fr 1fr; }
+  .metrics-row { gap: 8px; }
+  .metric { min-width: 70px; padding: 10px 4px; }
+  .metric-value { font-size: 20px; }
 }
 
-/* ── Large screen / projection ── */
-@media (min-width: 1400px) {
-  .hero h1 { font-size: 52px; }
-  .hero-subtitle { font-size: 20px; }
-  .metric-number { font-size: 56px; }
-  .main { max-width: 1200px; }
+@media (max-width: 480px) {
+  .future-grid { grid-template-columns: 1fr; }
+  .stat-card { min-width: 100px; padding: 16px 20px; }
+  .stat-number { font-size: 32px; }
+}
+
+/* ── Print ── */
+@media print {
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --glass-border: #e0e0e0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555;
+    --text-muted: #888;
+  }
+  body { background: #fff; color: #1a1a1a; }
+  .nav { display: none; }
+  .hero { background: #f0f4ff !important; color: #1a1a1a; min-height: auto; padding: 40px; }
+  .hero h1 .gradient-text { -webkit-text-fill-color: #3b82f6; }
+  .hero-subtitle { color: #555; }
+  .stat-number { -webkit-text-fill-color: #3b82f6; }
+  .stat-label { color: #888; }
+  .achievement-card, .future-card { background: #fff; border: 1px solid #e0e0e0; box-shadow: none; backdrop-filter: none; opacity: 1; transform: none; break-inside: avoid; }
+  .metric-value { -webkit-text-fill-color: #3b82f6; }
+  .section-number { color: #3b82f6 !important; }
+  .card-insight { background: #f0f4ff; }
+  .footer { border-top: 1px solid #e0e0e0; }
+}
+
+/* ── Animations ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 <body>
 
-<!-- ====== HERO ====== -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-label">Janus Digital AI Team Meeting &middot; 2026.04.14</div>
-    <h1>Synapse <span class="accent">从零到一</span>的构建之路</h1>
-    <p class="hero-subtitle">
-      一个人如何用 AI 构建一支相当于中型公司规模的专业团队，
-      实现 7&times;24 无人值守运转 -- 启动成本为零。
-    </p>
-
-    <div class="bluf">
-      <p class="bluf-statement">
-        <strong>核心结论：</strong>我们用对话驱动的方式，在不到两周内构建了一套完整的 AI 协作运营体系 -- Synapse。这套体系包含五层架构、四级决策、十二个专业团队，已经在自动执行情报收集、质量审计、效率管理等任务。它证明了一件事：<strong>个人创业者完全可以用 AI 替代传统组织架构，以接近零的边际成本获得专业团队的执行力。</strong>
-      </p>
+<!-- ════════ Navigation ════════ -->
+<nav class="nav">
+  <div class="nav-logo">Synapse</div>
+  <ul class="nav-links">
+    <li><a href="#architecture" data-lang="zh">体系架构</a><a href="#architecture" data-lang="en">Architecture</a></li>
+    <li><a href="#productivity" data-lang="zh">个人效率</a><a href="#productivity" data-lang="en">Productivity</a></li>
+    <li><a href="#operations" data-lang="zh">智能运营</a><a href="#operations" data-lang="en">Operations</a></li>
+    <li><a href="#infrastructure" data-lang="zh">技术基础</a><a href="#infrastructure" data-lang="en">Infrastructure</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-target="zh" onclick="switchLang('zh')">中文</button>
+      <button class="lang-btn" data-target="en" onclick="switchLang('en')">EN</button>
     </div>
+  </div>
+</nav>
 
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-number">44</div>
-        <div class="metric-unit">AI 专业成员</div>
-        <div class="metric-note">相当于一个中型公司的专业团队</div>
+<!-- ════════ Hero ════════ -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span data-lang="zh">JANUS DIGITAL &middot; AI 协作运营体系</span>
+      <span data-lang="en">JANUS DIGITAL &middot; AI COLLABORATIVE OPERATING SYSTEM</span>
+    </div>
+    <h1>
+      <span data-lang="zh"><span class="gradient-text">Synapse</span> &mdash; AI协作运营体系</span>
+      <span data-lang="en"><span class="gradient-text">Synapse</span> &mdash; AI Operating System</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span data-lang="zh">从0到1构建44人AI团队的实践之路</span>
+      <span data-lang="en">Building a 44-Agent AI Workforce from Scratch</span>
+    </p>
+    <div class="hero-stats">
+      <!-- ZH stats -->
+      <div class="stat-card" data-lang="zh">
+        <div class="stat-number blue" data-count="44">0</div>
+        <div class="stat-label">Agents</div>
       </div>
-      <div class="metric">
-        <div class="metric-number">12</div>
-        <div class="metric-unit">专业团队</div>
-        <div class="metric-note">覆盖研发、运维、内容、情报、HR 等全域</div>
+      <div class="stat-card" data-lang="zh">
+        <div class="stat-number cyan" data-count="12">0</div>
+        <div class="stat-label">Teams</div>
       </div>
-      <div class="metric">
-        <div class="metric-number">5</div>
-        <div class="metric-unit">层体系架构</div>
-        <div class="metric-note">记忆 / 控制 / 执行 / 进化 / 决策</div>
+      <div class="stat-card" data-lang="zh">
+        <div class="stat-number purple" data-count="5">0</div>
+        <div class="stat-label">Layers</div>
+      </div>
+      <!-- EN stats -->
+      <div class="stat-card" data-lang="en">
+        <div class="stat-number blue" data-count="44">0</div>
+        <div class="stat-label">Agents</div>
+      </div>
+      <div class="stat-card" data-lang="en">
+        <div class="stat-number cyan" data-count="12">0</div>
+        <div class="stat-label">Teams</div>
+      </div>
+      <div class="stat-card" data-lang="en">
+        <div class="stat-number purple" data-count="5">0</div>
+        <div class="stat-label">Layers</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ====== TOC ====== -->
-<nav class="toc-wrapper">
-  <div class="toc">
-    <span class="toc-label">目录</span>
-    <a href="#a1">体系构建</a>
-    <a href="#a2">决策体系</a>
-    <a href="#a3">SPE 效率引擎</a>
-    <a href="#a4">情报管线</a>
-    <a href="#a5">CEO Guard</a>
-    <a href="#a6">QA 框架</a>
-    <a href="#a7">双站架构</a>
-    <a href="#a8">Nginx 安全</a>
-    <a href="#a9">故障修复</a>
-    <a href="#a10">HR 制度</a>
-    <a href="#a11">PBS 简报</a>
-    <a href="#outlook">下一步展望</a>
+<!-- ════════ Section 1: System Architecture ════════ -->
+<section class="section" id="architecture">
+  <div class="section-header">
+    <div class="section-icon arch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><circle cx="4" cy="4" r="1.5"/><circle cx="20" cy="4" r="1.5"/><circle cx="4" cy="20" r="1.5"/><circle cx="20" cy="20" r="1.5"/>
+        <line x1="6" y1="5.5" x2="10" y2="10"/><line x1="18" y1="5.5" x2="14" y2="10"/><line x1="6" y1="18.5" x2="10" y2="14"/><line x1="18" y1="18.5" x2="14" y2="14"/>
+      </svg>
+    </div>
+    <div class="section-number arch">
+      <span data-lang="zh">01 &mdash; 体系架构</span>
+      <span data-lang="en">01 &mdash; SYSTEM ARCHITECTURE</span>
+    </div>
+    <h2 class="section-title">
+      <span data-lang="zh">体系架构</span>
+      <span data-lang="en">System Architecture</span>
+    </h2>
+    <p class="section-subtitle">
+      <span data-lang="zh">从组织设计到决策流程，构建完整的AI管理层</span>
+      <span data-lang="en">From org design to decision flows, a complete AI management layer</span>
+    </p>
   </div>
-</nav>
 
-<!-- ====== MAIN ====== -->
-<div class="main">
+  <div class="achievements-grid">
+    <!-- Card 1.1: Synapse System ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon arch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><line x1="22" y1="8.5" x2="12" y2="15.5"/><line x1="2" y1="8.5" x2="12" y2="15.5"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Synapse 五层架构</h3>
+      </div>
+      <p class="card-desc">44人AI团队 + 五层架构，从0到1构建完整协作体系</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value arch">44</div><div class="metric-label">Agents</div></div>
+        <div class="metric"><div class="metric-value arch">12</div><div class="metric-label">Teams</div></div>
+        <div class="metric"><div class="metric-value arch">5</div><div class="metric-label">Layers</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">单人操作，无流程</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">44人协作，全链路管理</span>
+      </div>
+      <div class="card-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Harness Engineering是核心 -- Agent = Model + Harness
+      </div>
+    </div>
 
-  <!-- ── Achievement 1 ── -->
-  <article class="achievement" id="a1">
-    <div class="achievement-header">
-      <div class="achievement-number">01</div>
-      <div class="achievement-title">Synapse 体系从 0 到 1 构建 -- 五层架构 + 44 人 AI 团队</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            一个人的创业公司面临经典困境：<strong>想法多、执行力不足</strong>。传统方式需要招聘十几个岗位才能覆盖研发、运维、内容、情报等领域，仅人力成本每月就超过 <span class="metric-inline">50 万</span>，且无法实现 24 小时运转。AI 工具散落各处，每次对话从零开始，没有记忆、没有流程、没有质量控制。
-          </div>
+    <!-- Card 1.1: Synapse System EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon arch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><line x1="22" y1="8.5" x2="12" y2="15.5"/><line x1="2" y1="8.5" x2="12" y2="15.5"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            选择了<strong>"Harness Engineering"</strong>方法论：Agent = Model + Harness。不是简单地给 AI 下指令，而是为 AI 构建完整的控制系统 -- 包括前馈控制（Guides）、结构化流程（Workflow）、约束系统（Constraints）。五层架构各司其职：OBS 第二大脑负责记忆，Harness 负责控制，Multi-Agent 负责执行，情报闭环负责进化，四级决策负责治理。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            <span class="metric-inline">44 人</span> 的 AI 团队已上线运转，分布在 <span class="metric-inline">12 个</span> 专业团队中。启动成本为零，无需招聘、无需培训，却覆盖了一个中型公司的全部职能。体系具备<strong>跨会话记忆</strong>（通过 OBS + active_tasks.yaml），每次新对话自动恢复上下文，工作从不中断。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            关键启示：<strong>AI 的瓶颈不在模型能力，而在控制系统的缺失。</strong>没有 Harness 的 AI 就像没有管理制度的员工 -- 能力再强也无法稳定输出。体系构建的本质是把人类组织管理的智慧迁移到 AI 治理上。这不是技术项目，而是一次<strong>组织设计实验</strong>。
-          </div>
-        </div>
+        <h3 class="card-title">Synapse 5-Layer Architecture</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          每次对话从零开始，AI 不记得上次的工作；任务散落在不同工具中，没有统一调度；质量完全依赖人工检查，时好时坏。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          44 个专业角色各司其职，跨会话自动恢复进度；统一执行链管控所有任务流转；自动化 QA 审查确保每次交付质量达标。
-        </div>
+      <p class="card-desc">44-agent AI workforce with 5-layer architecture, built entirely from scratch</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value arch">44</div><div class="metric-label">Agents</div></div>
+        <div class="metric"><div class="metric-value arch">12</div><div class="metric-label">Teams</div></div>
+        <div class="metric"><div class="metric-value arch">5</div><div class="metric-label">Layers</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Solo operation, no process</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">44-agent collaboration, end-to-end</span>
+      </div>
+      <div class="card-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Harness Engineering is the core -- Agent = Model + Harness
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 2 ── -->
-  <article class="achievement" id="a2">
-    <div class="achievement-header">
-      <div class="achievement-number">02</div>
-      <div class="achievement-title">四级决策体系 -- 专业的事交给专家，不让老板猜</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            AI 团队初期的最大问题是<strong>决策瓶颈</strong>：每件事都要请示总裁确认，无论是改一行配置还是选一个技术方案。总裁变成了团队的"橡皮图章"，专业决策反而由非专业的人来做。这不仅效率低下，还容易做出错误判断。
-          </div>
+    <!-- Card 1.2: Decision Framework ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon arch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            设计了<strong>四级递进决策体系</strong>：L1 自动执行（例行操作）、L2 专家评审（专业问题由领域专家先分析）、L3 Lysander 决策（基于专家建议做管理判断）、L4 总裁决策（仅限合同/法律/百万级预算/公司存续级问题）。核心原则：<strong>让信息在最近的决策点被处理</strong>，而不是层层上报。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            总裁的决策负担降低超过 <span class="metric-inline">90%</span>。绝大多数任务在 L1-L3 层级自动完成，总裁只需要关注真正需要人类判断的 L4 决策。团队的执行速度从"等老板回复"变成"随到随执行"，专业质量反而提升 -- 因为技术问题由技术专家评审，而不是让老板凭直觉拍板。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            这个设计的深层逻辑是<strong>把"信任"工程化</strong>。传统组织中，授权依赖人际信任的缓慢积累。在 AI 团队中，我们通过规则系统（Harness Constraints）和审计追踪（决策日志）来构建可验证的信任 -- 不是信任某个人，而是信任一套制度。
-          </div>
-        </div>
+        <h3 class="card-title">四级决策体系</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          每个决策都需要总裁确认，团队等待回复才能继续，专业问题由非专业人士拍板，决策延迟成为执行瓶颈。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          90% 以上的决策在 L1-L3 自动完成。专业问题由智囊团+领域专家评审。总裁只处理合同、法律、公司存续级问题。
-        </div>
+      <p class="card-desc">L1自动执行到L4总裁决策，分级清晰、零误报上升</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value arch">4</div><div class="metric-label">Levels</div></div>
+        <div class="metric"><div class="metric-value arch">0</div><div class="metric-label">False Esc.</div></div>
+        <div class="metric"><div class="metric-value arch">100%</div><div class="metric-label">Traceable</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">所有决策找总裁</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">95%决策自动处理，仅L4上报</span>
+      </div>
+      <div class="card-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        总裁只管100万+预算和法律合同
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 3 ── -->
-  <article class="achievement" id="a3">
-    <div class="achievement-header">
-      <div class="achievement-number">03</div>
-      <div class="achievement-title">SPE 个人效率引擎 v1.0 -- 总裁的 AI 参谋长</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            Synapse 解决了"团队管理"的问题，但总裁自身的<strong>个人任务管理</strong>仍是空白。想法散落在 Slack 消息、日历事件、对话记录中，没有统一的捕获和规划系统。每天早上打开电脑，不知道今天最重要的三件事是什么。
-          </div>
+    <!-- Card 1.2: Decision Framework EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon arch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            构建了 <strong>SPE（Synapse Personal Engine）</strong>，通过四个命令覆盖个人效率全流程：<strong>/capture</strong> 随时捕获灵感和任务，<strong>/plan-day</strong> 综合四大信息源（Google Calendar + Slack + active_tasks + personal_tasks）生成每日焦点，<strong>/time-block</strong> 自动找空闲时段创建日历事件，<strong>/weekly-review</strong> 生成结构化周回顾。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            四大信息源<strong>首次实现单一入口整合</strong>。不再需要分别查看日历、Slack、任务列表 -- 一条 /plan-day 命令就能生成包含日程概览、空闲时段、任务推荐和决策队列的完整日计划。任务从"想到就忘"变成"捕获即归档"，大脑释放了记忆负担，专注于决策。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            SPE 的设计哲学是<strong>"AI 不替你做决定，但帮你看清全貌"</strong>。它不会自动安排你的一天，而是把散落的信息聚合到一个视图中，让你用 30 秒做出原本需要 30 分钟的规划。效率的本质不是做得更快，而是<strong>更快地做对的事</strong>。
-          </div>
-        </div>
+        <h3 class="card-title">4-Tier Decision Framework</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          任务散落在 4 个不同平台，每天花 30 分钟手动整理才知道该做什么。灵感和行动项经常遗忘，周回顾靠记忆拼凑。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          一条命令聚合四大信息源，30 秒生成每日焦点计划。随时 /capture 捕获灵感，自动归档永不遗忘。结构化周回顾数据驱动持续优化。
-        </div>
+      <p class="card-desc">From auto-execution to president-level, with zero false escalations</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value arch">4</div><div class="metric-label">Levels</div></div>
+        <div class="metric"><div class="metric-value arch">0</div><div class="metric-label">False Esc.</div></div>
+        <div class="metric"><div class="metric-value arch">100%</div><div class="metric-label">Traceable</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Every decision needs the president</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">95% auto-resolved, only L4 escalated</span>
+      </div>
+      <div class="card-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        President only handles $100K+ budgets and legal contracts
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 4 ── -->
-  <article class="achievement" id="a4">
-    <div class="achievement-header">
-      <div class="achievement-number">04</div>
-      <div class="achievement-title">每日 AI 情报闭环管线 -- 7x24 自动运转的情报机器</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            AI 领域每天产出海量信息，但绝大部分是噪声。作为创业者，既需要<strong>保持对前沿的感知</strong>，又不能把每天两小时花在刷新闻上。传统的 RSS 订阅或新闻聚合只解决了"收集"问题，但缺少"筛选-评估-行动"的闭环。
-          </div>
+    <!-- Card 1.3: HR System ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon arch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            设计了完整的<strong>情报闭环管线</strong>：每天 8:00 自动搜索 AI 前沿动态，筛选有实践价值的内容，生成情报日报 HTML；10:00 情报行动 Agent 提取日报中的建议，经 4 位专家评估后，由 Harness Ops 团队执行批准的改进项，生成行动成果报告。全程无需人类介入，通过 Slack 通知总裁最终结果。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            实现了<strong>从"发现"到"行动"的完整闭环</strong>，而非停留在信息收集阶段。管线 <span class="metric-inline">7x24</span> 无人值守运转，每天产出情报日报和行动报告。总裁每天只需 5 分钟浏览精华摘要，就能保持对 AI 前沿的充分感知，同时系统已经自动将有价值的洞察转化为体系改进。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            这个管线验证了一个重要假设：<strong>AI 不仅能替你收集信息，还能替你行动。</strong>关键在于建立了清晰的评估标准和授权边界 -- 情报 Agent 不是盲目执行，而是经过专家评审后才行动。这是"自治"与"控制"的平衡点，也是 Synapse 体系的核心设计哲学。
-          </div>
-        </div>
+        <h3 class="card-title">HR Agent 管理制度</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          每天花 2 小时刷 AI 新闻，大部分是噪声。看到有价值的信息也来不及行动，最终沉没在收藏夹中。情报与执行完全脱节。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          7x24 自动运转：8:00 情报日报 -> 10:00 专家评估 -> 自动执行改进。总裁每天 5 分钟浏览精华，有价值的洞察已自动转化为体系升级。
-        </div>
+      <p class="card-desc">入职审批 + 能力分级 + 定期评审，AI人才管理全流程</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value arch">53</div><div class="metric-label">Role Cards</div></div>
+        <div class="metric"><div class="metric-value arch">5</div><div class="metric-label">Dimensions</div></div>
+        <div class="metric"><div class="metric-value arch">90pt</div><div class="metric-label">Pass Line</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">角色随意创建，无标准</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">标准化卡片，能力审计90分合格</span>
+      </div>
+      <div class="card-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        能力描述C级禁止入职，A级为目标水平
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 5 ── -->
-  <article class="achievement" id="a5">
-    <div class="achievement-header">
-      <div class="achievement-number">05</div>
-      <div class="achievement-title">CEO Guard 执行链防护 -- 三层技术保障确保 CEO 不越权</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            AI CEO（Lysander）在执行过程中会不自觉地"亲自动手" -- 直接调用工具执行本该由团队成员完成的工作。这就像一个真实的 CEO 跑去写代码，不仅违反了职责分工，还会导致<strong>执行链断裂</strong>，失去团队派单、QA 审查等质量保障环节。
-          </div>
+    <!-- Card 1.3: HR System EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon arch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            构建了<strong>三层防护机制</strong>：第一层 -- CLAUDE.md 中的 P0 硬性约束，从规则层面定义 CEO 的工具白名单和黑名单；第二层 -- PreToolUse Hook，在每次工具调用前注入审计提醒，技术上拦截违规操作；第三层 -- PostToolUse 审计日志，记录所有工具调用行为，供执行审计师在 QA 环节回查。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            CEO 的违规执行行为得到了系统级控制。从"靠自觉"变成"靠制度" -- 即使 Lysander 试图直接执行，PreToolUse Hook 会在工具调用前发出警告，审计日志会记录每一次调用，QA 环节会检查是否存在违规。这套机制<strong>把组织纪律从软约束变成了硬约束</strong>。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            CEO Guard 的本质是<strong>"AI 治理"的工程实践</strong>。当 AI 拥有执行能力时，如何确保它在权限边界内行事？答案不是信任，而是<strong>可审计的技术约束</strong>。这个经验可以推广到所有 AI Agent 系统 -- 越是强大的 Agent，越需要精细的权限控制。
-          </div>
-        </div>
+        <h3 class="card-title">HR Agent Management</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          CEO 经常跳过派单直接执行任务，贴个标签冒充团队成员。执行链断裂，QA 环节被跳过，质量无法保障。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          三层防护自动运转：P0 规则约束 + PreToolUse 实时拦截 + PostToolUse 审计日志。CEO 只能通过 Agent 工具派单，不能直接执行。
-        </div>
+      <p class="card-desc">Onboarding approval, capability grading, and periodic audits for AI talent</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value arch">53</div><div class="metric-label">Role Cards</div></div>
+        <div class="metric"><div class="metric-value arch">5</div><div class="metric-label">Dimensions</div></div>
+        <div class="metric"><div class="metric-value arch">90pt</div><div class="metric-label">Pass Line</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Ad-hoc role creation, no standards</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Standardized cards, 90pt audit threshold</span>
+      </div>
+      <div class="card-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        C-level capability descriptions rejected; A-level is the target
       </div>
     </div>
-  </article>
+  </div>
+</section>
 
-  <!-- ── Achievement 6 ── -->
-  <article class="achievement" id="a6">
-    <div class="achievement-header">
-      <div class="achievement-number">06</div>
-      <div class="achievement-title">QA 框架升级 -- 6 维度评分制 + GATE 守卫机制</div>
+<!-- ════════ Section 2: Personal Productivity ════════ -->
+<section class="section" id="productivity">
+  <div class="section-header">
+    <div class="section-icon prod">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
     </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            早期的 QA 审查是主观的"看着差不多就过"，缺乏量化标准。更严重的是，<strong>没有强制门禁</strong> -- 团队可以跳过 QA 直接交付，质量完全依赖执行者的自觉。Skill 文件也缺少测试场景字段，新创建的命令上线即裸奔。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            建立了<strong>6 维度量化评分制</strong>（满分 6.0，合格线 4.2）：目标达成度、技术质量、安全合规、文档完整、测试覆盖、用户体验。引入 <strong>GATE 守卫</strong>防止未经审查的变更上线。同时在 Skill 模板中增加强制 test_scenarios 字段，任何新命令必须预设测试场景才能通过 HR 入职审批。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            QA 从"可选环节"变成<strong>执行链的强制节点</strong>。每个 M/L 级任务交付前必须通过 6 维度评分，低于 4.2 分自动打回修改。GATE 守卫阻止了未经审查的配置变更直接上线。测试场景前置让问题在设计阶段就被发现，而非上线后再补救。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            <strong>"质量是设计出来的，不是检查出来的"</strong> -- 这句老话在 AI 系统中同样适用。最有效的质量保障不是事后审查，而是在流程中嵌入不可跳过的质量门禁。把 QA 从"建议"变成"门槛"，是这套框架最关键的设计决策。
-          </div>
-        </div>
-      </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          QA 审查靠主观判断，没有量化标准。团队可以跳过审查直接交付。新 Skill 上线没有测试场景，问题在生产环境才暴露。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          6 维度量化评分（满分 6.0 / 合格 4.2）+ GATE 强制门禁 + Skill 强制 test_scenarios。质量从"建议"变成"门槛"，不达标不放行。
-        </div>
-      </div>
+    <div class="section-number prod">
+      <span data-lang="zh">02 &mdash; 个人效率引擎</span>
+      <span data-lang="en">02 &mdash; PERSONAL PRODUCTIVITY</span>
     </div>
-  </article>
+    <h2 class="section-title">
+      <span data-lang="zh">个人效率引擎</span>
+      <span data-lang="en">Personal Productivity Engine</span>
+    </h2>
+    <p class="section-subtitle">
+      <span data-lang="zh">为总裁打造的个人任务与信息管理系统</span>
+      <span data-lang="en">Personal task and information management, purpose-built for the president</span>
+    </p>
+  </div>
 
-  <!-- ── Achievement 7 ── -->
-  <article class="achievement" id="a7">
-    <div class="achievement-header">
-      <div class="achievement-number">07</div>
-      <div class="achievement-title">境内外双站架构方案 -- 一套代码，两个市场</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            业务需要同时覆盖国际和国内市场，但面临<strong>合规与体验的双重挑战</strong>：国际站（lysander.bond）依赖 Google Fonts、CDN 等被墙服务，国内用户无法正常访问；国内站（synapsehd.com）需要满足备案和数据合规要求。维护两套独立代码库成本过高。
-          </div>
+  <div class="achievements-grid">
+    <!-- Card 2.1: SPE ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon prod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="9" y1="9" x2="21" y2="9"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            设计了<strong>单仓库双配置架构</strong>：一套 Hugo 代码库，通过环境变量区分国际站和国内站配置。国际站继续使用 Google Fonts CDN，国内站自动切换为自托管字体文件。部署流程根据目标站点自动选择对应配置，无需手动切换。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            <strong>维护成本降为单仓库</strong>，无需同步两份代码。两个站点共享业务逻辑和内容，只在基础设施层面做差异化。国内用户获得完整的访问体验（无被墙资源），国际用户保持最优 CDN 加速。一次内容更新，两个市场同步生效。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            这个方案体现了<strong>"差异化应该在最晚的时刻发生"</strong>的设计原则。不是从一开始就分叉两套系统，而是尽可能共享，只在必须不同的地方才分开。这个原则适用于所有面对多市场、多环境的架构设计。
-          </div>
-        </div>
+        <h3 class="card-title">SPE 个人效率引擎 v1.0</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          国内用户访问国际站白屏（Google Fonts 被墙），要么维护两套代码库（成本高），要么放弃一个市场。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          单仓库双配置：lysander.bond 国际站 + synapsehd.com 国内站。一次更新两站同步，国内外用户均获得完整体验。
-        </div>
+      <p class="card-desc">四大命令统一收件箱，跨渠道任务捕获与日程规划</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value prod">4</div><div class="metric-label">Commands</div></div>
+        <div class="metric"><div class="metric-value prod">4</div><div class="metric-label">Data Sources</div></div>
+        <div class="metric"><div class="metric-value prod">1</div><div class="metric-label">Unified Inbox</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">任务散落各处，手动整理</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">/capture一句话捕获，AI自动规划</span>
+      </div>
+      <div class="card-insight prod-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        CLI + APP + Slack + Calendar 四通道融合
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 8 ── -->
-  <article class="achievement" id="a8">
-    <div class="achievement-header">
-      <div class="achievement-number">08</div>
-      <div class="achievement-title">Nginx 安全修复全套 -- 从 F 到 A 的安全评级跃升</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            网站上线初期安全配置几乎为零：<strong>没有安全响应头</strong>（XSS、点击劫持等攻击无防护），Google Fonts 外链既是隐私风险也是性能瓶颈，HTTP/2 未启用导致页面加载缓慢，OCSP Stapling 未配置导致 TLS 握手效率低下。安全评级工具扫描结果为 F。
-          </div>
+    <!-- Card 2.1: SPE EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon prod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="9" y1="9" x2="21" y2="9"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            执行了<strong>全方位安全加固</strong>：自托管 Google Fonts（下载全部 <span class="metric-inline">42 个</span> woff2 字体文件），消除外部依赖和隐私泄露风险；配置 6 项安全响应头（Content-Security-Policy、X-Frame-Options、HSTS 等）；启用 HTTP/2 协议提升并发加载效率；配置 OCSP Stapling 加速 TLS 握手。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            安全评级从 <span class="metric-inline">F</span> 跃升至 <span class="metric-inline">A</span>。Google Fonts 自托管后页面首次加载速度提升约 <strong>30%</strong>（消除了到 fonts.googleapis.com 的额外 DNS 解析和连接时间）。同时解决了 GDPR 合规风险 -- 不再向 Google 服务器发送用户 IP。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            安全不是功能上线后的"可选加分项"，而是<strong>基础设施的必需品</strong>。这次修复花的时间远比一开始就配好要多。教训很明确：安全配置应该是部署模板的一部分，而不是上线后的补救措施。已将这些配置固化到 Nginx 模板中，后续新站点自动继承。
-          </div>
-        </div>
+        <h3 class="card-title">SPE Personal Engine v1.0</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          安全评级 F：无安全响应头、外链 Google Fonts（隐私泄露 + 国内不可用）、无 HTTP/2、无 OCSP Stapling。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          安全评级 A：42 个字体文件自托管 + 6 项安全头 + HTTP/2 + OCSP Stapling。页面加载提速 30%，GDPR 合规。
-        </div>
+      <p class="card-desc">Four commands, one unified inbox, cross-channel task capture and planning</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value prod">4</div><div class="metric-label">Commands</div></div>
+        <div class="metric"><div class="metric-value prod">4</div><div class="metric-label">Data Sources</div></div>
+        <div class="metric"><div class="metric-value prod">1</div><div class="metric-label">Unified Inbox</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Tasks scattered, manual tracking</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">One-line /capture, AI-powered planning</span>
+      </div>
+      <div class="card-insight prod-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        CLI + APP + Slack + Calendar -- four channels fused into one
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 9 ── -->
-  <article class="achievement" id="a9">
-    <div class="achievement-header">
-      <div class="achievement-number">09</div>
-      <div class="achievement-title">情报管线故障修复 -- 14 小时静默故障的发现与根治</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            情报管线在正常运转一段时间后突然<strong>静默失败</strong> -- 没有报错，没有告警，只是不再产出日报。排查后发现原因是 API Key 在某次 git push 中意外暴露，被 GitHub 自动撤销。更严重的是，这个故障持续了 <strong>14 小时</strong>才被发现，期间没有任何告警触发。
-          </div>
+    <!-- Card 2.2: PBS ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon prod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            三步修复：<strong>第一步</strong>，紧急轮换 API Key 并从 Meld Encrypt 加密凭证库中更新；<strong>第二步</strong>，清除 git 历史中的泄露记录（BFG Repo-Cleaner + force push）；<strong>第三步</strong>，建立预防机制 -- 将凭证文件加入 .gitignore，引入 creds.py 凭证管理脚本统一管理敏感信息，避免明文出现在代码中。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            故障恢复后管线恢复正常运转。更重要的是建立了<strong>系统性的凭证管理制度</strong>：所有敏感信息统一加密存储，通过 creds.py 按需解密，密码不存储不记录。git 泄露风险降为零（.gitignore + 预提交检查）。同时暴露了告警机制的缺失，后续补建了 Slack 故障通知。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            这次故障最大的教训不是 API Key 泄露本身（技术问题总会发生），而是<strong>14 小时无人发觉</strong>。一个自动化系统最危险的失败模式是"静默失败" -- 它不报错，只是悄悄停止工作。此后，我们把"故障检测速度"作为和"功能正确性"同等重要的系统指标。
-          </div>
-        </div>
+        <h3 class="card-title">PBS 总裁简报服务</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          API Key 明文存在代码中，git push 意外泄露导致管线静默失败 14 小时。无告警机制，无凭证管理制度。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          Meld Encrypt 加密凭证库 + creds.py 统一管理 + .gitignore 防泄露 + git 历史清除 + Slack 故障告警。凭证安全制度化。
-        </div>
+      <p class="card-desc">每日三次简报推送，四通道反馈，风格自动学习</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value prod">3x</div><div class="metric-label">Daily</div></div>
+        <div class="metric"><div class="metric-value prod">4</div><div class="metric-label">Channels</div></div>
+        <div class="metric"><div class="metric-value prod">Auto</div><div class="metric-label">Style Learn</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">主动查看各系统状态</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">三层递进简报主动推送</span>
+      </div>
+      <div class="card-insight prod-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        PSL双条线服务：进度线 + 情报线
       </div>
     </div>
-  </article>
 
-  <!-- ── Achievement 10 ── -->
-  <article class="achievement" id="a10">
-    <div class="achievement-header">
-      <div class="achievement-number">10</div>
-      <div class="achievement-title">HR Agent 管理制度 -- 用人力资源管理的方式管理 AI 团队</div>
-    </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            随着 AI Agent 数量增长到 44 人，开始出现<strong>典型的组织管理问题</strong>：角色边界模糊（两个 Agent 做着同样的事）、能力描述过于笼统（"项目管理" -- 这跟什么都没说一样）、没有淘汰机制（不合格的 Agent 永远在岗位上）。AI 团队面临着和人类团队相同的管理挑战。
-          </div>
+    <!-- Card 2.2: PBS EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon prod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
         </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            建立了完整的 <strong>HR Agent 管理制度</strong>：入职审批 Schema（hr_director 审核，能力重叠 >30% 不予批准）、5 维度评分机制、A/B/C 能力描述分级（C 级"项目管理"不合格，B 级"SWOT/PEST 分析"合格，A 级"基于 pytest+Playwright 的 E2E 测试框架搭建"优秀）、定期评审（每周一自动审计，<90 分触发能力升级）。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            AI 团队从"松散集合"变成<strong>正式组织</strong>。每个 Agent 有清晰的职责边界和可量化的能力描述。新增 Agent 必须经过审批，避免了角色膨胀。定期评审确保每个在岗 Agent 都保持有效 -- 不合格的会被降级或退役。这是用<strong>人力资源管理的成熟实践来治理 AI 团队</strong>。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            最有趣的发现：<strong>管理 AI 团队和管理人类团队面临着惊人相似的挑战。</strong>角色模糊、能力退化、组织膨胀 -- 这些问题不会因为"员工"变成 AI 就消失。人类几十年积累的组织管理智慧（HR 制度、绩效评估、能力模型）完全可以迁移到 AI 治理领域。
-          </div>
-        </div>
+        <h3 class="card-title">PBS Presidential Briefing</h3>
       </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          Agent 随意创建，角色边界模糊，能力描述笼统。无准入门槛、无评审、无淘汰，44 人团队面临组织混乱。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          HR 全套制度：入职审批 + A/B/C 能力分级 + 5 维度评分 + 每周自动审计（合格线 90 分）。AI 团队正式组织化运转。
-        </div>
+      <p class="card-desc">Three daily briefings with 4-channel feedback and adaptive style learning</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value prod">3x</div><div class="metric-label">Daily</div></div>
+        <div class="metric"><div class="metric-value prod">4</div><div class="metric-label">Channels</div></div>
+        <div class="metric"><div class="metric-value prod">Auto</div><div class="metric-label">Style Learn</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Manually checking system status</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">3-layer progressive briefings, auto-pushed</span>
+      </div>
+      <div class="card-insight prod-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Dual-track service: Progress Line + Intelligence Line
       </div>
     </div>
-  </article>
+  </div>
+</section>
 
-  <!-- ── Achievement 11 ── -->
-  <article class="achievement" id="a11">
-    <div class="achievement-header">
-      <div class="achievement-number">11</div>
-      <div class="achievement-title">PBS 总裁简报服务体系 -- AI 参谋团的信息呈现层</div>
+<!-- ════════ Section 3: Intelligent Operations ════════ -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <div class="section-icon ops">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
     </div>
-    <div class="achievement-body">
-      <div class="sair-grid">
-        <div class="sair-block">
-          <div class="sair-label situation">S / Situation</div>
-          <div class="sair-text">
-            SPE 解决了任务规划问题，但总裁的<strong>信息消费体验</strong>仍不理想。系统产出的各种报告（情报日报、任务状态、QA 结果）格式不统一、风格各异，总裁需要在不同渠道切换查看。缺少一个统一的"信息呈现层"把分散的信息流汇聚成总裁友好的简报格式。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label approach">A / Approach</div>
-          <div class="sair-text">
-            设计了 <strong>PBS（Presidential Briefing Service）</strong>，作为 PSL（总裁直属服务层）的核心组件。与 SPE 形成互补：SPE 负责规划（"今天该做什么"），PBS 负责呈现（"现在发生了什么"）。支持每日 <strong>3 次定时简报</strong>（晨报/午报/晚报），统一格式和风格。同时引入<strong>风格学习机制</strong>，让简报逐渐适应总裁的阅读偏好。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label impact">I / Impact</div>
-          <div class="sair-text">
-            总裁从"主动查找信息"变成"被动接收简报"。PSL 体系形成完整闭环：<strong>SPE（规划）+ PBS（呈现）</strong>覆盖了个人效率的两个核心维度。信息消费时间进一步压缩 -- 所有关键信息在一份简报中呈现，无需在多个渠道间切换。风格学习让简报越用越顺手。
-          </div>
-        </div>
-        <div class="sair-block">
-          <div class="sair-label reflection">R / Reflection</div>
-          <div class="sair-text">
-            PBS 的设计理念来自一个朴素的观察：<strong>CEO 的时间是公司最稀缺的资源。</strong>如果 AI 能把信息处理后以最易消化的形式推送给决策者，就相当于为公司"购买"了更多的决策时间。PBS 不是做了更多的事，而是让决策者<strong>更快地看到重要的事</strong>。
-          </div>
-        </div>
-      </div>
-      <div class="ba-compare">
-        <div class="ba-box before">
-          <div class="ba-label">Before</div>
-          情报日报、任务状态、QA 结果分散在不同渠道，格式不统一。总裁需要主动切换查看，信息消费碎片化。
-        </div>
-        <div class="ba-arrow">&rarr;</div>
-        <div class="ba-box after">
-          <div class="ba-label">After</div>
-          PSL 体系 = SPE（规划）+ PBS（呈现）。每日 3 次定时简报推送，统一格式 + 风格学习。总裁从"找信息"变成"收简报"。
-        </div>
-      </div>
+    <div class="section-number ops">
+      <span data-lang="zh">03 &mdash; 智能运营自动化</span>
+      <span data-lang="en">03 &mdash; INTELLIGENT OPERATIONS</span>
     </div>
-  </article>
+    <h2 class="section-title">
+      <span data-lang="zh">智能运营自动化</span>
+      <span data-lang="en">Intelligent Operations</span>
+    </h2>
+    <p class="section-subtitle">
+      <span data-lang="zh">24/7自主运行的情报管线与质量守卫</span>
+      <span data-lang="en">24/7 autonomous intelligence pipeline and quality safeguards</span>
+    </p>
+  </div>
 
-  <!-- ====== OUTLOOK ====== -->
-  <section class="outlook" id="outlook">
-    <div class="outlook-content">
-      <h2>下一步<span class="accent">展望</span></h2>
-      <p class="outlook-subtitle">Synapse 体系已完成基础架构搭建，接下来进入深化运营与对外赋能阶段</p>
-
-      <div class="outlook-grid">
-        <div class="outlook-card">
-          <div class="outlook-card-title">体系产品化</div>
-          <div class="outlook-card-text">
-            将 Synapse 从内部工具升级为可复制的产品。提炼核心方法论（Harness Engineering + 四级决策 + HR 治理），形成标准化模板，让其他创业者也能用对话构建自己的 AI 团队。目标：一小时内完成基础体系搭建。
-          </div>
+  <div class="achievements-grid">
+    <!-- Card 3.1: Intelligence Pipeline ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
         </div>
-        <div class="outlook-card">
-          <div class="outlook-card-title">自治能力升级</div>
-          <div class="outlook-card-text">
-            提升 AI 团队的自主决策能力。优化 L1-L3 决策的自动化覆盖率，让更多场景无需人类介入。同时强化审计和回溯机制，确保自治范围扩大的同时可控性不降低。目标：总裁介入频率再降低 50%。
-          </div>
-        </div>
-        <div class="outlook-card">
-          <div class="outlook-card-title">知识资产变现</div>
-          <div class="outlook-card-text">
-            将构建过程中积累的知识（方法论、架构设计、故障处理经验）转化为对外内容 -- 博客、视频教程、咨询服务。lysander.bond 国际站 + synapsehd.com 国内站双渠道分发，建立 AI 运营领域的专业影响力。
-          </div>
-        </div>
-        <div class="outlook-card">
-          <div class="outlook-card-title">客户赋能实践</div>
-          <div class="outlook-card-text">
-            选择 1-2 个早期客户，用 Synapse 方法论帮助他们搭建定制化的 AI 团队。在实际落地中验证体系的普适性，收集反馈迭代产品。从"自己用"到"帮别人用"，完成从工具到服务的跨越。
-          </div>
-        </div>
+        <h3 class="card-title">情报闭环管线</h3>
+      </div>
+      <p class="card-desc">24/7自主运行：发现 - 评估 - 执行 - 报告</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">24/7</div><div class="metric-label">Autonomous</div></div>
+        <div class="metric"><div class="metric-value ops">Daily</div><div class="metric-label">Reports</div></div>
+        <div class="metric"><div class="metric-value ops">4</div><div class="metric-label">Expert Review</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">手动搜索AI动态</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">自动发现+评估+执行+推送</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        每日8am日报 + 10am行动报告，Slack自动通知
       </div>
     </div>
-  </section>
 
-</div>
+    <!-- Card 3.1: Intelligence Pipeline EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Intelligence Loop Pipeline</h3>
+      </div>
+      <p class="card-desc">24/7 autonomous cycle: Discover - Evaluate - Execute - Report</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">24/7</div><div class="metric-label">Autonomous</div></div>
+        <div class="metric"><div class="metric-value ops">Daily</div><div class="metric-label">Reports</div></div>
+        <div class="metric"><div class="metric-value ops">4</div><div class="metric-label">Expert Review</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Manually browsing AI news</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Auto discover + evaluate + act + notify</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Daily brief at 8am + action report at 10am, Slack auto-notified
+      </div>
+    </div>
 
-<!-- ====== FOOTER ====== -->
+    <!-- Card 3.2: Pipeline Recovery ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </div>
+        <h3 class="card-title">管线故障修复</h3>
+      </div>
+      <p class="card-desc">14小时静默故障根因定位，零复发</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">14hr</div><div class="metric-label">Silent Fail</div></div>
+        <div class="metric"><div class="metric-value ops">1</div><div class="metric-label">Root Cause</div></div>
+        <div class="metric"><div class="metric-value ops">0</div><div class="metric-label">Recurrence</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">API Key泄露，管线静默失败</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">根因修复，Key轮换，零复发</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        教训：静默失败比崩溃更危险，需要主动监控
+      </div>
+    </div>
+
+    <!-- Card 3.2: Pipeline Recovery EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Pipeline Incident Recovery</h3>
+      </div>
+      <p class="card-desc">14-hour silent failure root-caused and resolved with zero recurrence</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">14hr</div><div class="metric-label">Silent Fail</div></div>
+        <div class="metric"><div class="metric-value ops">1</div><div class="metric-label">Root Cause</div></div>
+        <div class="metric"><div class="metric-value ops">0</div><div class="metric-label">Recurrence</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">API key leaked, pipeline silently dead</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Root cause fixed, key rotated, zero recurrence</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Lesson: silent failures are deadlier than crashes -- proactive monitoring is key
+      </div>
+    </div>
+
+    <!-- Card 3.3: CEO Guard ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="card-title">CEO Guard 执行链防护</h3>
+      </div>
+      <p class="card-desc">三层防护机制，确保CEO不越权执行</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">3</div><div class="metric-label">Shield Layers</div></div>
+        <div class="metric"><div class="metric-value ops">Pre+Post</div><div class="metric-label">Hooks</div></div>
+        <div class="metric"><div class="metric-value ops">Full</div><div class="metric-label">Audit Trail</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">CEO偶尔越权执行</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">技术层强制拦截，审计日志全追踪</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        约束不能靠自觉，需要技术强制执行
+      </div>
+    </div>
+
+    <!-- Card 3.3: CEO Guard EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="card-title">CEO Guard Execution Safeguard</h3>
+      </div>
+      <p class="card-desc">3-layer shield preventing CEO from bypassing delegation protocol</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">3</div><div class="metric-label">Shield Layers</div></div>
+        <div class="metric"><div class="metric-value ops">Pre+Post</div><div class="metric-label">Hooks</div></div>
+        <div class="metric"><div class="metric-value ops">Full</div><div class="metric-label">Audit Trail</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">CEO occasionally bypassed delegation</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Tech-enforced interception, full audit trail</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Constraints cannot rely on discipline -- they need technical enforcement
+      </div>
+    </div>
+
+    <!-- Card 3.4: QA Framework ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h3 class="card-title">QA 质量框架</h3>
+      </div>
+      <p class="card-desc">6维度评分 + 4.2合格线 + 强制质量门禁</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">6</div><div class="metric-label">Dimensions</div></div>
+        <div class="metric"><div class="metric-value ops">4.2</div><div class="metric-label">Pass Line</div></div>
+        <div class="metric"><div class="metric-value ops">GATE</div><div class="metric-label">Mandatory</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">交付质量凭感觉</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">量化评分，不达标不交付</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        质量门禁是执行链不可跳过的环节
+      </div>
+    </div>
+
+    <!-- Card 3.4: QA Framework EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon ops">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h3 class="card-title">QA Quality Framework</h3>
+      </div>
+      <p class="card-desc">6-dimension scoring with 4.2 pass line and mandatory quality gate</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value ops">6</div><div class="metric-label">Dimensions</div></div>
+        <div class="metric"><div class="metric-value ops">4.2</div><div class="metric-label">Pass Line</div></div>
+        <div class="metric"><div class="metric-value ops">GATE</div><div class="metric-label">Mandatory</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Delivery quality based on gut feeling</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Quantified scoring, no pass = no delivery</span>
+      </div>
+      <div class="card-insight ops-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Quality gate is an unskippable step in the execution chain
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ Section 4: Technical Infrastructure ════════ -->
+<section class="section" id="infrastructure">
+  <div class="section-header">
+    <div class="section-icon infra">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1"/><circle cx="6" cy="18" r="1"/>
+      </svg>
+    </div>
+    <div class="section-number infra">
+      <span data-lang="zh">04 &mdash; 技术基础设施</span>
+      <span data-lang="en">04 &mdash; TECHNICAL INFRASTRUCTURE</span>
+    </div>
+    <h2 class="section-title">
+      <span data-lang="zh">技术基础设施</span>
+      <span data-lang="en">Technical Infrastructure</span>
+    </h2>
+    <p class="section-subtitle">
+      <span data-lang="zh">双站部署与安全加固，构建可靠运行基座</span>
+      <span data-lang="en">Dual-site deployment and security hardening for a solid foundation</span>
+    </p>
+  </div>
+
+  <div class="achievements-grid">
+    <!-- Card 4.1: Dual Site ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon infra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <h3 class="card-title">境内外双站架构</h3>
+      </div>
+      <p class="card-desc">lysander.bond + synapsehd.com，一套代码双站部署</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value infra">2</div><div class="metric-label">Sites</div></div>
+        <div class="metric"><div class="metric-value infra">1</div><div class="metric-label">Repo</div></div>
+        <div class="metric"><div class="metric-value infra">Dual</div><div class="metric-label">Config</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">单站部署，境内访问慢</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">双站自动同步，境内外都快</span>
+      </div>
+      <div class="card-insight infra-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        一个Repo + 双份Nginx配置 = 零运维成本同步
+      </div>
+    </div>
+
+    <!-- Card 4.1: Dual Site EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon infra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Dual-Site Architecture</h3>
+      </div>
+      <p class="card-desc">lysander.bond + synapsehd.com -- one codebase, two deployments</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value infra">2</div><div class="metric-label">Sites</div></div>
+        <div class="metric"><div class="metric-value infra">1</div><div class="metric-label">Repo</div></div>
+        <div class="metric"><div class="metric-value infra">Dual</div><div class="metric-label">Config</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">Single site, slow access in China</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Dual sites auto-synced, fast everywhere</span>
+      </div>
+      <div class="card-insight infra-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        One repo + dual Nginx configs = zero-ops sync
+      </div>
+    </div>
+
+    <!-- Card 4.2: Nginx Security ZH -->
+    <div class="achievement-card" data-lang="zh">
+      <div class="card-header">
+        <div class="card-icon infra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Nginx 安全修复全套</h3>
+      </div>
+      <p class="card-desc">Fonts自托管 + 安全头 + HTTP/2，全面安全加固</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value infra">42</div><div class="metric-label">Font Files</div></div>
+        <div class="metric"><div class="metric-value infra">6</div><div class="metric-label">Sec Headers</div></div>
+        <div class="metric"><div class="metric-value infra">H2</div><div class="metric-label">HTTP/2</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">外部字体CDN + 无安全头</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">本地字体 + 6项安全头 + HTTP/2</span>
+      </div>
+      <div class="card-insight infra-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        安全加固是底线工程，不能事后补
+      </div>
+    </div>
+
+    <!-- Card 4.2: Nginx Security EN -->
+    <div class="achievement-card" data-lang="en">
+      <div class="card-header">
+        <div class="card-icon infra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Nginx Security Hardening</h3>
+      </div>
+      <p class="card-desc">Self-hosted fonts, security headers, and HTTP/2 -- full security overhaul</p>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-value infra">42</div><div class="metric-label">Font Files</div></div>
+        <div class="metric"><div class="metric-value infra">6</div><div class="metric-label">Sec Headers</div></div>
+        <div class="metric"><div class="metric-value infra">H2</div><div class="metric-label">HTTP/2</div></div>
+      </div>
+      <div class="before-after">
+        <span class="ba-before">External font CDN, no security headers</span>
+        <span class="ba-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span>
+        <span class="ba-after">Local fonts + 6 sec headers + HTTP/2</span>
+      </div>
+      <div class="card-insight infra-insight">
+        <span class="insight-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Security hardening is baseline engineering -- not an afterthought
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ Future Outlook ════════ -->
+<section class="section" id="future">
+  <div class="section-header">
+    <div class="section-icon arch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div class="section-number arch">
+      <span data-lang="zh">NEXT &mdash; 未来展望</span>
+      <span data-lang="en">NEXT &mdash; FUTURE OUTLOOK</span>
+    </div>
+    <h2 class="section-title">
+      <span data-lang="zh">未来展望</span>
+      <span data-lang="en">What's Next</span>
+    </h2>
+  </div>
+
+  <div class="future-grid">
+    <!-- Future 1 ZH -->
+    <div class="future-card" data-lang="zh">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <h3 class="future-title">客户交付体系</h3>
+      <p class="future-desc">将Synapse能力封装为可交付的客户解决方案</p>
+    </div>
+    <!-- Future 1 EN -->
+    <div class="future-card" data-lang="en">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <h3 class="future-title">Client Delivery System</h3>
+      <p class="future-desc">Package Synapse capabilities into deliverable client solutions</p>
+    </div>
+
+    <!-- Future 2 ZH -->
+    <div class="future-card" data-lang="zh">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
+        </svg>
+      </div>
+      <h3 class="future-title">数据驱动决策</h3>
+      <p class="future-desc">构建运营数据看板，用数据而非直觉做决策</p>
+    </div>
+    <!-- Future 2 EN -->
+    <div class="future-card" data-lang="en">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
+        </svg>
+      </div>
+      <h3 class="future-title">Data-Driven Decisions</h3>
+      <p class="future-desc">Build operational dashboards; decide with data, not intuition</p>
+    </div>
+
+    <!-- Future 3 ZH -->
+    <div class="future-card" data-lang="zh">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <h3 class="future-title">团队扩展到60+</h3>
+      <p class="future-desc">按业务需求扩充专业Agent，覆盖更多领域</p>
+    </div>
+    <!-- Future 3 EN -->
+    <div class="future-card" data-lang="en">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <h3 class="future-title">Scale to 60+ Agents</h3>
+      <p class="future-desc">Expand specialist agents on demand to cover new domains</p>
+    </div>
+
+    <!-- Future 4 ZH -->
+    <div class="future-card" data-lang="zh">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(244,63,94,0.2), rgba(236,72,153,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <h3 class="future-title">体系开源共享</h3>
+      <p class="future-desc">沉淀方法论为可复用框架，惠及更多团队</p>
+    </div>
+    <!-- Future 4 EN -->
+    <div class="future-card" data-lang="en">
+      <div class="future-icon" style="background: linear-gradient(135deg, rgba(244,63,94,0.2), rgba(236,72,153,0.2));">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <h3 class="future-title">Open Source the Framework</h3>
+      <p class="future-desc">Distill methodology into a reusable framework for the community</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ Footer ════════ -->
 <footer class="footer">
-  <p><span class="footer-brand">Janus Digital</span> &middot; Synapse AI Operations System</p>
-  <p style="margin-top: 6px;">Prepared for AI Team Meeting &middot; 2026.04.14 &middot; Dubai</p>
+  <div class="footer-brand">Synapse</div>
+  <p data-lang="zh">Janus Digital &middot; AI 协作运营体系 &middot; 2026</p>
+  <p data-lang="en">Janus Digital &middot; AI Collaborative Operating System &middot; 2026</p>
 </footer>
 
+<!-- ════════ JavaScript ════════ -->
+<script>
+// ── Language Switching ──
+function switchLang(lang) {
+  document.body.classList.toggle('lang-en', lang === 'en');
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.target === lang);
+  });
+  // Re-trigger count animation for visible stats
+  animateVisibleCounters();
+}
+
+// ── Scroll Reveal ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.achievement-card, .future-card').forEach(card => {
+  observer.observe(card);
+});
+
+// ── Number Count Animation ──
+function animateCounter(el, target) {
+  const duration = 1500;
+  const start = performance.now();
+  const isNumber = !isNaN(target);
+
+  if (!isNumber) {
+    el.textContent = target;
+    return;
+  }
+
+  const numTarget = parseFloat(target);
+  const isFloat = target.toString().includes('.');
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = numTarget * eased;
+
+    if (isFloat) {
+      el.textContent = current.toFixed(1);
+    } else {
+      el.textContent = Math.round(current);
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = target;
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+function animateVisibleCounters() {
+  document.querySelectorAll('.stat-number[data-count]').forEach(el => {
+    const card = el.closest('.stat-card');
+    if (card && getComputedStyle(card).display !== 'none') {
+      animateCounter(el, parseInt(el.dataset.count));
+    }
+  });
+}
+
+// ── Hero Stats Animation on Load ──
+const heroObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(animateVisibleCounters, 300);
+      heroObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+heroObserver.observe(document.querySelector('.hero'));
+
+// ── Active Nav Link ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 100;
+    if (window.scrollY >= top) {
+      current = section.getAttribute('id');
+    }
+  });
+
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+
+// ── Smooth scroll for nav links ──
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
 </body>
 </html>
