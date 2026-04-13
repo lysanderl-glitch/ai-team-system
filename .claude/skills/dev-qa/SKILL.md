@@ -108,3 +108,52 @@ ls Gemfile 2>/dev/null && grep -E 'rspec|minitest' Gemfile | head -3
 **详细发现：**
 1. [Bug描述] → [修复方式] → [回归测试文件]
 ```
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 对项目执行完整 QA 流程并修复发现的 Bug
+
+- **场景名称**：对指定功能执行 QA 测试、发现 Bug、原子修复、回归测试
+- **输入**：`/dev-qa 用户登录功能`
+- **前置条件**：
+  - 项目中存在测试框架配置（package.json 含 test 脚本 / pytest.ini / pyproject.toml 等）
+  - 项目中已有可运行的测试套件
+- **预期结果**：
+  - [ ] Step 1 正确检测项目测试框架（npm test / pytest / rspec 等）
+  - [ ] Step 2 运行现有测试套件，记录基线：通过数 / 失败数 / 跳过数
+  - [ ] Step 4a 每个 Bug 定位到根因（追踪数据流，非猜测）
+  - [ ] Step 4b 每个 Bug 修复为独立 git commit，Edit 后确认返回成功
+  - [ ] Step 4b commit message 格式：`fix: [简述问题] (file:line)`
+  - [ ] Step 4c 为每个修复创建回归测试文件，Write/Edit 后确认返回成功
+  - [ ] Step 4d 重新运行测试确认修复有效且无回归
+  - [ ] Step 5 输出覆盖率数据（如项目配置了覆盖率工具）
+  - [ ] Step 6 输出完整 QA 报告，格式包含：测试基线 / Bug 数 / 修复数 / 测试变化 / 覆盖率
+  - [ ] 工具调用链：`Bash(检测框架) -> Bash(运行测试基线) -> Read(定位Bug) -> Edit(修复) -> Bash(git commit) -> Write(回归测试) -> Bash(运行回归测试) -> Bash(覆盖率)`
+
+#### Edge Case 1: 目标 URL 不可达时的处理
+
+- **场景名称**：提供 URL 进行浏览器实测但 URL 不可达
+- **输入**：`/dev-qa http://localhost:3000`
+- **前置条件**：
+  - 本地服务未启动，localhost:3000 无响应
+- **预期结果**：
+  - [ ] Step 3 浏览器实测检测到页面无法加载
+  - [ ] 报告明确标注"目标 URL 不可达"，不编造测试结果
+  - [ ] 继续执行 Step 1-2（运行已有测试套件）作为降级方案
+  - [ ] QA 报告中标注浏览器测试为"跳过：目标 URL 不可达"
+
+#### Edge Case 2: Bug 修复 Edit 失败时的处理
+
+- **场景名称**：Bug 修复时 Edit 工具返回失败
+- **输入**：`/dev-qa 数据导出功能`
+- **前置条件**：
+  - 发现 Bug 但 Edit 修复 old_string 不匹配
+- **预期结果**：
+  - [ ] Edit 失败后重试一次
+  - [ ] 重试仍失败则记录该 Bug 为"未修复"
+  - [ ] 不跳过失败直接 git commit
+  - [ ] QA 报告中明确列出"未修复"的 Bug，不声称"全部修复"

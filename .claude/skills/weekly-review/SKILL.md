@@ -156,3 +156,69 @@ cd /c/Users/lysanderl_janusd/Claude\ Code/ai-team-system
 git add agent-butler/config/personal_tasks.yaml obs/06-daily-reports/YYYY-Wnn-weekly-review.md
 git commit -m "weekly-review: YYYY-Wnn 周回顾报告"
 ```
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 本周回顾（多数据源可用）
+
+- **场景名称**：周末调用 /weekly-review 生成完整周回顾报告
+- **输入**：`/weekly-review`（无参数，默认 this-week）
+- **前置条件**：
+  - `agent-butler/config/active_tasks.yaml` 存在且有本周已完成任务
+  - `agent-butler/config/personal_tasks.yaml` 存在且有 inbox 条目和 OKR 数据
+  - `obs/04-decision-knowledge/decision-log/` 目录存在
+  - Google Calendar MCP 已认证且可用
+- **预期结果**：
+  - [ ] Step 1：正确计算本周起止日期（周一到当天）
+  - [ ] Step 2a：读取 active_tasks.yaml 提取本周 completed_tasks
+  - [ ] Step 2b：读取 personal_tasks.yaml 提取 inbox 处理情况 + OKR 进度
+  - [ ] Step 2c：扫描决策日志目录，筛选本周新增决策文件
+  - [ ] Step 2d：调用 `gcal_list_events` 获取本周事件，统计会议时长和深度工作时间
+  - [ ] Step 2e：读取 memory 行为观察文件（如存在）
+  - [ ] Step 3：输出包含全部 6 个区块：本周成就 / OKR 进度 / 决策回顾 / 时间分配 / 行为洞察 / 下周焦点建议
+  - [ ] Step 3：OKR 进度含趋势箭头（>=5% 上升 / <5% 持平 / 下降）
+  - [ ] Step 5a GATE：Edit 更新 personal_tasks.yaml 的 weekly_review 字段，确认成功
+  - [ ] Step 5b GATE：Write 保存报告到 `obs/06-daily-reports/YYYY-Wnn-weekly-review.md`，确认成功
+  - [ ] Step 5c：前置检查 `git diff --stat` 确认有变更后执行 git commit
+  - [ ] 工具调用链：`Bash(日期计算) -> Read(active_tasks) -> Read(personal_tasks) -> Glob(decision-log) -> MCP(gcal) -> Read(memory) -> Edit(personal_tasks) -> Write(报告) -> Bash(git commit)`
+
+#### Edge Case 1: 无 OKR 设定时的降级
+
+- **场景名称**：personal_tasks.yaml 中无 OKR 数据时的行为
+- **输入**：`/weekly-review`
+- **前置条件**：
+  - `personal_tasks.yaml` 存在但无 `okr` 或 `objectives` 字段
+  - 其他数据源正常
+- **预期结果**：
+  - [ ] 不中断整体流程
+  - [ ] OKR 进度区块标注"尚未设定 OKR，建议配置后再追踪"
+  - [ ] 下周焦点建议基于未完成任务和行为洞察生成（不依赖 OKR 缺口）
+  - [ ] 其余 5 个区块正常输出
+
+#### Edge Case 2: 行为观察文件不存在
+
+- **场景名称**：SPE 初期，memory 目录下无行为观察文件
+- **输入**：`/weekly-review`
+- **前置条件**：
+  - memory 目录下无 `user_work_rhythm.md` 等行为观察文件
+  - 其他数据源正常
+- **预期结果**：
+  - [ ] 跳过 Step 2e 数据源，不报错
+  - [ ] 行为洞察区块标注"行为观察数据尚在积累中，将在使用一段时间后自动生成洞察"
+  - [ ] 其余区块正常输出
+
+#### Edge Case 3: git diff 为空（5a 和 5b 均失败）
+
+- **场景名称**：报告保存和任务更新均失败时不执行空 commit
+- **输入**：`/weekly-review`
+- **前置条件**：
+  - Step 5a Edit 失败（重试后仍失败）
+  - Step 5b Write 失败（重试后仍失败）
+- **预期结果**：
+  - [ ] `git diff --stat` 确认无变更
+  - [ ] 不执行 git commit（避免空 commit）
+  - [ ] 向用户报告写入失败，报告内容仍在控制台输出可见

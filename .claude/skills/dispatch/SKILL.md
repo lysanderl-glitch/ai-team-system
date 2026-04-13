@@ -74,3 +74,47 @@ cat agent-butler/config/organization.yaml 2>/dev/null | head -100
 - 交付物必须具体可验证
 - 跨团队任务需列出所有参与者
 - S级任务豁免派单，Lysander 可直接处理
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 标准任务派单
+
+- **场景名称**：明确任务描述派单到正确团队
+- **输入**：`/dispatch 优化 hr_base.py 中的 audit_all_agents 函数性能`
+- **前置条件**：
+  - `agent-butler/config/organization.yaml` 已存在且包含 Harness Ops 团队配置
+  - organization.yaml 中 `task_routing` 节包含关键词路由规则
+- **预期结果**：
+  - [ ] 工具调用链：`Bash(cat organization.yaml) -> Read(organization.yaml)`
+  - [ ] 关键词"代码/开发"命中 Harness Ops 或 RD 团队
+  - [ ] 输出标准派单表格式：`**【② 团队派单】**` + 三列表格（工作项 / 执行者 / 交付物）
+  - [ ] 执行者字段包含 specialist_id（如 `ai_systems_dev`）
+  - [ ] 交付物字段具体可验证（如"优化后的函数 + 性能对比"）
+  - [ ] 派单表后有执行者标注的工作块标题（如 `**ai_systems_dev 执行：**`）
+
+#### Edge Case 1: 任务描述无法明确匹配团队
+
+- **场景名称**：模糊任务描述的路由处理
+- **输入**：`/dispatch 把那个东西弄好一点`
+- **前置条件**：
+  - `agent-butler/config/organization.yaml` 正常存在
+- **预期结果**：
+  - [ ] 不直接猜测团队，而是向总裁追问一次以明确任务范围
+  - [ ] 追问内容包含"请补充具体任务内容"或类似提示
+  - [ ] 追问中可列出常见团队方向供选择
+  - [ ] 不输出不完整的派单表
+
+#### Edge Case 2: 跨团队任务
+
+- **场景名称**：任务涉及多个团队协作
+- **输入**：`/dispatch 开发新的情报收集功能并沉淀到知识库`
+- **前置条件**：
+  - organization.yaml 包含 RD 团队和 OBS 团队
+- **预期结果**：
+  - [ ] 派单表包含多个工作项，分属不同团队
+  - [ ] 至少包含 RD 团队成员（开发）和 OBS 团队成员（知识沉淀）
+  - [ ] 工作项之间有明确的依赖关系说明（如"A完成后做B"）

@@ -95,3 +95,54 @@ git diff --stat HEAD~10 2>/dev/null | tail -5
 - 新发现的待办写入
 
 **GATE：使用 Edit 工具更新 active_tasks.yaml 后，必须确认 Edit 返回成功。如果失败，重试一次，仍失败则提示用户手动更新任务状态。**
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 当前会话复盘
+
+- **场景名称**：会话中完成实质工作后执行默认范围复盘
+- **输入**：`/retro`（无参数，默认 session 范围）
+- **前置条件**：
+  - 当前会话中已完成若干任务（有 git commit 记录）
+  - `agent-butler/config/active_tasks.yaml` 存在
+  - `obs/02-project-knowledge/retro/` 目录存在
+- **预期结果**：
+  - [ ] Step 1：执行 `git log --oneline --since="7 days ago"` 和 `git diff --stat` 收集事实
+  - [ ] Step 2：输出四维度复盘：做得好 / 做得不好 / 学到的 / 下一步
+  - [ ] Step 3：输出完整复盘报告格式，包含执行链健康度（派单完整性 / QA 通过率 / 知识沉淀率）
+  - [ ] Step 4：将经验教训写入 `obs/02-project-knowledge/retro/`
+  - [ ] Step 4 GATE：Write 返回成功确认，失败则重试，仍失败则标注"知识沉淀写入失败：[路径]"
+  - [ ] Step 5：更新 `active_tasks.yaml` 中已完成任务标记为 done
+  - [ ] Step 5 GATE：Edit 返回成功确认，失败则提示用户手动更新
+  - [ ] 工具调用链：`Bash(git log) -> Bash(git diff) -> Write(retro文档) -> Edit(active_tasks.yaml)`
+
+#### Edge Case 1: 会话无实质工作内容
+
+- **场景名称**：会话仅有简短对话、无任务执行时执行复盘
+- **输入**：`/retro`
+- **前置条件**：
+  - 当前会话中未执行任何任务
+  - `git log --since="7 days ago"` 返回空（或仅有自动备份提交）
+  - `git diff --stat` 无变更
+- **预期结果**：
+  - [ ] 不生成空洞复盘报告
+  - [ ] 向用户报告"本次会话无实质性工作记录可复盘"
+  - [ ] 跳过 Step 4 知识沉淀（无有价值内容）
+  - [ ] 不产生空 commit
+  - [ ] 可选：建议使用 `/retro week` 查看更长时间范围
+
+#### Edge Case 2: week 范围复盘
+
+- **场景名称**：用户指定 week 范围进行周维度复盘
+- **输入**：`/retro week`
+- **前置条件**：
+  - 本周有 git 提交记录
+- **预期结果**：
+  - [ ] git log 使用 `--since="7 days ago"` 获取本周提交
+  - [ ] git diff 统计本周所有文件变更
+  - [ ] 复盘报告范围标注为本周日期区间
+  - [ ] 如果同时有会话工作和历史提交，合并分析

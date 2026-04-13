@@ -211,3 +211,57 @@ TZ="Asia/Dubai" date +%Y-%m-%d
 - 创建事件前必须获得总裁确认（展示推荐时段后等待确认）
 - 除更新 personal_tasks.yaml 的 calendar_blocked 字段外，不修改任何其他文件
 - 时区固定 Asia/Dubai，不支持其他时区
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 标准时间块创建
+
+- **场景名称**：为任务查找空闲时段并创建日历事件
+- **输入**：`/time-block 审阅Janus方案 1h tomorrow`
+- **前置条件**：
+  - Google Calendar MCP 可用（`gcal_find_my_free_time` + `gcal_create_event`）
+  - 明天日历上有至少一个空闲时段 >= 60 分钟
+- **预期结果**：
+  - [ ] Step 1 解析结果：任务="审阅Janus方案"，时长=60分钟，日期=明天
+  - [ ] Step 2 调用 `gcal_find_my_free_time`，timeMin/timeMax 为明天 08:00-20:00 Asia/Dubai
+  - [ ] 列出可用空闲时段列表（编号 + 时段 + 时长）
+  - [ ] Step 3 根据"审阅/review"关键词推荐 13:00-15:00 时段（午后协作时间）
+  - [ ] 向总裁展示推荐时段并等待确认
+  - [ ] Step 4 调用 `gcal_create_event`，参数包含：
+    - summary 前缀为 `📋`（会议准备/review 类型）
+    - colorId 为 `9`（Blueberry 蓝）
+    - timeZone 为 `Asia/Dubai`
+    - reminders 为提前 10 分钟弹窗
+  - [ ] Step 5 输出创建确认（日期/时间/标题/颜色/提醒）
+
+#### Edge Case 1: 指定日期无空闲时段
+
+- **场景名称**：全天排满时的降级处理
+- **输入**：`/time-block focus 2h 2026-04-15`
+- **前置条件**：
+  - Google Calendar MCP 可用
+  - 2026-04-15 日历上无 >= 120 分钟的连续空闲时段
+- **预期结果**：
+  - [ ] `gcal_find_my_free_time` 返回无满足时长的空闲时段
+  - [ ] 提示总裁："今日没有足够长的空闲时段（需要 120min），是否缩短时长或选择其他日期？"
+  - [ ] 不强行创建重叠事件
+  - [ ] 可选：列出当天已有事件供参考
+
+#### Edge Case 2: Deadline 全天事件创建
+
+- **场景名称**：创建 deadline 类型的全天提醒事件
+- **输入**：`/time-block deadline "合同签署截止" 2026-04-20`
+- **前置条件**：
+  - Google Calendar MCP 可用
+- **预期结果**：
+  - [ ] 识别 "deadline" 关键词，进入 Deadline 特殊处理模式
+  - [ ] 跳过空闲时段查找（全天事件不需要）
+  - [ ] 调用 `gcal_create_event`，使用 `date` 而非 `dateTime`
+  - [ ] colorId 固定为 `11`（Tomato 红）
+  - [ ] summary 前缀为 `⚠️`
+  - [ ] reminders 使用加强提醒：提前 1 天 + 提前 1 小时
+  - [ ] 不触发 personal_tasks.yaml 联动更新（除非任务已存在于文件中）

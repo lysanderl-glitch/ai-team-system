@@ -126,3 +126,56 @@ git diff origin/main
 
 **安全快扫：** 通过/发现N项
 ```
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 对功能分支执行完整代码审查
+
+- **场景名称**：对有代码变更的功能分支执行两轮审查并自动修复
+- **输入**：`/dev-review feature/add-auth`
+- **前置条件**：
+  - 当前处于非 main 分支（如 `feature/add-auth`）
+  - `git diff origin/main --stat` 有输出（存在代码变更）
+  - 远程 `origin/main` 可达（`git fetch` 成功）
+- **预期结果**：
+  - [ ] Step 1 正确检测到当前分支名和变更文件列表
+  - [ ] Step 2 获取完整 diff 内容
+  - [ ] Step 3 Pass 1 CRITICAL 审查覆盖所有检查项（SQL安全、竞态条件、LLM信任边界、Shell注入、枚举完整性）
+  - [ ] Step 4 Pass 2 INFORMATIONAL 审查输出补充发现
+  - [ ] Step 5a 发现分类为 AUTO-FIX 和 ASK 两组
+  - [ ] Step 5b AUTO-FIX 项逐项修复，每次 Edit 后确认返回成功
+  - [ ] Step 5b 修复后运行语法检查，失败则回退并降级为 ASK
+  - [ ] Step 5c ASK 项合并为一次提问，附推荐方案
+  - [ ] Step 6 安全快扫覆盖 OWASP Top 10（XSS、硬编码密钥、依赖漏洞）
+  - [ ] Step 7 每个结论附证据（行号/文件名），无"可能没问题"类模糊表述
+  - [ ] Step 8 输出完整审查报告，格式包含 AUTO-FIXED / NEEDS INPUT / 安全快扫
+  - [ ] 工具调用链：`Bash(git branch) -> Bash(git fetch + git diff --stat) -> Bash(git diff) -> Read(变更文件) -> Edit(AUTO-FIX) -> Bash(语法检查)`
+
+#### Edge Case 1: 在 main 分支或无变更时的降级处理
+
+- **场景名称**：在 main 分支上执行 /dev-review 时正确终止
+- **输入**：`/dev-review`
+- **前置条件**：
+  - 当前处于 `main` 分支，或 `git diff origin/main --stat` 无输出
+- **预期结果**：
+  - [ ] Step 1 检测到在 main 分支或无变更
+  - [ ] 输出"无可审查内容"并停止
+  - [ ] 不执行 Step 2-8 的任何操作
+  - [ ] 不产生任何文件修改
+
+#### Edge Case 2: AUTO-FIX 修复失败时的降级
+
+- **场景名称**：Edit 修复失败时正确降级为 ASK 类别
+- **输入**：`/dev-review feature/complex-refactor`
+- **前置条件**：
+  - 分支有代码变更
+  - 某个 AUTO-FIX 项的 Edit 调用返回失败（如 old_string 不匹配）
+- **预期结果**：
+  - [ ] Edit 失败后重试一次
+  - [ ] 重试仍失败则将该项降级为 ASK 类别
+  - [ ] 不跳过失败继续下一项修复
+  - [ ] 最终报告中该项出现在 NEEDS INPUT 而非 AUTO-FIXED 中

@@ -123,3 +123,55 @@ npm audit 2>/dev/null || pip audit 2>/dev/null || bundle audit 2>/dev/null
 ```
 
 **置信度门禁：** 日常模式只报告 >= 8/10 的发现，避免噪音。
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 对项目执行全量安全审计
+
+- **场景名称**：对整个项目执行 full 模式安全审计，输出安全态势报告
+- **输入**：`/dev-secure full`
+- **前置条件**：
+  - 项目目录包含可识别的技术栈文件（package.json / pyproject.toml / go.mod 等）
+  - git 仓库已初始化，`git log` 可用
+  - 项目中有至少一个源码文件
+- **预期结果**：
+  - [ ] Phase 0 正确检测技术栈（输出 STACK 标识）
+  - [ ] Phase 0 构建架构心智模型，绘制数据流（用户输入入口 → 输出 → 转换）
+  - [ ] Phase 1 Secrets 考古：搜索 git history 中的密钥泄露模式，检查 .env 是否在 .gitignore
+  - [ ] Phase 2 运行依赖漏洞检查（npm audit / pip audit / bundle audit）
+  - [ ] Phase 3 OWASP Top 10 逐项扫描，覆盖 A01-A10 所有检查项
+  - [ ] Phase 4 STRIDE 威胁建模六维度分析（Spoofing / Tampering / Repudiation / Info Disclosure / DoS / Elevation）
+  - [ ] Phase 5 输出安全态势报告，格式包含：日期 / 范围 / 技术栈 / 发现摘要 / 详细发现 / 修复优先级
+  - [ ] 每个发现附置信度评分，仅报告 >= 8/10 的发现
+  - [ ] 每个发现附具体位置（file:line）、攻击场景、修复方案
+  - [ ] 本命令不修改任何代码文件（只读审计）
+  - [ ] 工具调用链：`Bash(技术栈检测) -> Read(CLAUDE.md/配置) -> Bash(git log 密钥搜索) -> Grep(密钥模式) -> Bash(依赖审计) -> Grep(OWASP扫描) -> Write(安全报告)`
+
+#### Edge Case 1: diff 模式仅审计当前分支变更
+
+- **场景名称**：使用 diff 模式仅审计当前分支相对于 main 的变更
+- **输入**：`/dev-secure diff`
+- **前置条件**：
+  - 当前处于非 main 分支
+  - `git diff origin/main` 有输出
+- **预期结果**：
+  - [ ] 审计范围限定为 `git diff origin/main` 涉及的文件和代码
+  - [ ] Phase 1 Secrets 考古仅检查变更文件中的密钥模式
+  - [ ] Phase 3 OWASP 扫描聚焦 diff 涉及的代码，不扫描全量代码
+  - [ ] 报告范围标注为 `diff`，不报告与变更无关的已有问题
+
+#### Edge Case 2: 无可识别技术栈时的处理
+
+- **场景名称**：项目目录中无标准技术栈配置文件
+- **输入**：`/dev-secure full`
+- **前置条件**：
+  - 目录中不存在 package.json / pyproject.toml / go.mod / Gemfile 等
+- **预期结果**：
+  - [ ] Phase 0 技术栈检测无命中，报告"未识别标准技术栈"
+  - [ ] 继续执行通用安全检查（Secrets 考古、硬编码密钥、.env 检查等）
+  - [ ] Phase 2 依赖审计标注"跳过：未检测到包管理器"
+  - [ ] Phase 3 使用通用 Grep 模式扫描，不依赖特定框架
