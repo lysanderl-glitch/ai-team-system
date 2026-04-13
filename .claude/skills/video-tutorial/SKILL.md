@@ -171,3 +171,57 @@ cd tools/video-pipeline && python video-gen.py --config examples/<topic-slug>.js
 - chaos_items 数量建议 6-10 个，文本简短（10 字以内）
 - hook_cards 对应产品的核心命令/功能（3-5 个）
 - arch_layers 在 CTA 场景中展示完整架构，与 hook_cards 对应
+
+---
+
+## 测试场景（强制，交付前必须通过）
+
+### test_scenarios
+
+#### Golden Path: 从文档生成视频教程
+
+- **场景名称**：从 HTML 源文档生成完整视频教程
+- **输入**：`/video-tutorial spe-overview --source docs/spe-guide.html`
+- **前置条件**：
+  - `docs/spe-guide.html` 源文档存在且内容完整
+  - `tools/video-pipeline/examples/spe-tutorial.json` 示例配置存在（用于格式参考）
+  - `tools/video-pipeline/video-gen.py` 脚本存在
+  - FFmpeg、Playwright 浏览器、edge-tts 已安装
+- **预期结果**：
+  - [ ] Step 1：读取源文档内容
+  - [ ] Step 2：读取示例配置了解 scenes.json 格式
+  - [ ] Step 3：生成分镜脚本，包含 Hook-Problem-Solution-CTA 结构
+  - [ ] 分镜脚本总时长在 3-5 分钟范围内
+  - [ ] Hook 场景包含 chaos_items（6-10 个）
+  - [ ] 至少 3 个 terminal-demo 场景，每个 20-40 秒
+  - [ ] 每个 terminal-demo 至少有 1 个 sidebar 卡片
+  - [ ] CTA 场景包含 arch_layers 架构回顾
+  - [ ] Step 4：生成 `tools/video-pipeline/examples/spe-overview.json`
+  - [ ] JSON 格式验证通过（python json.load）
+  - [ ] 默认 voice 为 "zh-CN-YunxiNeural"，resolution 为 [1920, 1080]
+  - [ ] Step 5：调用 `video-gen.py --config examples/spe-overview.json`
+  - [ ] Step 6：输出结果包含场景数、总时长、输出文件路径
+
+#### Edge Case 1: 未提供 --source 参数
+
+- **场景名称**：缺少源文档路径时的提示处理
+- **输入**：`/video-tutorial my-feature`
+- **前置条件**：无特殊前置条件
+- **预期结果**：
+  - [ ] 不直接报错崩溃
+  - [ ] 主动询问用户提供源文档路径
+  - [ ] 提示正确的使用格式示例
+
+#### Edge Case 2: 视频生成失败（FFmpeg 未安装）
+
+- **场景名称**：video-gen.py 执行失败时的错误处理
+- **输入**：`/video-tutorial test --source docs/test.html`
+- **前置条件**：
+  - 源文档存在且有效
+  - FFmpeg 未安装或不在 PATH 中
+- **预期结果**：
+  - [ ] Step 1-4 正常完成（分镜脚本和 scenes.json 生成成功）
+  - [ ] Step 5 调用 video-gen.py 失败
+  - [ ] 捕获错误信息并诊断原因（"FFmpeg 未安装"）
+  - [ ] 输出已成功生成的中间产物路径（scenes.json）
+  - [ ] 提示修复方案（安装 FFmpeg 后重新运行）
