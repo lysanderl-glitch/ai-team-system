@@ -52,9 +52,9 @@
     },
     "wbs": {
       "title": "🗂️ WBS工序数据库",
-      "database_id": "c8bc3849-bb14-4b88-b6c8-28c590bad0a5",
+      "database_id": "bd3c845d-85a1-49da-aa5c-0a273a811106",
       "data_source_id": "8cf298a9-fee0-4194-b371-b6616e2bb6aa",
-      "url": "https://www.notion.so/c8bc3849bb144b88b6c828c590bad0a5",
+      "url": "https://www.notion.so/bd3c845d85a149daaa5c0a273a811106",
       "old_database_id": "6714567e05f5437bad4b726202ecbb6e",
       "old_data_source_id": "d8b55188-995b-4a5f-b257-60074438fd5b",
       "records_to_import": 115,

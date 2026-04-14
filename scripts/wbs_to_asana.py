@@ -9,7 +9,7 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.1
   L4 → L3 的 Subtask（不加入项目）
   ⬡  → Gate 里程碑 Task，加入项目
 
-数据源：Notion 数据库 c8bc3849-bb14-4b88-b6c8-28c590bad0a5
+数据源：Notion 数据库 bd3c845d-85a1-49da-aa5c-0a273a811106
 目标：  已由 WF-02 创建好的 Asana 项目（通过 --project-gid 传入）
 
 使用:
@@ -66,7 +66,7 @@ NOTION_VERSION    = "2022-06-28"
 RATE_LIMIT_SLEEP  = 0.18          # Asana 限流间隔（秒）
 
 # Notion WBS 数据库 ID
-NOTION_WBS_DB_ID  = "c8bc3849-bb14-4b88-b6c8-28c590bad0a5"
+NOTION_WBS_DB_ID  = "bd3c845d85a149daaa5c0a273a811106"
 
 # 跳过的阶段（售前工序不属于交付期）
 SKIP_PHASES = {"S-售前"}
