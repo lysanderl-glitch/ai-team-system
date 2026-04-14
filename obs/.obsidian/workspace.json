@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "d18e19e264c7bf1f",
+        "id": "bf2e2a6cede1dd4a",
         "type": "tabs",
         "children": [
           {
-            "id": "548356e6d566a228",
+            "id": "a01e5965d65c1384",
             "type": "leaf",
             "state": {
-              "type": "meld-encrypted-view",
-              "state": {
-                "file": "credentials.mdenc",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "credentials"
+              "title": "New tab"
             }
           }
         ]
@@ -189,7 +185,7 @@
       "meld-encrypt:Decrypt at Cursor": false
     }
   },
-  "active": "548356e6d566a228",
+  "active": "a01e5965d65c1384",
   "lastOpenFiles": [
     "generated-articles/synapse-achievements-presentation-20260413.html.tmp.49284.1776070383133",
     "generated-articles/synapse-achievements-presentation-20260413.html.tmp.49284.1776069500374",
