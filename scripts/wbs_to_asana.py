@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Janusd PMO - WBS → Asana 任务初始化脚本  V1.0
+Janusd PMO - WBS → Asana 任务初始化脚本  V1.1
 ===============================================
 从 Notion WBS工序数据库读取工序模板，向已有 Asana 项目批量写入：
   L2 → Asana Task（汇总任务，带 start/due）
@@ -201,17 +201,20 @@ def read_wbs_from_notion(notion_token):
     从 Notion WBS工序数据库读取所有工序，返回结构化行列表。
 
     字段映射：
-      WBS编码  (title)      → code
-      层级     (number)     → lvl (str)
-      任务名称 (text)       → name
-      工期(天) (number)     → dur
-      并行组   (select)     → pg
-      前置依赖 (text)       → pred  ← 已是逗号分隔WBS编码格式
-      负责角色 (multi_sel)  → exec_role
-      备注     (text)       → summary
-      阶段门   (select)     → gate  (G0-G5，有值则为Gate记录)
-      所属阶段 (select)     → phase (过滤：跳过 "S-售前")
-      序号     (number)     → seq  (排序键，已由API端排序)
+      WBS编码        (title)      → code
+      层级           (number)     → lvl (str)
+      任务名称       (text)       → name
+      工期(天)       (number)     → dur
+      并行组         (select)     → pg
+      前置依赖       (text)       → pred  ← 已是逗号分隔WBS编码格式
+      负责角色       (multi_sel)  → exec_role
+      备注           (text)       → summary (旧备注字段，保留兼容)
+      工作说明摘要   (text)       → summary (新字段，写入 Asana notes)
+      必须提交       (checkbox)   → must_submit (True 时任务名末尾加 🏁)
+      参考模板链接   (url)        → template_url (有值时追加到 notes)
+      阶段门         (select)     → gate  (G0-G5，有值则为Gate记录)
+      所属阶段       (select)     → phase (过滤：跳过 "S-售前")
+      序号           (number)     → seq  (排序键，已由API端排序)
 
     Gate 处理逻辑：
       - 阶段门字段有值（G2/G3/G4/G5） → lvl="⬡", code=gate值（如"G2"）
@@ -226,16 +229,20 @@ def read_wbs_from_notion(notion_token):
         props = page.get("properties", {})
 
         # --- 基础字段 ---
-        raw_code  = _get_title(props, "WBS编码")
-        raw_lvl   = _get_number(props, "层级")       # int or None
-        name      = _get_text(props, "任务名称")
-        dur_raw   = _get_number(props, "工期(天)")
-        pg        = _get_select(props, "并行组") or ""
-        pred      = _get_text(props, "前置依赖") or ""
-        exec_role = _get_multi_select(props, "负责角色")
-        summary   = _get_text(props, "备注") or ""
-        gate      = _get_select(props, "阶段门")       # None 或 "G0"~"G5"
-        phase     = _get_select(props, "所属阶段")     # None 或 阶段名
+        raw_code     = _get_title(props, "WBS编码")
+        raw_lvl      = _get_number(props, "层级")       # int or None
+        name         = _get_text(props, "任务名称")
+        dur_raw      = _get_number(props, "工期(天)")
+        pg           = _get_select(props, "并行组") or ""
+        pred         = _get_text(props, "前置依赖") or ""
+        exec_role    = _get_multi_select(props, "负责角色")
+        # 工作说明摘要：优先取新字段，回退到旧备注字段
+        summary      = _get_text(props, "工作说明摘要") or _get_text(props, "备注") or ""
+        # 新增字段
+        must_submit  = props.get("必须提交", {}).get("checkbox", False)
+        template_url = props.get("参考模板链接", {}).get("url", "") or ""
+        gate         = _get_select(props, "阶段门")       # None 或 "G0"~"G5"
+        phase        = _get_select(props, "所属阶段")     # None 或 阶段名
 
         # --- 跳过售前阶段 ---
         if phase and phase in SKIP_PHASES:
@@ -262,15 +269,17 @@ def read_wbs_from_notion(notion_token):
 
         # deliv 字段在 Notion 版本中映射到 summary（原 Excel 的关键交付物列在 Notion 无对应）
         rows.append({
-            "code":      code,
-            "lvl":       lvl,
-            "name":      name,
-            "dur":       dur,
-            "pg":        pg,
-            "pred":      pred,
-            "exec_role": exec_role,
-            "deliv":     "",      # Notion 数据库无"关键交付物"字段，留空
-            "summary":   summary,
+            "code":         code,
+            "lvl":          lvl,
+            "name":         name,
+            "dur":          dur,
+            "pg":           pg,
+            "pred":         pred,
+            "exec_role":    exec_role,
+            "deliv":        "",      # Notion 数据库无"关键交付物"字段，留空
+            "summary":      summary,
+            "must_submit":  must_submit,
+            "template_url": template_url,
         })
 
     print(f"  过滤后有效工序：{len(rows)} 条")
@@ -287,9 +296,11 @@ def parse_preds(pred_str):
 
 
 def add_business_days(from_date, n_days):
-    """从 from_date 向后推 n_days 个工作日，返回 due date"""
+    """从 from_date 向后推 n_days 个工作日，返回 due date。
+    支持小数天数：0.5天按1天处理，确保至少+1工作日。"""
+    n_days_int = max(1, round(float(n_days)))  # 0.5→1, 1→1, 2→2
     d, added = from_date, 0
-    while added < n_days:
+    while added < n_days_int:
         d += timedelta(days=1)
         if d.weekday() < 5:   # Mon-Fri
             added += 1
@@ -326,7 +337,7 @@ def calc_dates(rows, start_date):
         row      = code_to_row[code]
         preds    = [p for p in parse_preds(row["pred"]) if p in in_scope]
         earliest = max((due[p] for p in preds), default=start_date)
-        due_d    = add_business_days(earliest, int(row["dur"]) or 1)
+        due_d    = add_business_days(earliest, row["dur"] or 1)
         due[code]        = due_d
         row["due_on"]    = due_d.isoformat()
         row["start_on"]  = earliest.isoformat()
@@ -334,7 +345,7 @@ def calc_dates(rows, start_date):
     # 对未被拓扑覆盖的行（如孤立节点）设置默认日期
     for r in rows:
         if r.get("code") and "due_on" not in r:
-            r["due_on"]   = add_business_days(start_date, int(r["dur"]) or 1).isoformat()
+            r["due_on"]   = add_business_days(start_date, r["dur"] or 1).isoformat()
             r["start_on"] = start_date.isoformat()
 
 
@@ -419,10 +430,21 @@ def _task_payload(row, project_gid, section_gid, parent_gid):
     name = row.get("name") or row.get("code") or "未命名"
     if row["lvl"] == "⬡":
         name = f"🏁 {name}"
+    # 升级2：must_submit → 任务名末尾加 🏁 标记（Gate里程碑已有自己的🏁前缀，不重复）
+    if row.get("must_submit") and row["lvl"] != "⬡":
+        name = f"{name} 🏁"
+
+    # 升级2：构建 notes（工作说明摘要 + 参考模板链接）
+    notes_parts = []
+    if row.get("summary"):
+        notes_parts.append(row["summary"])
+    if row.get("template_url"):
+        notes_parts.append(f"📎 参考模板：{row['template_url']}")
+    notes = "\n\n".join(notes_parts)
 
     data = {
         "name":     name,
-        "notes":    row.get("summary") or "",
+        "notes":    notes,
         "due_on":   row.get("due_on"),
         "start_on": row.get("start_on"),
     }
@@ -443,6 +465,20 @@ def create_project_task(project_gid, section_gid, row, pat, dry_run=False):
         return f"DRY_{row['code']}"
     data = _task_payload(row, project_gid, section_gid, None)
     return asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
+
+
+def section_insert_task(section_gid, task_gid, insert_after_gid, pat, dry_run=False):
+    """升级1：将 task_gid 加入 section，并插入到 insert_after_gid 之后（控制 Timeline 排序）。
+    insert_after_gid=None 时插入到 Section 最前。"""
+    if dry_run:
+        return
+    body = {"data": {"task": task_gid}}
+    if insert_after_gid:
+        body["data"]["insert_after"] = insert_after_gid
+    try:
+        asana_api("POST", f"/sections/{section_gid}/addTask", pat, json=body)
+    except Exception as e:
+        print(f"    [WARN] section_insert_task 失败 (task={task_gid}): {e}")
 
 
 def create_l3_subtask(parent_gid, row, pat, dry_run=False):
@@ -505,7 +541,7 @@ def wire_dependencies(code_to_gid, rows, pat, dry_run=False):
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(
-        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.0"
+        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.1"
     )
     parser.add_argument("--pat",           required=True,
                         help="Asana Personal Access Token")
@@ -531,7 +567,7 @@ def main():
         sys.exit(1)
 
     print("=" * 65)
-    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.0")
+    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.1")
     if dry:
         print("【演练模式 - 不实际调用 API】")
     print("=" * 65)
@@ -574,10 +610,11 @@ def main():
     # ── Step 4：创建任务层级 ─────────────────────────────────────
     print("\n[4/5] 创建 Task / Subtask 层级...")
 
-    code_to_gid    = {}   # 全量 code → gid
-    current_l2_gid  = None
-    current_l2_code = None
-    current_l3_gid  = None
+    code_to_gid      = {}   # 全量 code → gid
+    current_l2_gid   = None
+    current_l2_code  = None
+    current_l3_gid   = None
+    last_inserted_gid = None  # 升级1：追踪 Section 中最后插入的 L2/Gate GID
 
     l2_count = l3_count = l4_count = gate_count = 0
 
@@ -593,18 +630,24 @@ def main():
 
         elif lvl == "2":
             gid = create_project_task(project_gid, section_gid, r, pat, dry)
-            code_to_gid[code]   = gid
-            current_l2_gid      = gid
-            current_l2_code     = code
-            current_l3_gid      = None
-            l2_count           += 1
+            # 升级1：控制 Section 中的排序，确保按 WBS 序号排列
+            section_insert_task(section_gid, gid, last_inserted_gid, pat, dry)
+            code_to_gid[code]    = gid
+            current_l2_gid       = gid
+            current_l2_code      = code
+            current_l3_gid       = None
+            last_inserted_gid    = gid
+            l2_count            += 1
             if not dry:
                 print(f"  ▶ L2 Task: {code} | {str(r.get('name', ''))[:40]}")
 
         elif lvl == "⬡":
             gid = create_project_task(project_gid, section_gid, r, pat, dry)
-            code_to_gid[code]   = gid
-            gate_count         += 1
+            # 升级1：Gate 里程碑也按顺序插入 Section
+            section_insert_task(section_gid, gid, last_inserted_gid, pat, dry)
+            code_to_gid[code]    = gid
+            last_inserted_gid    = gid
+            gate_count          += 1
             if not dry:
                 print(f"  🏁 Gate: {code} | {r.get('name', '')}")
 
@@ -655,21 +698,23 @@ def main():
 # ─────────────────────────────────────────────────────────────────────────────
 def _mock_rows():
     """返回少量模拟工序行，用于 dry-run 流程验证"""
+    _mk = lambda **kw: {"pg": "", "pred": "", "exec_role": "", "deliv": "",
+                         "summary": "", "must_submit": False, "template_url": "", **kw}
     return [
-        {"code": "D.1",   "lvl": "2", "name": "需求确认阶段",    "dur": 5.0,
-         "pg": "", "pred": "", "exec_role": "PM", "deliv": "", "summary": ""},
-        {"code": "D.1.1", "lvl": "3", "name": "需求调研",         "dur": 3.0,
-         "pg": "A", "pred": "", "exec_role": "SA", "deliv": "", "summary": "完成需求调研"},
-        {"code": "D.1.2", "lvl": "3", "name": "需求评审",         "dur": 2.0,
-         "pg": "", "pred": "D.1.1", "exec_role": "PM", "deliv": "", "summary": ""},
-        {"code": "D.1.2.1", "lvl": "4", "name": "内部评审",       "dur": 1.0,
-         "pg": "", "pred": "", "exec_role": "SA", "deliv": "", "summary": ""},
-        {"code": "D.2",   "lvl": "2", "name": "设计阶段",          "dur": 10.0,
-         "pg": "", "pred": "D.1", "exec_role": "SA", "deliv": "", "summary": ""},
-        {"code": "D.2.1", "lvl": "3", "name": "概要设计",          "dur": 5.0,
-         "pg": "", "pred": "D.1.2", "exec_role": "SA", "deliv": "", "summary": ""},
-        {"code": "G2",    "lvl": "⬡", "name": "G2 方案评审门",    "dur": 0.0,
-         "pg": "", "pred": "D.2.1", "exec_role": "PM", "deliv": "", "summary": "阶段门里程碑"},
+        _mk(code="D.1",     lvl="2", name="需求确认阶段",  dur=5.0,  exec_role="PM"),
+        _mk(code="D.1.1",   lvl="3", name="需求调研",       dur=3.0,  exec_role="SA",
+            pg="A", summary="完成需求调研"),
+        _mk(code="D.1.2",   lvl="3", name="需求评审",       dur=2.0,  exec_role="PM",
+            pred="D.1.1", must_submit=True),
+        _mk(code="D.1.2.1", lvl="4", name="内部评审",       dur=1.0,  exec_role="SA"),
+        _mk(code="D.2",     lvl="2", name="设计阶段",        dur=10.0, exec_role="SA",
+            pred="D.1", template_url="https://example.com/template/design"),
+        _mk(code="D.2.1",   lvl="3", name="概要设计",        dur=5.0,  exec_role="SA",
+            pred="D.1.2"),
+        _mk(code="D.2.1.1", lvl="3", name="0.5天小任务",    dur=0.5,  exec_role="SA",
+            pred="D.1.2"),
+        _mk(code="G2",      lvl="⬡", name="G2 方案评审门",  dur=0.0,  exec_role="PM",
+            pred="D.2.1", summary="阶段门里程碑"),
     ]
 
 
