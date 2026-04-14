@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Janusd PMO - WBS → Asana 任务初始化脚本  V1.3
+Janusd PMO - WBS → Asana 任务初始化脚本  V1.4
 ===============================================
 从 Notion WBS工序数据库读取工序模板，向已有 Asana 项目批量写入：
   L2 → Asana Task（汇总任务，带 start/due）
@@ -13,6 +13,7 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.3
 目标：  已由 WF-02 创建好的 Asana 项目（通过 --project-gid 传入）
 
 变更历史：
+  V1.4 新增：--pm-email 参数，自动为PM负责角色的L3/L4任务设置Asana Assignee
   V1.3 新增：L3 子任务 setParent+insert_after 排序，Timeline 展开后按 WBS 序号显示
   V1.2 新增：幂等保护 — 运行前检查项目是否已有任务，有则中止（--force 可跳过）
   V1.1 升级：Notion 数据源、must_submit 标记、template_url 注释、Section 排序
@@ -39,6 +40,14 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.3
         --project-gid ASANA_PROJECT_GID \\
         --start-date 2026-05-01 \\
         --force
+
+    # 指定PM邮箱，为PM角色任务自动设置Assignee
+    python wbs_to_asana.py \\
+        --pat ASANA_PAT \\
+        --notion-token NOTION_INTEGRATION_TOKEN \\
+        --project-gid ASANA_PROJECT_GID \\
+        --start-date 2026-05-01 \\
+        --pm-email pm@example.com
 """
 
 import argparse
@@ -508,23 +517,31 @@ def set_subtask_order(subtask_gid: str, parent_gid: str, insert_after_gid,
     time.sleep(RATE_LIMIT_SLEEP)
 
 
-def create_l3_subtask(parent_gid, row, pat, dry_run=False):
+def create_l3_subtask(parent_gid, row, pat, dry_run=False, pm_asana_gid=None):
     """创建 L3：作为 L2 的 Subtask，不再次加入项目（避免重复加入）"""
     if dry_run:
         print(f"      [DRY] L3-subtask {row['code']!s:10s} "
               f"{str(row.get('name', ''))[:35]}")
         return f"DRY_{row['code']}"
     data = _task_payload(row, None, None, parent_gid)
+    # V1.4：PM角色任务自动设置Assignee
+    roles = [r.strip() for r in row.get("exec_role", "").split(",") if r.strip()]
+    if pm_asana_gid and "PM" in roles:
+        data["assignee"] = pm_asana_gid
     return asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
 
 
-def create_l4_subtask(parent_gid, row, pat, dry_run=False):
+def create_l4_subtask(parent_gid, row, pat, dry_run=False, pm_asana_gid=None):
     """创建 L4：作为 L3 的 Subtask，不加入项目"""
     if dry_run:
         print(f"        [DRY] L4-subtask {row['code']!s:10s} "
               f"{str(row.get('name', ''))[:35]}")
         return f"DRY_{row['code']}"
     data = _task_payload(row, None, None, parent_gid)
+    # V1.4：PM角色任务自动设置Assignee
+    roles = [r.strip() for r in row.get("exec_role", "").split(",") if r.strip()]
+    if pm_asana_gid and "PM" in roles:
+        data["assignee"] = pm_asana_gid
     return asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
 
 
@@ -566,6 +583,26 @@ def wire_dependencies(code_to_gid, rows, pat, dry_run=False):
 # ─────────────────────────────────────────────────────────────────────────────
 # 幂等保护
 # ─────────────────────────────────────────────────────────────────────────────
+def email_to_asana_gid(session: requests.Session, email: str, workspace_gid: str) -> "str | None":
+    """通过邮箱在Asana工作区中查找用户GID。未找到返回None。"""
+    url = f"{ASANA_BASE_URL}/users/{email}"
+    params = {"opt_fields": "gid,name,email", "workspace": workspace_gid}
+    try:
+        resp = session.get(url, params=params)
+        if resp.status_code == 404:
+            print(f"  ⚠️  Asana中未找到邮箱 {email} 对应的账号，PM任务将不设Assignee。")
+            return None
+        resp.raise_for_status()
+        data = resp.json().get("data", {})
+        gid = data.get("gid")
+        name = data.get("name", "")
+        print(f"  ✅ 找到Asana账号：{name} ({email}) → GID: {gid}")
+        return gid
+    except Exception as e:
+        print(f"  ⚠️  查找Asana用户时出错 ({email}): {e}")
+        return None
+
+
 def check_project_empty(session: requests.Session, project_gid: str) -> int:
     """检查项目中已有的任务数量，返回任务数"""
     url = f"{ASANA_BASE_URL}/projects/{project_gid}/tasks"
@@ -581,7 +618,7 @@ def check_project_empty(session: requests.Session, project_gid: str) -> int:
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(
-        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.3"
+        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.4"
     )
     parser.add_argument("--pat",           required=True,
                         help="Asana Personal Access Token")
@@ -595,6 +632,8 @@ def main():
                         help="演练模式，不实际调用 API")
     parser.add_argument("--force",         action="store_true",
                         help="强制执行，忽略已有任务检查（警告：可能产生重复任务）")
+    parser.add_argument("--pm-email",      default=None,
+                        help="项目经理邮箱（用于查找Asana账号，为PM角色任务自动设置Assignee）")
     args = parser.parse_args()
 
     dry         = args.dry_run
@@ -610,7 +649,7 @@ def main():
         sys.exit(1)
 
     print("=" * 65)
-    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.3")
+    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.4")
     if dry:
         print("【演练模式 - 不实际调用 API】")
     if force:
@@ -631,6 +670,19 @@ def main():
                 print(f"\n⚠️  项目 {project_gid} 中已存在 {existing_count} 个任务，脚本已中止以防止重复。")
                 print(f"   如需重新初始化，请先手动清空项目任务，或使用 --force 参数强制覆盖。")
                 sys.exit(1)
+
+    # ── PM Asana GID 查找 ────────────────────────────────────────
+    pm_asana_gid = None
+    if args.pm_email:
+        print(f"\n🔍 查找PM Asana账号：{args.pm_email}")
+        if dry:
+            print("  [DRY] 跳过Asana用户查找，pm_asana_gid 将使用模拟值")
+            pm_asana_gid = "DRY_PM_GID"
+        else:
+            if "session" not in dir():
+                session = requests.Session()
+                session.headers.update(asana_headers(pat))
+            pm_asana_gid = email_to_asana_gid(session, args.pm_email, WORKSPACE_GID)
 
     # ── Step 1：从 Notion 读取 WBS ──────────────────────────────
     print("\n[1/5] 从 Notion 读取 WBS 工序模板...")
@@ -714,7 +766,7 @@ def main():
             if not current_l2_gid:
                 print(f"    [WARN] L3 {code} 无 L2 父任务，跳过")
                 continue
-            gid = create_l3_subtask(current_l2_gid, r, pat, dry)
+            gid = create_l3_subtask(current_l2_gid, r, pat, dry, pm_asana_gid)
             # 升级3：调用 setParent 控制 L3 在父任务下的排序，Timeline 展开后按 WBS 序号显示
             set_subtask_order(gid, current_l2_gid, last_l3_gid, pat, dry)
             code_to_gid[code]   = gid
@@ -728,7 +780,7 @@ def main():
             if not current_l3_gid:
                 print(f"    [WARN] L4 {code} 无 L3 父任务，跳过")
                 continue
-            gid = create_l4_subtask(current_l3_gid, r, pat, dry)
+            gid = create_l4_subtask(current_l3_gid, r, pat, dry, pm_asana_gid)
             code_to_gid[code]   = gid
             l4_count           += 1
 
