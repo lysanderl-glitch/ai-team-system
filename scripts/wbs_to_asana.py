@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Janusd PMO - WBS → Asana 任务初始化脚本  V1.2
+Janusd PMO - WBS → Asana 任务初始化脚本  V1.3
 ===============================================
 从 Notion WBS工序数据库读取工序模板，向已有 Asana 项目批量写入：
   L2 → Asana Task（汇总任务，带 start/due）
@@ -13,6 +13,7 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.2
 目标：  已由 WF-02 创建好的 Asana 项目（通过 --project-gid 传入）
 
 变更历史：
+  V1.3 新增：L3 子任务 setParent+insert_after 排序，Timeline 展开后按 WBS 序号显示
   V1.2 新增：幂等保护 — 运行前检查项目是否已有任务，有则中止（--force 可跳过）
   V1.1 升级：Notion 数据源、must_submit 标记、template_url 注释、Section 排序
 
@@ -493,6 +494,20 @@ def section_insert_task(section_gid, task_gid, insert_after_gid, pat, dry_run=Fa
         print(f"    [WARN] section_insert_task 失败 (task={task_gid}): {e}")
 
 
+def set_subtask_order(subtask_gid: str, parent_gid: str, insert_after_gid,
+                      pat: str, dry_run: bool = False) -> None:
+    """调用 setParent 接口对子任务在父任务下进行排序。
+    insert_after_gid=None 表示插入到最前；有值则插入到指定任务之后。
+    """
+    if dry_run:
+        return
+    body: dict = {"data": {"parent": parent_gid}}
+    if insert_after_gid:
+        body["data"]["insert_after"] = insert_after_gid
+    asana_api("POST", f"/tasks/{subtask_gid}/setParent", pat, json=body)
+    time.sleep(RATE_LIMIT_SLEEP)
+
+
 def create_l3_subtask(parent_gid, row, pat, dry_run=False):
     """创建 L3：作为 L2 的 Subtask，不再次加入项目（避免重复加入）"""
     if dry_run:
@@ -566,7 +581,7 @@ def check_project_empty(session: requests.Session, project_gid: str) -> int:
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(
-        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.2"
+        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.3"
     )
     parser.add_argument("--pat",           required=True,
                         help="Asana Personal Access Token")
@@ -595,7 +610,7 @@ def main():
         sys.exit(1)
 
     print("=" * 65)
-    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.2")
+    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.3")
     if dry:
         print("【演练模式 - 不实际调用 API】")
     if force:
@@ -679,6 +694,7 @@ def main():
             current_l2_gid       = gid
             current_l2_code      = code
             current_l3_gid       = None
+            last_l3_gid          = None   # 升级3：每个 L2 重置 L3 排序游标
             last_inserted_gid    = gid
             l2_count            += 1
             if not dry:
@@ -699,8 +715,11 @@ def main():
                 print(f"    [WARN] L3 {code} 无 L2 父任务，跳过")
                 continue
             gid = create_l3_subtask(current_l2_gid, r, pat, dry)
+            # 升级3：调用 setParent 控制 L3 在父任务下的排序，Timeline 展开后按 WBS 序号显示
+            set_subtask_order(gid, current_l2_gid, last_l3_gid, pat, dry)
             code_to_gid[code]   = gid
             current_l3_gid      = gid
+            last_l3_gid         = gid     # 升级3：更新排序游标
             l3_count           += 1
             if not dry and l3_count % 10 == 0:
                 print(f"    ... 已创建 {l3_count} 个 L3 任务")
