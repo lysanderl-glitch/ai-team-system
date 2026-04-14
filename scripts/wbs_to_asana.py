@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Janusd PMO - WBS → Asana 任务初始化脚本  V1.1
+Janusd PMO - WBS → Asana 任务初始化脚本  V1.2
 ===============================================
 从 Notion WBS工序数据库读取工序模板，向已有 Asana 项目批量写入：
   L2 → Asana Task（汇总任务，带 start/due）
@@ -11,6 +11,10 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.1
 
 数据源：Notion 数据库 bd3c845d-85a1-49da-aa5c-0a273a811106
 目标：  已由 WF-02 创建好的 Asana 项目（通过 --project-gid 传入）
+
+变更历史：
+  V1.2 新增：幂等保护 — 运行前检查项目是否已有任务，有则中止（--force 可跳过）
+  V1.1 升级：Notion 数据源、must_submit 标记、template_url 注释、Section 排序
 
 使用:
     python wbs_to_asana.py \\
@@ -26,6 +30,14 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.1
         --project-gid ASANA_PROJECT_GID \\
         --start-date 2026-05-01 \\
         --dry-run
+
+    # 强制覆盖已有任务（警告：可能产生重复任务）
+    python wbs_to_asana.py \\
+        --pat ASANA_PAT \\
+        --notion-token NOTION_INTEGRATION_TOKEN \\
+        --project-gid ASANA_PROJECT_GID \\
+        --start-date 2026-05-01 \\
+        --force
 """
 
 import argparse
@@ -537,11 +549,24 @@ def wire_dependencies(code_to_gid, rows, pat, dry_run=False):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 幂等保护
+# ─────────────────────────────────────────────────────────────────────────────
+def check_project_empty(session: requests.Session, project_gid: str) -> int:
+    """检查项目中已有的任务数量，返回任务数"""
+    url = f"{ASANA_BASE_URL}/projects/{project_gid}/tasks"
+    params = {"opt_fields": "gid,name", "limit": 100}
+    resp = session.get(url, params=params)
+    resp.raise_for_status()
+    tasks = resp.json().get("data", [])
+    return len(tasks)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # 主流程
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(
-        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.1"
+        description="Janusd PMO - WBS → Asana 任务初始化脚本 V1.2"
     )
     parser.add_argument("--pat",           required=True,
                         help="Asana Personal Access Token")
@@ -553,9 +578,12 @@ def main():
                         help="项目启动日期，格式 YYYY-MM-DD")
     parser.add_argument("--dry-run",       action="store_true",
                         help="演练模式，不实际调用 API")
+    parser.add_argument("--force",         action="store_true",
+                        help="强制执行，忽略已有任务检查（警告：可能产生重复任务）")
     args = parser.parse_args()
 
     dry         = args.dry_run
+    force       = args.force
     pat         = args.pat
     notion_tok  = args.notion_token
     project_gid = args.project_gid
@@ -567,12 +595,27 @@ def main():
         sys.exit(1)
 
     print("=" * 65)
-    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.1")
+    print("Janusd PMO · WBS → Asana 任务初始化脚本 V1.2")
     if dry:
         print("【演练模式 - 不实际调用 API】")
+    if force:
+        print("【--force 模式 - 已有任务检查已跳过】")
     print("=" * 65)
     print(f"  Asana 项目 GID : {project_gid}")
     print(f"  项目启动日期   : {start_date}")
+
+    # ── 幂等检查：确认项目无已有任务 ────────────────────────────
+    if not dry:
+        session = requests.Session()
+        session.headers.update(asana_headers(pat))
+        existing_count = check_project_empty(session, project_gid)
+        if existing_count > 0:
+            if force:
+                print(f"\n⚠️  --force 模式：检测到 {existing_count} 个已有任务，将继续执行（可能产生重复）。")
+            else:
+                print(f"\n⚠️  项目 {project_gid} 中已存在 {existing_count} 个任务，脚本已中止以防止重复。")
+                print(f"   如需重新初始化，请先手动清空项目任务，或使用 --force 参数强制覆盖。")
+                sys.exit(1)
 
     # ── Step 1：从 Notion 读取 WBS ──────────────────────────────
     print("\n[1/5] 从 Notion 读取 WBS 工序模板...")
