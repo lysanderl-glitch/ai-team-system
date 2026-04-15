@@ -195,6 +195,28 @@ tasks:
       message: "总裁已批准Synapse Forge方案，等待总裁指示启动产品化执行（Phase 1: GitHub仓库+CI）"
       assigned_team: "RD + Harness Ops"
 
+  # PMO 自动化体系
+  pmo_automation_v1:
+    status: completed
+    completed_at: "2026-04-15"
+    description: "PMO 自动化 v1.0 正式发布，总裁验收通过"
+    deliverables:
+      - "WF-01: 项目初始化工作流 (n8n ID: AnR20HucIRaiZPS7)"
+      - "WF-05: 章程确认Assignee同步 (n8n ID: g6wKsdroKNAqHHds)"
+      - "wbs_trigger.py: 本地WBS导入触发器（每5分钟定时任务）"
+      - "wbs_to_asana.py V1.4: WBS全量导入脚本（111任务，L2/L3/L4+Gate）"
+      - "docs/: 产品化文档全套（架构图/运维手册/WBS规范/测试SOP）"
+
+  pmo_automation_v2_plan_b:
+    status: pending_followup
+    description: "方案B：将 wbs_to_asana.py 包装为 Python 微服务（FastAPI），部署到 lysander.bond 服务器，n8n 通过 HTTP 调用，彻底云原生化 WBS 导入"
+    follow_up:
+      date: "2026-05-15"
+      message: "方案B提醒：Python 微服务云原生化 WBS 导入，预计在 v1.0 稳定运行1个月后启动"
+      assigned_team: "RD 团队 - ai_systems_dev"
+    priority: low
+    notes: "v1.0 已用本地定时任务方案作为过渡，v2.0 完成后可完全去除本地机器依赖"
+
 notes:
   - "SSH配置已修复BOM问题，可通过 ssh lysander-server 访问服务器"
   - "Obsidian Git推送已恢复正常（API Key已从历史清除）"
