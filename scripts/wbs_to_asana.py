@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Janusd PMO - WBS → Asana 任务初始化脚本  V1.4
+Janusd PMO - WBS → Asana 任务初始化脚本  V1.5.1
 ===============================================
 从 Notion WBS工序数据库读取工序模板，向已有 Asana 项目批量写入：
   L2 → Asana Task（汇总任务，带 start/due）
@@ -13,6 +13,20 @@ Janusd PMO - WBS → Asana 任务初始化脚本  V1.4
 目标：  已由 WF-02 创建好的 Asana 项目（通过 --project-gid 传入）
 
 变更历史：
+  V1.5.1 (2026-04-19)：超时 + 并发优化（紧急补丁）
+       - _attach_subtask_cf 改为通过模块级 ThreadPoolExecutor(max_workers=5) 并发执行，
+         将顺序 ~333 次 API 调用压缩到 ~1-2 分钟内完成（避免 wbs_trigger 600s timeout）
+       - main() 在 Step 5 wire_dependencies 之前显式 join 所有在飞 CF Futures，保证
+         顺序语义（removeProject 必须先于 wire_dependencies）
+       - 兼容原子语义：单个 subtask 的 addProject→PATCH→removeProject 仍是串行三步走
+  V1.5 Errata-001：修复 L3/L4 Timeline 污染 + main() 崩溃保护
+       - _attach_subtask_cf 三步走：addProject → PATCH CF → removeProject
+         （POC 验证 CF 在 removeProject 后完全保留，参见
+          _v15_investigation/poc_remove_project_cf_retention.log）
+       - main() Step 4/5 全程 try/except/finally 包裹，finally 保证
+         _dump_post_step_errors 落盘，防止 Step4 异常 bypass Step5
+       - 入口/出口显式 [v1.5] 日志便于排障
+       - wire_dependencies 完成后自动 coverage 自检，<80% 时标记"需人工复核"
   V1.4 新增：--pm-email 参数，自动为PM负责角色的L3/L4任务设置Asana Assignee
   V1.3 新增：L3 子任务 setParent+insert_after 排序，Timeline 展开后按 WBS 序号显示
   V1.2 新增：幂等保护 — 运行前检查项目是否已有任务，有则中止（--force 可跳过）
@@ -64,12 +78,69 @@ if sys.platform == "win32":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Asana 常量（与 create_delivery_project.py 完全一致）
+# 配置加载（v1.2 新增：从 PMO 项目的 config/config.yaml 读取）
 # ─────────────────────────────────────────────────────────────────────────────
-WORKSPACE_GID = "1213200325138682"
-TEAM_GID      = "1213938170960375"
+import sys as _sys
+from pathlib import Path as _Path
 
-CF = {
+# 尝试从 PMO 项目目录加载 config_loader
+_pmo_root_candidates = [
+    _Path(__file__).parent.parent.parent / "PMO-AI Auto" / "PMO-AI Auto",
+    _Path(__file__).parent.parent / "PMO-AI Auto" / "PMO-AI Auto",
+    _Path(__file__).parent / "PMO-AI Auto" / "PMO-AI Auto",
+]
+_pmo_root = next((p for p in _pmo_root_candidates if (p / "config_loader.py").exists()), None)
+
+if _pmo_root and str(_pmo_root) not in _sys.path:
+    _sys.path.insert(0, str(_pmo_root))
+
+try:
+    from config_loader import get as _cfg
+    _HAS_CONFIG = True
+except ImportError:
+    _HAS_CONFIG = False
+    _cfg = lambda key, default=None: default  # noqa: E731
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Asana 常量（v1.2：从 config.yaml 读取，保留硬编码作为备用默认值）
+# ─────────────────────────────────────────────────────────────────────────────
+WORKSPACE_GID = _cfg("asana.workspace_gid", "1213200325138682")
+TEAM_GID      = _cfg("asana.team_gid",      "1213938170960375")
+
+# 自定义字段：从 config.yaml 读取，格式转换为脚本期望的 CF 字典结构
+def _build_cf_from_config() -> dict:
+    """从 config.yaml 构建 CF 字典，失败时回落到硬编码。"""
+    if not _HAS_CONFIG:
+        return None
+    fields_config = _cfg("asana.custom_fields", {})
+    if not fields_config:
+        return None
+    # config key → CF dict key 映射
+    _key_map = {
+        "task_code":                ("任务编码",     "text",   True,  None),
+        "standard_duration":        ("标准工期(天)", "number", True,  None),
+        "wbs_status":               ("工序状态",     "enum",   True,  "1213890696992753"),
+        "exec_role":                ("执行角色",     "text",   False, None),
+        "parallel_group":           ("并行组",       "text",   False, None),
+        "predecessor_code":         ("前置依赖编码", "text",   False, None),
+        "key_deliverable":          ("关键交付物",   "text",   False, None),
+        "cross_stream_dependency":  ("跨流依赖",     "enum",   False, None),
+    }
+    cf = {}
+    for config_key, (cf_label, cf_type, important, default_enum_gid) in _key_map.items():
+        field = fields_config.get(config_key, {})
+        if not field or not field.get("gid"):
+            return None  # 任意字段缺失则回落到完整硬编码
+        entry = {"gid": field["gid"], "type": cf_type, "important": important}
+        if default_enum_gid:
+            entry["default_enum_gid"] = default_enum_gid
+        # cross_stream_dependency 的 no_gid
+        if config_key == "cross_stream_dependency" and field.get("no_gid"):
+            entry["no_gid"] = field["no_gid"]
+        cf[cf_label] = entry
+    return cf
+
+CF = _build_cf_from_config() or {
     "任务编码":     {"gid": "1213897601825660", "type": "text",   "important": True},
     "标准工期(天)": {"gid": "1213890674565355", "type": "number", "important": True},
     "工序状态":     {"gid": "1213890696992752", "type": "enum",   "important": True,
@@ -82,19 +153,94 @@ CF = {
                     "no_gid": "1213890696992764"},
 }
 
-ASANA_BASE_URL    = "https://app.asana.com/api/1.0"
-NOTION_BASE_URL   = "https://api.notion.com/v1"
-NOTION_VERSION    = "2022-06-28"
+ASANA_BASE_URL    = _cfg("asana.base_url", "https://app.asana.com/api/1.0")
+NOTION_BASE_URL   = _cfg("notion.base_url", "https://api.notion.com/v1")
+NOTION_VERSION    = _cfg("notion.api_version", "2022-06-28")
 RATE_LIMIT_SLEEP  = 0.18          # Asana 限流间隔（秒）
 
+# ─────────────────────────────────────────────────────────────────────────────
+# [v1.4 CRASH-GUARD] 非关键路径错误收集器
+# ─────────────────────────────────────────────────────────────────────────────
+_POST_STEP_ERRORS: list = []
+
+def _record_post_step_error(op: str, gid: str, err: str) -> None:
+    """收集非关键步骤错误，main() 结束时落盘（供 trigger 读取决定"部分完成"态）。"""
+    _POST_STEP_ERRORS.append({"op": op, "gid": gid, "error": str(err)[:500]})
+
+def _dump_post_step_errors(project_gid: str) -> None:
+    if not _POST_STEP_ERRORS:
+        return
+    import json as _json
+    fn = f"_post_step_errors_{project_gid}.json"
+    try:
+        with open(fn, "w", encoding="utf-8") as f:
+            _json.dump(_POST_STEP_ERRORS, f, ensure_ascii=False, indent=2)
+        print(f"  ⚠️  {len(_POST_STEP_ERRORS)} 条非关键步骤告警已记录到 {fn}")
+    except Exception as e:
+        print(f"  [WARN] 无法写入 {fn}: {e}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# [v1.5.1 PERF] 并发 CF 附加器：将 _attach_subtask_cf 的三步 API 调用并发化
+# ─────────────────────────────────────────────────────────────────────────────
+# 背景：v1.5 给每个 L3/L4 subtask 新增 addProject→PATCH→removeProject 三次 API 调用。
+# 按 RATE_LIMIT_SLEEP=0.18s 顺序跑，~110 subtasks × 3 次 × ~1s ≈ 5-6 分钟，遇 429
+# 重试易超过 wbs_trigger 的 600s subprocess timeout，导致 wire_dependencies 未执行。
+# v1.5.1 方案：单个 subtask 内仍串行（保证 removeProject 一定在 PATCH 之后），但
+# 跨 subtask 使用 ThreadPoolExecutor(max_workers=5) 并发。Asana 限速 150 req/min，
+# 5 路并发 ≈ 2.5 req/s，安全。
+from concurrent.futures import ThreadPoolExecutor, wait as _fut_wait, ALL_COMPLETED
+
+_CF_EXECUTOR: "ThreadPoolExecutor | None" = None
+_CF_FUTURES: list = []
+
+def _cf_executor() -> ThreadPoolExecutor:
+    global _CF_EXECUTOR
+    if _CF_EXECUTOR is None:
+        _CF_EXECUTOR = ThreadPoolExecutor(max_workers=5, thread_name_prefix="cf-attach")
+    return _CF_EXECUTOR
+
+def _submit_attach_cf(task_gid: str, row: dict, root_project_gid: str, pat: str) -> None:
+    """[v1.5.1] 将 _attach_subtask_cf 任务提交到后台线程池。"""
+    fut = _cf_executor().submit(_attach_subtask_cf, task_gid, row, root_project_gid, pat)
+    _CF_FUTURES.append(fut)
+
+def _wait_all_cf_futures(label: str = "") -> None:
+    """[v1.5.1] 等待所有在飞 CF 任务完成（必须在 wire_dependencies 前调用）。"""
+    global _CF_FUTURES
+    if not _CF_FUTURES:
+        return
+    n = len(_CF_FUTURES)
+    print(f"  [v1.5.1] 等待 {n} 个并发 CF 附加任务完成{(' ('+label+')') if label else ''}...")
+    _fut_wait(_CF_FUTURES, return_when=ALL_COMPLETED)
+    failures = 0
+    for f in _CF_FUTURES:
+        try:
+            f.result()
+        except Exception as _e:
+            failures += 1
+            _record_post_step_error("attach_cf_future", "N/A", str(_e))
+    print(f"  [v1.5.1] CF 并发任务全部结束。failures={failures}/{n}")
+    _CF_FUTURES = []
+
+def _shutdown_cf_executor() -> None:
+    global _CF_EXECUTOR
+    if _CF_EXECUTOR is not None:
+        try:
+            _CF_EXECUTOR.shutdown(wait=True)
+        except Exception:
+            pass
+        _CF_EXECUTOR = None
+
 # Notion WBS 数据库 ID
-NOTION_WBS_DB_ID  = "bd3c845d85a149daaa5c0a273a811106"
+NOTION_WBS_DB_ID  = _cfg("notion.databases.wbs", "bd3c845d85a149daaa5c0a273a811106")
 
 # 跳过的阶段（售前工序不属于交付期）
-SKIP_PHASES = {"S-售前"}
+_skip_phases_list = _cfg("wbs.skip_phases", ["S-售前"])
+SKIP_PHASES = set(_skip_phases_list) if isinstance(_skip_phases_list, list) else {"S-售前"}
 
 # 有效的阶段门标识
-GATE_VALUES = {"G2", "G3", "G4", "G5"}
+_gate_values_list = _cfg("wbs.gate_values", ["G2", "G3", "G4", "G5"])
+GATE_VALUES = set(_gate_values_list) if isinstance(_gate_values_list, list) else {"G2", "G3", "G4", "G5"}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -223,9 +369,9 @@ def read_wbs_from_notion(notion_token):
     从 Notion WBS工序数据库读取所有工序，返回结构化行列表。
 
     字段映射：
-      WBS编码        (title)      → code
+      WBS编码        (title)      → code  ← 内容格式: "DA001 项目章程编制"，split(" ",1)[0] 取编码
       层级           (number)     → lvl (str)
-      任务名称       (text)       → name
+      任务名称       (text)       → name  ← rich_text 字段，存储任务名称文字
       工期(天)       (number)     → dur
       并行组         (select)     → pg
       前置依赖       (text)       → pred  ← 已是逗号分隔WBS编码格式
@@ -251,9 +397,9 @@ def read_wbs_from_notion(notion_token):
         props = page.get("properties", {})
 
         # --- 基础字段 ---
-        raw_code     = _get_title(props, "WBS编码")
+        raw_code     = _get_title(props, "WBS编码").split(" ", 1)[0]   # title格式: "DA001 项目章程编制"，取编码部分
         raw_lvl      = _get_number(props, "层级")       # int or None
-        name         = _get_text(props, "任务名称")
+        name         = _get_text(props, "任务名称")     # rich_text 字段，存储任务名称文字
         dur_raw      = _get_number(props, "工期(天)")
         pg           = _get_select(props, "并行组") or ""
         pred         = _get_text(props, "前置依赖") or ""
@@ -447,8 +593,16 @@ def build_cf_payload(row):
     }
 
 
-def _task_payload(row, project_gid, section_gid, parent_gid):
-    """组装 Asana 任务 data dict"""
+def _task_payload(row, project_gid, section_gid, parent_gid, include_cf=True):
+    """组装 Asana 任务 data dict
+
+    include_cf: 是否在 payload 中包含 custom_fields。
+        True  — L2 / Gate 任务：直接在 project 下创建，custom_field 已关联到 project，可直接写入。
+        False — L3 / L4 subtask：Asana subtask 不自动继承父项目的 project membership，
+                若初始 POST 含 custom_fields 会被拒绝 `Custom field X is not on given object`（HTTP 400）。
+                → 必须先 POST 建 subtask（不带 CF）→ addProject(root_project) → PATCH 补 custom_fields。
+                见 create_l3_subtask / create_l4_subtask 的 addProject+PATCH 流程。
+    """
     name = row.get("name") or row.get("code") or "未命名"
     if row["lvl"] == "⬡":
         name = f"🏁 {name}"
@@ -473,6 +627,11 @@ def _task_payload(row, project_gid, section_gid, parent_gid):
     if project_gid:
         data["projects"]      = [project_gid]
         data["memberships"]   = [{"project": project_gid, "section": section_gid}]
+    # [BUG-C 修复 2026-04-19] Asana subtask 不自动继承父项目的 custom_fields。
+    # L3/L4 subtask 初始 POST 必须不带 custom_fields（include_cf=False），
+    # 创建后由调用方走 addProject + PATCH 补字段，避免 HTTP 400。
+    # L2 / Gate 入项目任务仍正常写入 CF（include_cf=True）。
+    if include_cf and row.get("code"):
         data["custom_fields"] = build_cf_payload(row)
     if parent_gid:
         data["parent"] = parent_gid
@@ -501,67 +660,200 @@ def section_insert_task(section_gid, task_gid, insert_after_gid, pat, dry_run=Fa
         asana_api("POST", f"/sections/{section_gid}/addTask", pat, json=body)
     except Exception as e:
         print(f"    [WARN] section_insert_task 失败 (task={task_gid}): {e}")
+        _record_post_step_error("section_insert_task", task_gid, str(e))
 
 
 def set_subtask_order(subtask_gid: str, parent_gid: str, insert_after_gid,
                       pat: str, dry_run: bool = False) -> None:
     """调用 setParent 接口对子任务在父任务下进行排序。
     insert_after_gid=None 表示插入到最前；有值则插入到指定任务之后。
+
+    [CRASH-GUARD v1.4 2026-04-19] 排序是显示层辅助操作（非主数据）。
+    单条失败不应中止整个 WBS 导入。使用独立重试 + try/except 包裹：
+      - 429：按 Retry-After 指数退避，最多 3 次（asana_api 内部已含此逻辑，
+             此处额外再包一层避免 raise）
+      - 5xx：指数退避重试 3 次（1s, 2s, 4s）
+      - 其它异常：记 WARNING + 写 _post_step_errors，不 raise
+    与 §2 设计原则对齐：主数据 fail-fast，辅助增强 best-effort。
     """
     if dry_run:
         return
     body: dict = {"data": {"parent": parent_gid}}
     if insert_after_gid:
         body["data"]["insert_after"] = insert_after_gid
-    asana_api("POST", f"/tasks/{subtask_gid}/setParent", pat, json=body)
+
+    last_err = None
+    for attempt in range(3):
+        try:
+            asana_api("POST", f"/tasks/{subtask_gid}/setParent", pat, json=body)
+            last_err = None
+            break
+        except requests.HTTPError as e:
+            status = getattr(getattr(e, "response", None), "status_code", None)
+            last_err = e
+            # 5xx / 429 → 指数退避重试；4xx（非 429）→ 立即跳出（非暂时性错误）
+            if status and 500 <= status < 600:
+                wait = 2 ** attempt
+                print(f"    [WARN] set_subtask_order 5xx (attempt {attempt+1}/3), "
+                      f"backoff {wait}s: subtask={subtask_gid}")
+                time.sleep(wait)
+                continue
+            if status == 429:
+                wait = 2 ** attempt
+                print(f"    [WARN] set_subtask_order 429 (attempt {attempt+1}/3), "
+                      f"backoff {wait}s: subtask={subtask_gid}")
+                time.sleep(wait)
+                continue
+            # 其它 4xx — 不重试
+            break
+        except Exception as e:
+            last_err = e
+            break
+
+    if last_err is not None:
+        print(f"    [WARN] set_subtask_order 最终失败 subtask={subtask_gid} "
+              f"parent={parent_gid}: {last_err}")
+        _record_post_step_error("set_subtask_order", subtask_gid, str(last_err))
+        # 不 raise — 继续下一条（best-effort）
+
     time.sleep(RATE_LIMIT_SLEEP)
 
 
-def create_l3_subtask(parent_gid, row, pat, dry_run=False, pm_asana_gid=None):
-    """创建 L3：作为 L2 的 Subtask，不再次加入项目（避免重复加入）"""
+def _attach_subtask_cf(task_gid: str, row: dict, root_project_gid: str, pat: str) -> None:
+    """[v1.5 Errata-001] 为 subtask 写入 custom_fields，不污染 Timeline。
+
+    三步走（POC 已验证 CF 在 removeProject 后完全保留）：
+      1) POST /tasks/{gid}/addProject {project: root_project_gid}
+         → 临时关联到根项目，使项目的 custom_field 对该 task 可见
+      2) PUT /tasks/{gid} {custom_fields: {...}}
+         → 写入 CF 值
+      3) POST /tasks/{gid}/removeProject {project: root_project_gid}
+         → 移除项目 membership，subtask 回归纯 subtask 身份（不占 Timeline 主层）
+         CF 值已写入 task 本身，removeProject 不会清空。
+
+    容忍策略：
+      - Step 1 失败 → 记 warning，不抛异常，不进 Step 2/3
+      - Step 2 失败 → 记 warning，但 finally 块仍执行 Step 3 保证无污染
+      - Step 3 失败 → 记 warning + [POLLUTION-RISK] 标记（该 task 会残留在 Timeline，
+        需事后用 fix_0422_l4_timeline.py 类脚本批量清理）
+    """
+    if not row.get("code"):
+        return  # 无 code 不需要 CF
+
+    # Step 1: addProject（必要的临时关联）
+    try:
+        asana_api("POST", f"/tasks/{task_gid}/addProject", pat,
+                  json={"data": {"project": root_project_gid, "insert_after": None}})
+    except Exception as e:
+        print(f"    [WARN][v1.5] addProject 失败 subtask={task_gid} code={row.get('code')}: {e}")
+        _record_post_step_error("attach_cf_addProject", task_gid, str(e))
+        return
+
+    # Step 2 + Step 3：PATCH CF，然后无论成功与否都 removeProject
+    try:
+        try:
+            cf_payload = build_cf_payload(row)
+            asana_api("PUT", f"/tasks/{task_gid}", pat,
+                      json={"data": {"custom_fields": cf_payload}})
+        except Exception as e:
+            print(f"    [WARN][v1.5] PATCH custom_fields 失败 subtask={task_gid} "
+                  f"code={row.get('code')}: {e}")
+            _record_post_step_error("attach_cf_patch", task_gid, str(e))
+    finally:
+        # Step 3: removeProject — 无论 PATCH 成功失败都必须执行，避免 Timeline 污染
+        try:
+            asana_api("POST", f"/tasks/{task_gid}/removeProject", pat,
+                      json={"data": {"project": root_project_gid}})
+        except Exception as e:
+            print(f"    [WARN][v1.5][POLLUTION-RISK] removeProject 失败 "
+                  f"subtask={task_gid} code={row.get('code')}: {e}")
+            _record_post_step_error("attach_cf_removeProject", task_gid, str(e))
+
+
+def create_l3_subtask(parent_gid, row, pat, dry_run=False, pm_asana_gid=None,
+                      root_project_gid=None):
+    """创建 L3：作为 L2 的 Subtask。
+
+    [BUG-C 2026-04-19] 分两步：
+      1) POST subtask（不带 custom_fields）→ 绕过 "Custom field X is not on given object" 400
+      2) addProject(root_project_gid) + PATCH custom_fields → 补齐编码等字段
+    """
     if dry_run:
         print(f"      [DRY] L3-subtask {row['code']!s:10s} "
               f"{str(row.get('name', ''))[:35]}")
         return f"DRY_{row['code']}"
-    data = _task_payload(row, None, None, parent_gid)
+    data = _task_payload(row, None, None, parent_gid, include_cf=False)
     # V1.4：PM角色任务自动设置Assignee
     roles = [r.strip() for r in row.get("exec_role", "").split(",") if r.strip()]
     if pm_asana_gid and "PM" in roles:
         data["assignee"] = pm_asana_gid
-    return asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
+    gid = asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
+    # BUG-C: subtask 不自动继承项目 CF → addProject + PATCH 补齐
+    # [v1.5.1] 提交到线程池并发执行（main() 会在 Step5 前 join 所有 future）
+    if root_project_gid:
+        _submit_attach_cf(gid, row, root_project_gid, pat)
+    return gid
 
 
-def create_l4_subtask(parent_gid, row, pat, dry_run=False, pm_asana_gid=None):
-    """创建 L4：作为 L3 的 Subtask，不加入项目"""
+def create_l4_subtask(parent_gid, row, pat, dry_run=False, pm_asana_gid=None,
+                      root_project_gid=None):
+    """创建 L4：作为 L3 的 Subtask。
+
+    [BUG-C 2026-04-19] 同 L3：POST 不带 CF → addProject → PATCH 补 CF
+    """
     if dry_run:
         print(f"        [DRY] L4-subtask {row['code']!s:10s} "
               f"{str(row.get('name', ''))[:35]}")
         return f"DRY_{row['code']}"
-    data = _task_payload(row, None, None, parent_gid)
+    data = _task_payload(row, None, None, parent_gid, include_cf=False)
     # V1.4：PM角色任务自动设置Assignee
     roles = [r.strip() for r in row.get("exec_role", "").split(",") if r.strip()]
     if pm_asana_gid and "PM" in roles:
         data["assignee"] = pm_asana_gid
-    return asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
+    gid = asana_api("POST", "/tasks", pat, json={"data": data})["gid"]
+    # BUG-C: subtask 不自动继承项目 CF → addProject + PATCH 补齐
+    # [v1.5.1] 提交到线程池并发执行（main() 会在 Step5 前 join 所有 future）
+    if root_project_gid:
+        _submit_attach_cf(gid, row, root_project_gid, pat)
+    return gid
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 5. 依赖链（完全复用 create_delivery_project.py）
 # ─────────────────────────────────────────────────────────────────────────────
-def wire_dependencies(code_to_gid, rows, pat, dry_run=False):
-    """为所有有前置依赖的任务在 Asana 中建立依赖关系"""
+def wire_dependencies(code_to_gid, rows, pat, dry_run=False, project_gid=None):
+    """为所有有前置依赖的任务在 Asana 中建立依赖关系
+
+    [v1.5]   入口/出口显式日志 + coverage 自检。
+    [v1.5.2] 增加 _wire_summary_{project_gid}.json 结构化摘要输出。
+    """
+    print("  [v1.5] entering wire_dependencies")
+    import json as _json_v152
+    import os as _os_v152
+    from datetime import datetime as _dt_v152
+
     in_scope = set(code_to_gid.keys())
-    linked   = 0
-    skipped  = 0
+    linked   = 0                # triples_wired
+    skipped  = 0                # triples_skipped_existing / API 失败
+    wbs_deps_defined  = 0       # triples_defined（原始 pred 非空行数）
+    wbs_deps_resolvable = 0     # triples_resolvable（pred 过滤后仍有依赖）
+    unresolved_codes  = []      # 定义了 pred 但全部无法解析到 code_to_gid 的任务码
 
     for row in rows:
         task_code = row.get("code")
         if not task_code or task_code not in code_to_gid:
             continue
-        preds = [p for p in parse_preds(row["pred"])
-                 if p in in_scope and p != task_code]
-        if not preds:
+        raw_preds = parse_preds(row.get("pred", ""))
+        if not raw_preds:
             continue
+        wbs_deps_defined += 1  # 只要 pred 非空就算 defined
+
+        preds = [p for p in raw_preds if p in in_scope and p != task_code]
+        if not preds:
+            # 定义了前置，但前置均不在 code_to_gid → unresolved
+            unresolved_codes.append(task_code)
+            continue
+        wbs_deps_resolvable += 1
 
         task_gid = code_to_gid[task_code]
         dep_gids = [code_to_gid[p] for p in preds]
@@ -575,9 +867,48 @@ def wire_dependencies(code_to_gid, rows, pat, dry_run=False):
             linked += 1
         except Exception as e:
             print(f"    [WARN] 依赖失败 {task_code}: {e}")
+            _record_post_step_error("wire_dependencies", task_gid, str(e))
             skipped += 1
 
     print(f"  ✓ 依赖链：{linked} 条连接，{skipped} 条跳过")
+
+    # [v1.5] coverage 自检（基于可解析 triples）
+    coverage_base = wbs_deps_resolvable or wbs_deps_defined
+    coverage = (linked / coverage_base) if coverage_base else 1.0
+    print(f"  [v1.5] wire_dependencies done, deps_written={linked}, "
+          f"deps_defined={wbs_deps_defined}, resolvable={wbs_deps_resolvable}, "
+          f"coverage={coverage:.1%}")
+    if coverage_base and coverage < 0.80:
+        print(f"  [v1.5][COVERAGE-ALERT] coverage < 80% → 需人工复核依赖写入结果")
+        _record_post_step_error("wire_dependencies_coverage",
+                                "N/A",
+                                f"coverage={coverage:.1%} linked={linked} "
+                                f"defined={wbs_deps_defined} resolvable={wbs_deps_resolvable}")
+
+    # [v1.5.2] 结构化摘要输出
+    try:
+        wire_summary = {
+            "project_gid": project_gid,
+            "triples_defined": wbs_deps_defined,
+            "triples_resolvable": wbs_deps_resolvable,
+            "triples_wired": linked,
+            "triples_skipped_existing": skipped,
+            "triples_unresolved": len(unresolved_codes),
+            "unresolved_codes": unresolved_codes[:50],  # 防止过长
+            "coverage_pct": round(coverage * 100, 2),
+            "timestamp_utc": _dt_v152.utcnow().isoformat(),
+            "dry_run": bool(dry_run),
+        }
+        logs_dir = _os_v152.path.join(_os_v152.path.dirname(__file__), "..", "logs")
+        logs_dir = _os_v152.path.abspath(logs_dir)
+        _os_v152.makedirs(logs_dir, exist_ok=True)
+        fname = f"_wire_summary_{project_gid or 'unknown'}.json"
+        summary_path = _os_v152.path.join(logs_dir, fname)
+        with open(summary_path, "w", encoding="utf-8") as f:
+            _json_v152.dump(wire_summary, f, ensure_ascii=False, indent=2)
+        print(f"  [v1.5.2] wire_summary → {summary_path}")
+    except Exception as e:
+        print(f"  [v1.5.2][WARN] 写 wire_summary 失败：{e}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -717,10 +1048,16 @@ def main():
     section_gid = setup_delivery_section(project_gid, pat, dry)
     attach_custom_fields(project_gid, pat, dry)
 
-    # ── Step 4：创建任务层级 ─────────────────────────────────────
+    # ── Step 4 + Step 5：创建任务层级 + 建立依赖 ────────────────
+    # [v1.5 Errata-001] 全程 try/except/finally 包裹，保证：
+    #   - Step 4 异常不会 bypass Step 5（wire_dependencies 必须跑）
+    #   - _dump_post_step_errors 必定落盘（供 wbs_trigger 判定 PARTIAL）
     print("\n[4/5] 创建 Task / Subtask 层级...")
 
     code_to_gid      = {}   # 全量 code → gid
+    _step4_exc = None
+    _step5_exc = None
+
     current_l2_gid   = None
     current_l2_code  = None
     current_l3_gid   = None
@@ -728,83 +1065,132 @@ def main():
 
     l2_count = l3_count = l4_count = gate_count = 0
 
-    for r in rows:
-        code = r.get("code")
-        if not code:
-            continue
-        lvl = r["lvl"]
-
-        if lvl == "1":
-            # L1 只是顶层分组，不在 Asana 中创建任务
-            continue
-
-        elif lvl == "2":
-            gid = create_project_task(project_gid, section_gid, r, pat, dry)
-            # 升级1：控制 Section 中的排序，确保按 WBS 序号排列
-            section_insert_task(section_gid, gid, last_inserted_gid, pat, dry)
-            code_to_gid[code]    = gid
-            current_l2_gid       = gid
-            current_l2_code      = code
-            current_l3_gid       = None
-            last_l3_gid          = None   # 升级3：每个 L2 重置 L3 排序游标
-            last_inserted_gid    = gid
-            l2_count            += 1
-            if not dry:
-                print(f"  ▶ L2 Task: {code} | {str(r.get('name', ''))[:40]}")
-
-        elif lvl == "⬡":
-            gid = create_project_task(project_gid, section_gid, r, pat, dry)
-            # 升级1：Gate 里程碑也按顺序插入 Section
-            section_insert_task(section_gid, gid, last_inserted_gid, pat, dry)
-            code_to_gid[code]    = gid
-            last_inserted_gid    = gid
-            gate_count          += 1
-            if not dry:
-                print(f"  🏁 Gate: {code} | {r.get('name', '')}")
-
-        elif lvl == "3":
-            if not current_l2_gid:
-                print(f"    [WARN] L3 {code} 无 L2 父任务，跳过")
+    try:
+        for r in rows:
+            code = r.get("code")
+            if not code:
                 continue
-            gid = create_l3_subtask(current_l2_gid, r, pat, dry, pm_asana_gid)
-            # 升级3：调用 setParent 控制 L3 在父任务下的排序，Timeline 展开后按 WBS 序号显示
-            set_subtask_order(gid, current_l2_gid, last_l3_gid, pat, dry)
-            code_to_gid[code]   = gid
-            current_l3_gid      = gid
-            last_l3_gid         = gid     # 升级3：更新排序游标
-            l3_count           += 1
-            if not dry and l3_count % 10 == 0:
-                print(f"    ... 已创建 {l3_count} 个 L3 任务")
+            lvl = r["lvl"]
 
-        elif lvl == "4":
-            if not current_l3_gid:
-                print(f"    [WARN] L4 {code} 无 L3 父任务，跳过")
+            if lvl == "1":
+                # L1 只是顶层分组，不在 Asana 中创建任务
                 continue
-            gid = create_l4_subtask(current_l3_gid, r, pat, dry, pm_asana_gid)
-            code_to_gid[code]   = gid
-            l4_count           += 1
 
-        else:
-            # 未识别层级，跳过
-            if lvl:
-                print(f"    [WARN] 未识别层级 '{lvl}'，跳过 {code}")
+            elif lvl == "2":
+                gid = create_project_task(project_gid, section_gid, r, pat, dry)
+                # 升级1：控制 Section 中的排序，确保按 WBS 序号排列
+                section_insert_task(section_gid, gid, last_inserted_gid, pat, dry)
+                code_to_gid[code]    = gid
+                current_l2_gid       = gid
+                current_l2_code      = code
+                current_l3_gid       = None
+                last_l3_gid          = None   # 升级3：每个 L2 重置 L3 排序游标
+                last_inserted_gid    = gid
+                l2_count            += 1
+                if not dry:
+                    print(f"  ▶ L2 Task: {code} | {str(r.get('name', ''))[:40]}")
 
-    print(f"\n  ✓ 完成：{l2_count} 个L2任务，{l3_count} 个L3子任务，"
-          f"{l4_count} 个L4子任务，{gate_count} 个阶段门")
+            elif lvl == "⬡":
+                gid = create_project_task(project_gid, section_gid, r, pat, dry)
+                # 升级1：Gate 里程碑也按顺序插入 Section
+                section_insert_task(section_gid, gid, last_inserted_gid, pat, dry)
+                code_to_gid[code]    = gid
+                last_inserted_gid    = gid
+                gate_count          += 1
+                if not dry:
+                    print(f"  🏁 Gate: {code} | {r.get('name', '')}")
 
-    # ── Step 5：建立依赖链 ───────────────────────────────────────
+            elif lvl == "3":
+                if not current_l2_gid:
+                    print(f"    [WARN] L3 {code} 无 L2 父任务，跳过")
+                    continue
+                gid = create_l3_subtask(current_l2_gid, r, pat, dry, pm_asana_gid,
+                                        root_project_gid=project_gid)
+                # 升级3：调用 setParent 控制 L3 在父任务下的排序，Timeline 展开后按 WBS 序号显示
+                set_subtask_order(gid, current_l2_gid, last_l3_gid, pat, dry)
+                code_to_gid[code]   = gid
+                current_l3_gid      = gid
+                last_l3_gid         = gid     # 升级3：更新排序游标
+                l3_count           += 1
+                if not dry and l3_count % 10 == 0:
+                    print(f"    ... 已创建 {l3_count} 个 L3 任务")
+
+            elif lvl == "4":
+                if not current_l3_gid:
+                    print(f"    [WARN] L4 {code} 无 L3 父任务，跳过")
+                    continue
+                gid = create_l4_subtask(current_l3_gid, r, pat, dry, pm_asana_gid,
+                                        root_project_gid=project_gid)
+                code_to_gid[code]   = gid
+                l4_count           += 1
+
+            else:
+                # 未识别层级，跳过
+                if lvl:
+                    print(f"    [WARN] 未识别层级 '{lvl}'，跳过 {code}")
+
+        print(f"\n  ✓ 完成：{l2_count} 个L2任务，{l3_count} 个L3子任务，"
+              f"{l4_count} 个L4子任务，{gate_count} 个阶段门")
+
+    except Exception as _e:
+        _step4_exc = _e
+        print(f"\n[v1.5][STEP4-EXC] 创建任务层级阶段异常：{_e}")
+        print(f"  已创建：L2={l2_count} L3={l3_count} L4={l4_count} Gate={gate_count}")
+        _record_post_step_error("step4_create_tasks", project_gid, str(_e))
+
+    # [v1.5.1] Step 5 之前必须等待所有 CF 并发任务收尾 —
+    # 否则可能在 wire_dependencies 期间仍有 addProject/removeProject 在跑，
+    # 造成 Timeline 污染窗口。
+    try:
+        _wait_all_cf_futures(label="pre-Step5")
+    except Exception as _e:
+        print(f"  [v1.5.1][WARN] join CF futures 异常：{_e}")
+        _record_post_step_error("cf_future_join", project_gid, str(_e))
+
+    # ── Step 5：建立依赖链（无论 Step 4 是否抛异常都尝试跑）────
     print("\n[5/5] 建立 Asana 依赖链...")
-    wire_dependencies(code_to_gid, rows, pat, dry)
+    try:
+        wire_dependencies(code_to_gid, rows, pat, dry, project_gid=project_gid)
+    except Exception as _e:
+        _step5_exc = _e
+        print(f"\n[v1.5][STEP5-EXC] wire_dependencies 异常：{_e}")
+        _record_post_step_error("step5_wire_dependencies", project_gid, str(_e))
 
-    # ── 完成 ─────────────────────────────────────────────────────
+    # ── 完成（finally 语义：无论前面如何，都落盘 post-step errors）──
     print("\n" + "=" * 65)
-    if dry:
-        print("演练完成！以上操作在真实运行时将实际执行。")
-    else:
-        print("✅ 任务初始化完成！")
-        print(f"\nAsana 项目链接：")
-        print(f"  https://app.asana.com/0/{project_gid}")
+    try:
+        if dry:
+            print("演练完成！以上操作在真实运行时将实际执行。")
+        else:
+            if _step4_exc or _step5_exc:
+                print("⚠️  任务初始化部分完成（含异常，详见 _post_step_errors_*.json）")
+            else:
+                print("✅ 任务初始化完成！")
+            print(f"\nAsana 项目链接：")
+            print(f"  https://app.asana.com/0/{project_gid}")
+    finally:
+        # [v1.5.1] 兜底再 join 一次 CF futures（防止 Step4 抛异常早退时残留 in-flight task）
+        try:
+            _wait_all_cf_futures(label="finally-pre-dump")
+        except Exception as _e:
+            print(f"  [v1.5.1][WARN] finally join CF futures 异常：{_e}")
+        # [v1.5] 无论成功失败都强制落盘，供 wbs_trigger 判定 STATUS_PARTIAL
+        try:
+            _dump_post_step_errors(project_gid)
+        except Exception as _e:
+            print(f"  [WARN] dump post-step errors failed: {_e}")
+        # [v1.5.1] 关闭线程池
+        try:
+            _shutdown_cf_executor()
+        except Exception:
+            pass
     print("=" * 65)
+
+    # [v1.5] 若 Step 4/5 曾抛异常，重新抛出供上层（wbs_trigger）捕获为 STATUS_PARTIAL/FAILED
+    if _step4_exc is not None:
+        raise _step4_exc
+    if _step5_exc is not None:
+        raise _step5_exc
 
 
 # ─────────────────────────────────────────────────────────────────────────────
