@@ -265,6 +265,7 @@ teams:
       - UAT测试与验收管理
       - PMO自动化(WBS→Asana)
       - 阶段门质量管控
+      - Meos产品深度功能认证（测试驱动）
     access_key: "janus"
 
   stock:

@@ -318,12 +318,12 @@ class NotionWBSSource(WBSDataSource):
         for page in pages:
             props = page.get("properties", {})
 
-            wbs_code = self._extract_title(props, "WBS编码")
+            wbs_code = self._extract_title(props, "WBS编码").split(" ", 1)[0]   # title格式: "DA001 任务名称"，取编码部分
             if not wbs_code:
                 continue
 
             level = self._extract_number(props, "层级")
-            name = self._extract_text(props, "任务名称")
+            name = self._extract_text(props, "任务名称")   # rich_text 字段，存储任务名称文字
             duration = self._extract_number(props, "工期(天)")
             pg_raw = self._extract_select(props, "并行组")
             deps_raw = self._extract_text(props, "前置依赖")

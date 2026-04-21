@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/c/Users/lysanderl_janusd/Claude Code/ai-team-system/scripts/ceo-guard-pre.js\" 2>/dev/null || echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"[CEO-GUARD] 审计脚本异常，但提醒仍然有效：Lysander CEO 主对话禁止直接调用 Bash/Edit/Write。\"}}'",
+            "command": "node scripts/ceo-guard-pre.js",
             "timeout": 10,
             "statusMessage": "CEO Guard 审计..."
           }
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/c/Users/lysanderl_janusd/Claude Code/ai-team-system/scripts/ceo-guard-post.js\" 2>/dev/null || true",
+            "command": "node scripts/ceo-guard-post.js",
             "timeout": 5,
             "async": true
           }

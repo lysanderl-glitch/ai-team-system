@@ -198,7 +198,7 @@ tasks:
   # PMO 自动化体系
   pmo_automation_v1:
     status: completed
-    completed_at: "2026-04-15"
+    completed_at: "2026-04-14"
     description: "PMO 自动化 v1.0 正式发布，总裁验收通过"
     deliverables:
       - "WF-01: 项目初始化工作流 (n8n ID: AnR20HucIRaiZPS7)"
@@ -207,15 +207,164 @@ tasks:
       - "wbs_to_asana.py V1.4: WBS全量导入脚本（111任务，L2/L3/L4+Gate）"
       - "docs/: 产品化文档全套（架构图/运维手册/WBS规范/测试SOP）"
 
+  - id: pmo_automation_v1_1
+    title: "PMO自动化体系 v1.1 开发"
+    status: completed
+    completed_date: "2026-04-15"
+    team: harness_ops + butler
+    deliverables:
+      - "create_project_hub.py（Notion Hub自动创建：Dashboard+RAID Log+文档库+5子页面）"
+      - "WF-06_任务依赖通知（n8n ID: knVJ8Uq2D1UZmpxr，每15分钟触发，已激活）"
+      - "Notion模板库66条Google Drive外链回填（100%完成）"
+      - "wbs_trigger.py更新（WBS导入成功后自动触发Hub创建；新增find_project_nav_page()）"
+      - "Hub位置修复：写入目标从章程页→📁项目导航页（晚间修复）"
+      - "deploy_wf06.py（WF-06部署脚本）"
+      - "config/template_links.yaml（66条模板-GDrive链接映射）"
+      - "PMO页面结构规范化：清理重复页面+新增🗂️活跃项目区域"
+      - "0415Janus Training Project Hub补建至导航页（验证完成）"
+      - "docs/PMO_v1.1_总结报告_20260415.md（执行链审查报告，评分5.5/6.0，含晚间修复章节）"
+      - "docs/01-architecture.md（v1.1架构文档全面更新）"
+      - "docs/session_archive_20260415.md（会话归档索引）"
+
+  - id: pmo_automation_v1_3
+    title: "PMO自动化体系 v1.3 开发"
+    status: completed
+    completed_date: "2026-04-16"
+    team: harness_ops + butler
+    deliverables:
+      - "create_charter_content.py（章程模板8章重构，61块，9节）"
+      - "upload_templates_to_notion.py（模板库64/66条目直传Notion，告别GDrive外链）"
+      - "WBS工序数据库字段方案C迁移（title→'WBS编码'，格式'DA001 任务名称'）"
+      - "修复7个受影响文件（wbs_to_asana.py/wbs_data_source.py/link_templates_to_wbs.py/WF-02/WF-05×3）"
+      - "模板库新增3字段：对应工序(Relation)/是否纳入自动化(Checkbox)/负责角色汇总(Rollup)"
+      - "link_templates_to_wbs.py（模板-工序关联脚本）"
+      - "create_project_hub.py V2.0（Hub升级为独立子页面，美化版布局，返回hub_page_id）"
+      - "create_tool_pages.py V1.0（新建，19个工具页平铺生成）"
+      - "wbs_trigger.py V2.0（流程重构④-b/④-f/④-g/④-h，新增create_nav_page()）"
+      - "E2E验证：Singapore Keppel Project 27个子项目全部创建成功（2026-04-16）"
+      - "docs/PMO_v1.1_业务介绍与使用指南.md（追加v1.3更新记录章节）"
+      - "docs/system_status_20260416.md（系统状态快照）"
+
+  - id: pmo_e2e_verification
+    title: "PMO v1.1 全流程E2E验证"
+    status: completed
+    completed_date: "2026-04-16"
+    summary: |
+      Singapore Keppel Project E2E验证通过：27个子项目全部创建成功。
+      WF-01→Hub子页面→章程子页面→19个工具页→章程DB条目更新，全流程验证完成。
+
   pmo_automation_v2_plan_b:
     status: pending_followup
     description: "方案B：将 wbs_to_asana.py 包装为 Python 微服务（FastAPI），部署到 lysander.bond 服务器，n8n 通过 HTTP 调用，彻底云原生化 WBS 导入"
     follow_up:
       date: "2026-05-15"
-      message: "方案B提醒：Python 微服务云原生化 WBS 导入，预计在 v1.0 稳定运行1个月后启动"
+      message: "方案B提醒：Python 微服务云原生化 WBS 导入，预计在 v1.1 稳定运行1个月后启动"
       assigned_team: "RD 团队 - ai_systems_dev"
     priority: low
-    notes: "v1.0 已用本地定时任务方案作为过渡，v2.0 完成后可完全去除本地机器依赖"
+    notes: "v1.1 已用本地定时任务方案作为过渡，v2.0 完成后可完全去除本地机器依赖"
+
+  - id: pmo_v2_plan_b
+    title: "PMO v2.0 方案B - Python FastAPI微服务"
+    status: pending_followup
+    follow_up:
+      date: "2026-05-15"
+      message: "wbs_to_asana 包装为 FastAPI 微服务，部署到 lysander.bond，实现云原生化"
+      assigned_team: "RD team - ai_systems_dev"
+
+  - id: pmo_template_wbs_linkage
+    title: "模板库-工序关联体系 全量填写"
+    status: in_progress
+    priority: medium
+    owner: 总裁（手工填写）
+    context: |
+      模板库已新增「对应工序」Relation字段，与WBS工序数据库建立双向关联。
+      总裁已开始手工填写部分模板-工序关联，尚未全量完成。
+      link_templates_to_wbs.py 已就绪，可辅助批量关联。
+    next_steps:
+      - "总裁继续在 Notion 模板库中填写「对应工序」字段"
+      - "全量完成后可启用「负责角色汇总」Rollup 自动聚合"
+
+  - id: pmo_template_field_fix
+    title: "模板库「是否生成Notion模板」字段第18条命名规范修正"
+    status: pending
+    priority: low
+    owner: harness_ops
+    context: |
+      第18条模板的「是否生成Notion模板」字段命名不规范，待修正。
+      不影响核心功能，可在下次模板库维护时一并处理。
+
+  - id: pmo_wf07_development
+    title: "WF-07 任务依赖自动推送模板"
+    status: pending_followup
+    priority: low
+    owner: harness_ops + butler
+    follow_up:
+      date: "2026-05-01"
+      message: "WF-07 规划：当工序进入「进行中」时，自动向负责人推送对应模板文件链接。前置条件：模板-工序关联全量完成。"
+      assigned_team: harness_ops
+    context: |
+      模板库已新增「是否纳入自动化」Checkbox，为WF-07做准备。
+      WF-07 将实现：工序状态变更为「进行中」→ 自动推送对应模板 Slack 通知。
+      前提：模板-工序关联全量完成 + Notion自动化webhook设置。
+
+  - task_id: meos-energy-cde-2026-04-20
+    title: "Meos 能源管理测试 × CDE 精通化项目"
+    status: in_progress
+    priority: L
+    created: "2026-04-20"
+    start_date: "2026-04-20"
+    last_updated: "2026-04-21"
+    progress_percentage: 45
+    owner: "janus_cde（主）+ integration_qa + knowledge_engineer（协）"
+    current_phase: "阶段 B P0 收口（2026-04-21，熔断事件已控制，77% 通过率，待阶段 C 决策）"
+    approved_by: "总裁刘子杨（2026-04-20 A方案全量批准）"
+    context: |
+      A方案：Meos 能源管理测试 × CDE Agent 精通化双轨项目全量启动。
+      测试轨：TC-ENERGY-01~12 系列测试（98个场景），覆盖Meos产品六大模块
+        （资产/风险/运行/能源/监控/运营）功能完整性验证。
+      能力轨：janus_cde 基于测试执行沉淀"Meos产品深度功能认证（测试驱动型）"A级能力，
+        构建产品精通知识库。
+      验收标准：20题实战答辩 ≥90分 + HR审计 ≥90分。
+      能力卡片已同步更新 janus_cde.md capability_roadmap 节，status=pending_development。
+    completed_milestones:
+      - "阶段 A 基础设施对齐（amc-energy.page.ts 329行 + energy-smoke.spec.ts 98行）"
+      - "HR 配置变更（janus_cde.md + organization.yaml + active_tasks.yaml）"
+      - "前置条件 3 项（环境清单 + 业务知识 + 20题答辩机制）"
+      - "阶段 B P0 深化（TC-01/02/03/06/10 共 2243 行 / 44 场景）"
+    pending_decisions:
+      - "阶段 B 实跑验证 vs 直接推进阶段 C（总裁待批示，Lysander 建议先实跑）"
+      - "向产品方申请 BUDGET_CONFIG 直链 URL（L2 决策，可并行）"
+      - "只读账号 Keppel 申请（S级派单，不阻塞 P0）"
+      - "L3: energy-06-deep p-select 下拉遮挡共性问题是否统一重构 Page Object（test_case_designer 另派）"
+      - "L3: Boundary-1-1 空结果空态 UI 缺失是否报产品方修复（挂 test.fixme 暂时阻塞）"
+    next_steps:
+      - "Lysander 向总裁汇报并等待下一步批示（继续阶段 C / 先实跑 / 其他）"
+      - "若选实跑：由 qa_engineer 在 Meos 真环境跑 44 场景"
+      - "若选继续：并行派单 TC-04/05/08/09/12 五路"
+    key_artifacts:
+      - "meos-e2e/pages/amc-energy.page.ts（基础设施）"
+      - "meos-e2e/tests/energy-01-deep.spec.ts ~ energy-10-deep.spec.ts（P0 深化 5 文件）"
+      - "meos-e2e/tests/energy-smoke.spec.ts（烟雾测试）"
+      - "playwright.config.ts（已修复 testMatch 正则 bug）"
+    critical_notes:
+      - "TC-03 执行中修复了 playwright.config.ts testMatch 正则 bug（如未修复所有 deep 文件会被静默吞掉）"
+      - "Integration-6-2 由「页内跳转」调整为「跨模块可达性验证」"
+      - "1 个 test.skip（5min长耗时）+ 1 个 test.fixme（依赖只读账号）待人工补"
+    incidents:
+      - id: INC-2026-0421-001
+        date: 2026-04-21
+        severity: P1
+        status: contained
+        summary: "阶段 B P0 实跑中上一轮 qa_engineer Agent 未做只读扫描即启动 energy-10-deep，对 BUDGET_CONFIG 产生 7+ 次写入尝试；本轮 Agent 正确熔断；总裁决定不回滚"
+        snapshot: "obs/04-session-snapshots/INCIDENT_2026-04-21_meos-readonly-breach.md"
+        lesson: "obs/03-process-knowledge/readonly-test-circuit-breaker-lesson.md"
+    deliverables_planned:
+      - "TC-ENERGY 测试用例执行报告（98场景）"
+      - "Meos 产品精通知识库（六大模块）"
+      - "janus_cde 实战答辩 + HR 审计达标"
+      - "capability_roadmap 能力升级为 active（验收通过后）"
+    related_capability: "janus_cde / Meos产品深度功能认证（测试驱动型）"
+    session_snapshot: "obs/04-session-snapshots/SESSION_SNAPSHOT_2026-04-20_meos-energy-cde.md"
 
 notes:
   - "SSH配置已修复BOM问题，可通过 ssh lysander-server 访问服务器"
@@ -224,3 +373,5 @@ notes:
   - "usesynapse.com 2026-04-15到期，可关注是否释放抢注"
   - "PBS体系2026-04-13总裁全量批准启动，PSL=SPE+PBS双条线服务总裁"
   - "PDG虚拟小组（executive_briefer + style_calibrator）已启动HR入职流程"
+  - "PMO v1.3 已通过E2E验证（Singapore Keppel Project，27子项目，2026-04-16）"
+  - "0415Janus项目Hub未迁移到v1.3新结构（保持现状，历史项目不回迁）"

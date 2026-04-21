@@ -1,0 +1,18 @@
+{
+  "project_gid": "1214148487702106",
+  "triples_defined": 111,
+  "triples_resolvable": 106,
+  "triples_wired": 106,
+  "triples_skipped_existing": 0,
+  "triples_unresolved": 5,
+  "unresolved_codes": [
+    "DA",
+    "DA001",
+    "DA002",
+    "DA003",
+    "DA003a"
+  ],
+  "coverage_pct": 100.0,
+  "timestamp_utc": "2026-04-20T15:50:42.020386",
+  "dry_run": false
+}

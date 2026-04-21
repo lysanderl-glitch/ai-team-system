@@ -77,6 +77,22 @@ cat agent-butler/config/organization.yaml 2>/dev/null | head -100
 
 ---
 
+## 测试类派单的只读铁律（针对 qa_engineer）
+
+当被派单任务涉及对生产/共享环境做实跑时（尤其是 `qa_engineer` 跑 Playwright/Selenium 等 E2E 测试用例），派单 prompt **必须包含以下 6 条约束**，缺一不可：
+
+1. **登录前只读扫描**：在发起任何浏览器实跑之前，先用 Grep 扫描所有待执行 spec 文件中的写操作动词（`saveBtn` / `submitBtn` / `deleteBtn` / `updateBtn` / `confirmBtn` / `fill(` / `click(.*[保存提交删除确定])` 等），逐一核对。
+2. **发现即熔断**：只要扫描命中任何一个写操作 → **立刻停止实跑**，返回"只读审计报告"，由派单方（Lysander）做下一步决策（skip / fixme / 只读账号申请 / 重写用例）；qa_engineer 不得擅自跑下去。
+3. **命令行凭证注入**：**禁止写入 `.env` 文件**。账号密码只能以命令行环境变量形式临时注入（`MEOS_USER=... MEOS_PASS=... npx playwright test`），避免密码落盘。
+4. **密码 `***` 替代**：所有报告、日志、异常栈里**绝不出现明文密码**。报告里一律用 `***` 替代。
+5. **`--grep-invert` 过滤**：对已知含写操作的用例（如 `BUDGET_CONFIG` 相关），在 playwright 命令里显式加 `--grep-invert="<pattern>"` 过滤，双保险。
+6. **同步 reporter**：优先用 `--reporter=list` 或 `--reporter=html`，**禁止异步启动后立刻退出**（会错过中途失败）；必须等测试进程真正结束再收集结果。
+
+**经验卡片来源**：`obs/03-process-knowledge/readonly-test-circuit-breaker-lesson.md`
+**事件溯源**：INC-2026-0421-001（上一轮 qa_engineer 未做只读扫描，对 BUDGET_CONFIG 产生 7+ 次写入尝试）
+
+---
+
 ## 测试场景（强制，交付前必须通过）
 
 ### test_scenarios

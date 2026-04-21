@@ -18,7 +18,8 @@ OBS_HR_PATH = Path(os.environ.get("OBS_HR_PATH", REPO_ROOT / "obs" / "01-team-kn
 OBS_MEMORY_PATH = Path(os.environ.get("OBS_MEMORY_PATH", REPO_ROOT / "obs" / "00-system" / "claude-code-memory"))
 CONFIG_DIR = Path(__file__).parent / "config"
 SYNC_SCRIPT = Path(__file__).parent / "hr_base.py"
-CLAUDE_MEMORY_SYNC = REPO_ROOT / "scripts" / "sync-claude-memory.sh"
+CLAUDE_MEMORY_SYNC_SH = REPO_ROOT / "scripts" / "sync-claude-memory.sh"
+CLAUDE_MEMORY_SYNC_PS1 = REPO_ROOT / "scripts" / "sync-claude-memory.ps1"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -121,7 +122,8 @@ class ClaudeMemoryHandler(FileSystemEventHandler):
         """执行Claude Memory同步"""
         try:
             result = subprocess.run(
-                ["bash", str(CLAUDE_MEMORY_SYNC)],
+                (["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(CLAUDE_MEMORY_SYNC_PS1)]
+                 if os.name == "nt" else ["bash", str(CLAUDE_MEMORY_SYNC_SH)]),
                 capture_output=True,
                 text=True
             )
@@ -144,13 +146,18 @@ def start_watcher():
     hr_observer.schedule(hr_handler, str(OBS_HR_PATH), recursive=True)
 
     # Claude Memory监控
-    memory_handler = ClaudeMemoryHandler()
-    memory_observer = Observer()
-    memory_observer.schedule(memory_handler, str(OBS_MEMORY_PATH), recursive=True)
+    memory_observer = None
+    if OBS_MEMORY_PATH.exists():
+        memory_handler = ClaudeMemoryHandler()
+        memory_observer = Observer()
+        memory_observer.schedule(memory_handler, str(OBS_MEMORY_PATH), recursive=True)
+    else:
+        logger.warning(f"Claude Memory目录不存在，跳过监控: {OBS_MEMORY_PATH}")
 
-    # 启动两个监控
+    # 启动监控
     hr_observer.start()
-    memory_observer.start()
+    if memory_observer is not None:
+        memory_observer.start()
 
     logger.info("监控已启动，按 Ctrl+C 停止")
 
@@ -160,9 +167,11 @@ def start_watcher():
     except KeyboardInterrupt:
         logger.info("停止监控")
         hr_observer.stop()
-        memory_observer.stop()
+        if memory_observer is not None:
+            memory_observer.stop()
     hr_observer.join()
-    memory_observer.join()
+    if memory_observer is not None:
+        memory_observer.join()
 
 
 if __name__ == "__main__":

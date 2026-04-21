@@ -1,0 +1,108 @@
+--- wbs_to_asana.py.bak_before_v152_20260419_192232	2026-04-19 19:22:33.026174800 +0400
++++ wbs_to_asana.py	2026-04-19 19:23:53.923027100 +0400
+@@ -821,26 +821,39 @@
+ # ─────────────────────────────────────────────────────────────────────────────
+ # 5. 依赖链（完全复用 create_delivery_project.py）
+ # ─────────────────────────────────────────────────────────────────────────────
+-def wire_dependencies(code_to_gid, rows, pat, dry_run=False):
++def wire_dependencies(code_to_gid, rows, pat, dry_run=False, project_gid=None):
+     """为所有有前置依赖的任务在 Asana 中建立依赖关系
+ 
+-    [v1.5] 入口/出口显式日志 + coverage 自检。
++    [v1.5]   入口/出口显式日志 + coverage 自检。
++    [v1.5.2] 增加 _wire_summary_{project_gid}.json 结构化摘要输出。
+     """
+     print("  [v1.5] entering wire_dependencies")
++    import json as _json_v152
++    import os as _os_v152
++    from datetime import datetime as _dt_v152
++
+     in_scope = set(code_to_gid.keys())
+-    linked   = 0
+-    skipped  = 0
+-    wbs_deps_defined = 0  # 所有"应当建立"的依赖条数（按行计）
++    linked   = 0                # triples_wired
++    skipped  = 0                # triples_skipped_existing / API 失败
++    wbs_deps_defined  = 0       # triples_defined（原始 pred 非空行数）
++    wbs_deps_resolvable = 0     # triples_resolvable（pred 过滤后仍有依赖）
++    unresolved_codes  = []      # 定义了 pred 但全部无法解析到 code_to_gid 的任务码
+ 
+     for row in rows:
+         task_code = row.get("code")
+         if not task_code or task_code not in code_to_gid:
+             continue
+-        preds = [p for p in parse_preds(row["pred"])
+-                 if p in in_scope and p != task_code]
++        raw_preds = parse_preds(row.get("pred", ""))
++        if not raw_preds:
++            continue
++        wbs_deps_defined += 1  # 只要 pred 非空就算 defined
++
++        preds = [p for p in raw_preds if p in in_scope and p != task_code]
+         if not preds:
++            # 定义了前置，但前置均不在 code_to_gid → unresolved
++            unresolved_codes.append(task_code)
+             continue
+-        wbs_deps_defined += 1
++        wbs_deps_resolvable += 1
+ 
+         task_gid = code_to_gid[task_code]
+         dep_gids = [code_to_gid[p] for p in preds]
+@@ -859,15 +872,43 @@
+ 
+     print(f"  ✓ 依赖链：{linked} 条连接，{skipped} 条跳过")
+ 
+-    # [v1.5] coverage 自检
+-    coverage = (linked / wbs_deps_defined) if wbs_deps_defined else 1.0
++    # [v1.5] coverage 自检（基于可解析 triples）
++    coverage_base = wbs_deps_resolvable or wbs_deps_defined
++    coverage = (linked / coverage_base) if coverage_base else 1.0
+     print(f"  [v1.5] wire_dependencies done, deps_written={linked}, "
+-          f"deps_defined={wbs_deps_defined}, coverage={coverage:.1%}")
+-    if wbs_deps_defined and coverage < 0.80:
++          f"deps_defined={wbs_deps_defined}, resolvable={wbs_deps_resolvable}, "
++          f"coverage={coverage:.1%}")
++    if coverage_base and coverage < 0.80:
+         print(f"  [v1.5][COVERAGE-ALERT] coverage < 80% → 需人工复核依赖写入结果")
+         _record_post_step_error("wire_dependencies_coverage",
+                                 "N/A",
+-                                f"coverage={coverage:.1%} linked={linked} defined={wbs_deps_defined}")
++                                f"coverage={coverage:.1%} linked={linked} "
++                                f"defined={wbs_deps_defined} resolvable={wbs_deps_resolvable}")
++
++    # [v1.5.2] 结构化摘要输出
++    try:
++        wire_summary = {
++            "project_gid": project_gid,
++            "triples_defined": wbs_deps_defined,
++            "triples_resolvable": wbs_deps_resolvable,
++            "triples_wired": linked,
++            "triples_skipped_existing": skipped,
++            "triples_unresolved": len(unresolved_codes),
++            "unresolved_codes": unresolved_codes[:50],  # 防止过长
++            "coverage_pct": round(coverage * 100, 2),
++            "timestamp_utc": _dt_v152.utcnow().isoformat(),
++            "dry_run": bool(dry_run),
++        }
++        logs_dir = _os_v152.path.join(_os_v152.path.dirname(__file__), "..", "logs")
++        logs_dir = _os_v152.path.abspath(logs_dir)
++        _os_v152.makedirs(logs_dir, exist_ok=True)
++        fname = f"_wire_summary_{project_gid or 'unknown'}.json"
++        summary_path = _os_v152.path.join(logs_dir, fname)
++        with open(summary_path, "w", encoding="utf-8") as f:
++            _json_v152.dump(wire_summary, f, ensure_ascii=False, indent=2)
++        print(f"  [v1.5.2] wire_summary → {summary_path}")
++    except Exception as e:
++        print(f"  [v1.5.2][WARN] 写 wire_summary 失败：{e}")
+ 
+ 
+ # ─────────────────────────────────────────────────────────────────────────────
+@@ -1109,7 +1150,7 @@
+     # ── Step 5：建立依赖链（无论 Step 4 是否抛异常都尝试跑）────
+     print("\n[5/5] 建立 Asana 依赖链...")
+     try:
+-        wire_dependencies(code_to_gid, rows, pat, dry)
++        wire_dependencies(code_to_gid, rows, pat, dry, project_gid=project_gid)
+     except Exception as _e:
+         _step5_exc = _e
+         print(f"\n[v1.5][STEP5-EXC] wire_dependencies 异常：{_e}")
