@@ -402,7 +402,16 @@ tasks:
       - "REQ-002 完成：WBS前置依赖字段已在V1.7.0实现，本次补充L3/L4层级日志统计"
       - "REQ-004 完成：共享幂等去重机制，新增004_shared_dedup.sql + shared_dedup_check_and_mark() + /dedup-check端点"
       - "REQ-005 完成：WF-06硬编码Token(Asana PAT + Slack Token)已替换为n8n Credentials Store引用，WF-06 ID: knVJ8Uq2D1UZmpxr"
-    next_action: "QA验证通过后，执行服务器部署：docker-compose build + up，并运行register-team端点完成全量Webhook注册"
+      - "V2.0 GA 服务器部署完成：git commit fddb933，docker-compose rebuild 成功，migration 004 执行完成"
+      - "全量Webhook注册：35个项目已注册，1个STD-TEST遗留冲突处理中"
+    next_action: "STD-TEST旧Webhook清理后，V2.0 GA全量交付完成，等待总裁验收"
+    deployment:
+      version: "v2.0-ga"
+      commit: "fddb933"
+      deployed_at: "2026-04-22"
+      server: "lysander-server:/home/ubuntu/pmo-ai-auto"
+      webhooks_registered: 35
+      webhooks_pending: 1
     created_at: "2026-04-22"
 
 notes:
