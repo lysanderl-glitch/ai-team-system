@@ -366,6 +366,36 @@ tasks:
     related_capability: "janus_cde / Meos产品深度功能认证（测试驱动型）"
     session_snapshot: "obs/04-session-snapshots/SESSION_SNAPSHOT_2026-04-20_meos-energy-cde.md"
 
+  - id: STRATEGY-001
+    title: "Synapse产品化升级：Phase 1执行"
+    status: in_progress
+    team: product_ops
+    assigned_to: synapse_product_owner
+    description: "总裁2026-04-22批准战略升级，Phase 1立即执行"
+    next_steps:
+      - "synapse_product_owner + requirements_analyst 完成HR入职审批"
+      - "产品委员会首次会议：确认PMO Auto V2.0 PRD范围"
+      - "requirements_analyst 完成REQ-001~008的RICE评分"
+      - "knowledge_engineer 基于09-system-spec编写PMO Auto V2.0回顾性PRD"
+    blockers: []
+    created_at: "2026-04-22"
+    decision_ref: "2026-04-22战略圆桌会议纪要"
+
+  - id: PMO-AUTO-V20
+    title: "PMO Auto V2.0 版本规划"
+    status: pending
+    team: product_ops
+    assigned_to: synapse_product_owner
+    description: "以PMO Auto V2.0为首个双轨制研发试点，完成PRD→版本规划→开发→测试→验收全流程"
+    depends_on: ["STRATEGY-001"]
+    next_steps:
+      - "等待synapse_product_owner入职完成（HR审批）"
+      - "召开产品委员会会议确认V2.0范围"
+      - "从requirements_pool.yaml选取V2.0候选需求"
+    blockers:
+      - "synapse_product_owner待HR审批"
+    created_at: "2026-04-22"
+
 notes:
   - "SSH配置已修复BOM问题，可通过 ssh lysander-server 访问服务器"
   - "Obsidian Git推送已恢复正常（API Key已从历史清除）"

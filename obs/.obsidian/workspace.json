@@ -191,6 +191,12 @@
   },
   "active": "9d4eacd1d5951dd5",
   "lastOpenFiles": [
+    "02-product-knowledge/product_committee_charter.md",
+    "02-product-knowledge/requirements_pool.yaml",
+    "02-product-knowledge",
+    "01-team-knowledge/HR/personnel/product_ops/requirements_analyst.md",
+    "01-team-knowledge/HR/personnel/product_ops/synapse_product_owner.md",
+    "01-team-knowledge/HR/personnel/product_ops",
     "generated-articles/synapse-achievements-presentation-20260413.html.tmp.49284.1776070383133",
     "generated-articles/synapse-achievements-presentation-20260413.html.tmp.49284.1776069500374",
     "generated-articles/synapse-achievements-presentation-20260413.html",
@@ -206,17 +212,13 @@
     "03-process-knowledge/spe-video-production-guide.md",
     "03-process-knowledge/spe-video-production-guide.md.tmp.36988.1776012813924",
     "03-process-knowledge/spe-video-script-mvp.md.tmp.36988.1776012272854",
-    "03-process-knowledge/spe-video-script-mvp.md.tmp.36988.1776012221280",
-    "03-process-knowledge/spe-video-script-mvp.md.tmp.36988.1776012188197",
     "03-process-knowledge/spe-video-script-mvp.md",
     "01-team-knowledge/HR/personnel/content_ops/video_producer.md",
     "01-team-knowledge/HR/personnel/content_ops/video_scriptwriter.md",
-    "03-process-knowledge/spe-user-guide.html",
     "04-decision-knowledge/agent-proactive-drive-model.md",
     "02-project-knowledge/wechat-article-scraper-plan.md",
     "04-decision-knowledge/decision-log/D-2026-0412-001.md",
     "04-decision-knowledge/decision-log/_template.md",
-    "04-decision-knowledge/decision-log/_template.md.tmp.27160.1775985676677",
     "04-decision-knowledge/synapse-product-architecture.md",
     "01-team-knowledge/HR/personnel/graphify/evolution_engine.md",
     "04-decision-knowledge/synapse-self-evolution-feasibility.md",
@@ -224,8 +226,6 @@
     "05-industry-knowledge/blog/2026-04-11-gstack-team-empowerment.md",
     "01-team-knowledge/OBS第二大脑2.0系统说明.md",
     "generated-articles/illustration-prompts.md",
-    "04-decision-knowledge/gstack-strategic-evaluation-2026-04-11.md",
-    "01-team-knowledge/HR/personnel/content_ops/ai_visual_creator.md",
-    "04-decision-knowledge/website-technical-plan.md"
+    "04-decision-knowledge/gstack-strategic-evaluation-2026-04-11.md"
   ]
 }

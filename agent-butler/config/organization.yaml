@@ -268,6 +268,24 @@ teams:
       - Meos产品深度功能认证（测试驱动）
     access_key: "janus"
 
+  product_ops:
+    name: "产品运营团队 (Product Ops)"
+    description: "Product Ops团队 - 负责Synapse体系产品化运营，统筹四大产品线（PMO Auto / 情报系统 / PBS / SPE）的规划、PRD撰写、需求管理和版本协调。"
+    specialists:
+      - synapse_product_owner    # Synapse首席产品官 - 产品战略、路线图、PRD、产品委员会
+      - requirements_analyst     # 需求分析师 - 多源需求捕获、RICE评分、需求池维护
+    capabilities:
+      - 基于Jobs-To-Be-Done框架的产品需求挖掘与用户场景建模
+      - PRD撰写（用户故事 + RICE优先级评分 + 验收标准定义）
+      - 产品路线图管理（Now-Next-Later三层规划法 + OKR对齐）
+      - 跨产品线架构协调（API契约设计、数据模型对齐、依赖管理）
+      - 产品度量体系设计（North Star Metric + 输入/输出指标拆解）
+      - 结构化需求捕获（5W2H框架 + 用户故事映射）
+      - 需求去重与聚类分析（语义相似度 + 业务场景分类）
+      - 需求价值评分（RICE模型计算）
+      - 需求池（requirements_pool.yaml）全生命周期管理
+    access_key: "product_ops"
+
   stock:
     name: "股票交易系统项目"
     description: "股票交易系统项目（趋势智选）- A股趋势交易指导系统，基于《炒股的智慧》策略"
@@ -314,6 +332,32 @@ task_routing:
       - gtm_strategist
     "市场扩张":
       - gtm_strategist
+
+    # Product Ops 产品运营团队关键词
+    "产品规划":
+      - product_ops
+    "PRD":
+      - synapse_product_owner
+    "路线图":
+      - synapse_product_owner
+    "版本规划":
+      - synapse_product_owner
+    "产品委员会":
+      - synapse_product_owner
+    "需求评审":
+      - synapse_product_owner
+    "产品化":
+      - synapse_product_owner
+    "需求分析":
+      - requirements_analyst
+    "需求池":
+      - requirements_analyst
+    "RICE评分":
+      - requirements_analyst
+    "需求建模":
+      - requirements_analyst
+    "需求捕获":
+      - requirements_analyst
 
     # HR 管理团队关键词
     "HR":

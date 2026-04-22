@@ -1,0 +1,168 @@
+# Synapse 产品需求池
+# 维护者：requirements_analyst
+# 审核：synapse_product_owner
+# 最后更新：2026-04-22
+
+meta:
+  version: "1.0"
+  last_updated: "2026-04-22"
+  maintained_by: requirements_analyst
+  reviewed_by: synapse_product_owner
+
+# RICE评分说明：
+# Reach: 影响用户数量 (1-10)
+# Impact: 业务价值 (1-10)
+# Confidence: 确定性 (1-10)
+# Effort: 工作量估算 S/M/L/XL
+
+backlog:
+  # PMO Auto 产品线
+  - id: REQ-001
+    product: pmo_auto
+    title: "全量项目Asana Webhook注册"
+    description: "当前仅STD-TEST灰度(2订阅)，需扩展至所有活跃项目实现实时任务完成通知"
+    source: "V1.7.0待办"
+    type: feature
+    priority: P1
+    rice:
+      reach: 8
+      impact: 9
+      confidence: 9
+      effort: M
+      score: 0  # 由requirements_analyst计算
+    status: candidate
+    target_version: "v2.0"
+    created_at: "2026-04-22"
+
+  - id: REQ-002
+    product: pmo_auto
+    title: "WBS模板L3/L4前置依赖字段补齐"
+    description: "当前WBS模板L3/L4无前置依赖字段，导致子任务级依赖链通知无法触发"
+    source: "V1.7.0已知限制"
+    type: improvement
+    priority: P2
+    rice:
+      reach: 6
+      impact: 7
+      confidence: 8
+      effort: S
+      score: 0
+    status: candidate
+    target_version: "v2.0"
+    created_at: "2026-04-22"
+
+  - id: REQ-003
+    product: pmo_auto
+    title: "时区配置统一：config=Asia/Singapore vs n8n实际=Asia/Dubai"
+    description: "源码审查发现时区混用，可能导致轮询时间偏差"
+    source: "09-system-spec-v170-verified.md 第九节"
+    type: bug
+    priority: P2
+    rice:
+      reach: 5
+      impact: 5
+      confidence: 9
+      effort: S
+      score: 0
+    status: candidate
+    target_version: "v2.0"
+    created_at: "2026-04-22"
+
+  - id: REQ-004
+    product: pmo_auto
+    title: "WF-06与WF-08幂等去重共享机制"
+    description: "源码TODO标注：两路并行可能产生重复DM，需实现真正的跨WF去重"
+    source: "09-system-spec-v170-verified.md 第九节"
+    type: bug
+    priority: P2
+    rice:
+      reach: 7
+      impact: 6
+      confidence: 8
+      effort: M
+      score: 0
+    status: candidate
+    target_version: "v2.0"
+    created_at: "2026-04-22"
+
+  - id: REQ-005
+    product: pmo_auto
+    title: "WF-06 Code节点移除硬编码凭证"
+    description: "v1.5.6声称已移除，但源码仍硬编码ASANA_PAT和SLACK_TOKEN"
+    source: "09-system-spec-v170-verified.md 第九节"
+    type: bug
+    priority: P2
+    rice:
+      reach: 3
+      impact: 4
+      confidence: 10
+      effort: S
+      score: 0
+    status: candidate
+    target_version: "v2.0"
+    created_at: "2026-04-22"
+
+  - id: REQ-006
+    product: pmo_auto
+    title: "服务器部署git clone化"
+    description: "当前手动rsync部署易漏文件，迁移至git clone方式"
+    source: "V1.7.0 D-162 P3"
+    type: improvement
+    priority: P3
+    rice:
+      reach: 2
+      impact: 5
+      confidence: 8
+      effort: M
+      score: 0
+    status: candidate
+    target_version: "v2.0"
+    created_at: "2026-04-22"
+
+  # Synapse体系产品化
+  - id: REQ-007
+    product: synapse
+    title: "产品路线图自动维护机制"
+    description: "情报系统自动扫描→需求池→路线图更新→月度快照报告给总裁"
+    source: "2026-04-22战略圆桌决议"
+    type: feature
+    priority: P1
+    rice:
+      reach: 2
+      impact: 9
+      confidence: 7
+      effort: L
+      score: 0
+    status: candidate
+    target_version: "synapse_v2.0"
+    created_at: "2026-04-22"
+
+  - id: REQ-008
+    product: synapse
+    title: "需求自动捕获：Lysander识别口头需求并入池"
+    description: "总裁对话中的口头需求由Lysander自动识别、结构化后写入requirements_pool.yaml"
+    source: "2026-04-22战略圆桌决议"
+    type: feature
+    priority: P2
+    rice:
+      reach: 2
+      impact: 8
+      confidence: 6
+      effort: M
+      score: 0
+    status: candidate
+    target_version: "synapse_v2.0"
+    created_at: "2026-04-22"
+
+in_review: []
+
+approved: []
+
+rejected: []
+
+shipped:
+  - id: REQ-PRE-001
+    product: pmo_auto
+    title: "WF-08 Webhook实时通知"
+    shipped_version: "v1.7.0"
+    shipped_at: "2026-04-22"
