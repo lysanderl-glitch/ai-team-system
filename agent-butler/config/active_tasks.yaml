@@ -398,7 +398,11 @@ tasks:
     milestones:
       - "RICE评分完成：REQ-001~008 全部评分，requirements_pool.yaml 已更新"
       - "V2.0 PRD 完成：obs/02-product-knowledge/prd-v200-pmo-auto.md，458行，9章节，待产品委员会审议"
-    next_action: "产品委员会审议 PRD，批准后进入研发双轨制执行"
+      - "REQ-003 完成：时区统一 Asia/Singapore → Asia/Dubai，共修改9个文件"
+      - "REQ-002 完成：WBS前置依赖字段已在V1.7.0实现，本次补充L3/L4层级日志统计"
+      - "REQ-004 完成：共享幂等去重机制，新增004_shared_dedup.sql + shared_dedup_check_and_mark() + /dedup-check端点"
+      - "REQ-005 完成：WF-06硬编码Token(Asana PAT + Slack Token)已替换为n8n Credentials Store引用，WF-06 ID: knVJ8Uq2D1UZmpxr"
+    next_action: "QA验证通过后，执行服务器部署：docker-compose build + up，并运行register-team端点完成全量Webhook注册"
     created_at: "2026-04-22"
 
 notes:
