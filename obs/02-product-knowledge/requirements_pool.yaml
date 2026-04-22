@@ -21,7 +21,7 @@ backlog:
   - id: REQ-001
     product: pmo_auto
     title: "全量项目Asana Webhook注册"
-    description: "当前仅STD-TEST灰度(2订阅)，需扩展至所有活跃项目实现实时任务完成通知"
+    description: "注册 config.yaml 中 asana.target_team 所指向团队（默认 ProjectProgressTesting）下的所有项目 Webhook，累加操作（已注册项目跳过，不删除现有订阅）"
     source: "V1.7.0待办"
     type: feature
     priority: P1
@@ -31,9 +31,13 @@ backlog:
       confidence: 0.8 # 技术路径清晰，但活跃项目总数待确认
       effort: 3       # M级=3人天，逐项目注册+验证
       score: 4.27     # (8×2×0.8)/3
-    status: candidate
-    target_version: "v2.0"
+    status: approved
+    target_version: "v2.0-beta"
     created_at: "2026-04-22"
+    acceptance_criteria:
+      - "执行批量注册后，GET /webhooks/asana/list 返回的活跃订阅数等于 target_team 下非 archived 项目总数（允许 ±1 容错）"
+      - "对批量注册后新建的 Asana 项目，任务完成后 pmo-api 日志 accepted=1，WF-08 成功执行，PM 在 60 秒内收到 Slack DM"
+      - "重复执行批量注册脚本，webhook_subscriptions 记录数不增加，日志显示已注册项目均为 SKIP: already registered"
 
   - id: REQ-002
     product: pmo_auto
@@ -89,7 +93,7 @@ backlog:
   - id: REQ-005
     product: pmo_auto
     title: "WF-06 Code节点移除硬编码凭证"
-    description: "v1.5.6声称已移除，但源码仍硬编码ASANA_PAT和SLACK_TOKEN"
+    description: "n8n WF-06 中的硬编码 API Token 字符串 → 改用 n8n 内置 Credentials Store 引用（$credentials.xxx），pmo-api 侧 config.yaml 明文维持现状，辅以文件权限控制"
     source: "09-system-spec-v170-verified.md 第九节"
     type: bug
     priority: P2
@@ -97,10 +101,10 @@ backlog:
       reach: 3        # 直接影响PMO工程师，间接关系安全合规
       impact: 3       # 安全漏洞，生产凭证泄露风险，影响深度高
       confidence: 1.0 # 已确认问题（源码直接可见），修改方案简单
-      effort: 1       # S级=1人天，替换为$env读取
+      effort: 1       # S级=1人天，改用 Credentials Store 引用
       score: 9.00     # (3×3×1.0)/1
-    status: candidate
-    target_version: "v2.0"
+    status: approved
+    target_version: "v2.0-ga"
     created_at: "2026-04-22"
 
   - id: REQ-006
@@ -116,8 +120,8 @@ backlog:
       confidence: 0.8 # 方案成熟，主要是迁移成本
       effort: 3       # M级=3人天，脚本编写+服务器配置+验证
       score: 0.27     # (2×0.5×0.8)/3
-    status: candidate
-    target_version: "v2.0"
+    status: deferred
+    target_version: "future"
     created_at: "2026-04-22"
 
   # Synapse体系产品化
