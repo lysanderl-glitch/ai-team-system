@@ -377,23 +377,24 @@ tasks:
       - "产品委员会首次会议：确认PMO Auto V2.0 PRD范围"
       - "requirements_analyst 完成REQ-001~008的RICE评分"
       - "knowledge_engineer 基于09-system-spec编写PMO Auto V2.0回顾性PRD"
+    progress:
+      - "Phase 1 完成：HR入职审批通过，product_ops团队正式激活，requirements_pool.yaml + product_committee_charter.md 已建立"
     blockers: []
     created_at: "2026-04-22"
     decision_ref: "2026-04-22战略圆桌会议纪要"
 
   - id: PMO-AUTO-V20
     title: "PMO Auto V2.0 版本规划"
-    status: pending
+    status: in_progress
     team: product_ops
     assigned_to: synapse_product_owner
     description: "以PMO Auto V2.0为首个双轨制研发试点，完成PRD→版本规划→开发→测试→验收全流程"
     depends_on: ["STRATEGY-001"]
+    hr_approved: "2026-04-22, synapse_product_owner + requirements_analyst 通过 capability_architect 审计"
     next_steps:
-      - "等待synapse_product_owner入职完成（HR审批）"
       - "召开产品委员会会议确认V2.0范围"
       - "从requirements_pool.yaml选取V2.0候选需求"
-    blockers:
-      - "synapse_product_owner待HR审批"
+    next_action: "synapse_product_owner 召开产品委员会第一次会议，确认 PMO Auto V2.0 PRD 范围"
     created_at: "2026-04-22"
 
 notes:

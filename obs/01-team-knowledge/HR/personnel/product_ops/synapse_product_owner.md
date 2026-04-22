@@ -3,7 +3,7 @@ title: Synapse首席产品官
 specialist_id: synapse_product_owner
 team: product_ops
 role: 产品战略与路线图负责人
-status: probation
+status: active
 type: ai_agent
 
 name: AI - Synapse首席产品官

@@ -10,10 +10,11 @@ meta:
   reviewed_by: synapse_product_owner
 
 # RICE评分说明：
-# Reach: 影响用户数量 (1-10)
-# Impact: 业务价值 (1-10)
-# Confidence: 确定性 (1-10)
-# Effort: 工作量估算 S/M/L/XL
+# Reach: 影响用户/项目数量 (1-10)
+# Impact: 对单用户影响深度 (0.25/0.5/1/2/3)
+# Confidence: 对评估准确性的信心 (0.5/0.8/1.0)
+# Effort: 实际估算人天数 (S=1天/M=3天/L=8天/XL=20天)
+# Score = (Reach × Impact × Confidence) / Effort
 
 backlog:
   # PMO Auto 产品线
@@ -25,11 +26,11 @@ backlog:
     type: feature
     priority: P1
     rice:
-      reach: 8
-      impact: 9
-      confidence: 9
-      effort: M
-      score: 0  # 由requirements_analyst计算
+      reach: 8        # 影响所有活跃项目经理(10-20人)及全部项目
+      impact: 2       # 解决当前最大痛点，PM实时收到通知替代手动查询
+      confidence: 0.8 # 技术路径清晰，但活跃项目总数待确认
+      effort: 3       # M级=3人天，逐项目注册+验证
+      score: 4.27     # (8×2×0.8)/3
     status: candidate
     target_version: "v2.0"
     created_at: "2026-04-22"
@@ -42,11 +43,11 @@ backlog:
     type: improvement
     priority: P2
     rice:
-      reach: 6
-      impact: 7
-      confidence: 8
-      effort: S
-      score: 0
+      reach: 6        # 影响使用L3/L4子任务的所有项目及PM
+      impact: 1       # 依赖链通知精度提升，非核心断裂类痛点
+      confidence: 0.8 # 需求清晰，但Notion WBS模板字段对齐有风险
+      effort: 1       # S级=1人天，模板字段补齐
+      score: 4.80     # (6×1×0.8)/1
     status: candidate
     target_version: "v2.0"
     created_at: "2026-04-22"
@@ -59,11 +60,11 @@ backlog:
     type: bug
     priority: P2
     rice:
-      reach: 5
-      impact: 5
-      confidence: 9
-      effort: S
-      score: 0
+      reach: 5        # 影响所有定时工作流，潜在波及全部用户
+      impact: 0.5     # 时区偏差非功能性断裂，但影响轮询时段准确性
+      confidence: 1.0 # 已验证差异，修改方案确定
+      effort: 1       # S级=1人天，配置统一
+      score: 2.50     # (5×0.5×1.0)/1
     status: candidate
     target_version: "v2.0"
     created_at: "2026-04-22"
@@ -76,11 +77,11 @@ backlog:
     type: bug
     priority: P2
     rice:
-      reach: 7
-      impact: 6
-      confidence: 8
-      effort: M
-      score: 0
+      reach: 7        # 影响所有收到重复DM通知的项目经理
+      impact: 1       # 减少骚扰DM，体验提升，非功能断裂
+      confidence: 0.8 # 源码TODO明确，但需跨WF架构改动
+      effort: 3       # M级=3人天，需改造WF-06调用pmo-api去重
+      score: 1.87     # (7×1×0.8)/3
     status: candidate
     target_version: "v2.0"
     created_at: "2026-04-22"
@@ -93,11 +94,11 @@ backlog:
     type: bug
     priority: P2
     rice:
-      reach: 3
-      impact: 4
-      confidence: 10
-      effort: S
-      score: 0
+      reach: 3        # 直接影响PMO工程师，间接关系安全合规
+      impact: 3       # 安全漏洞，生产凭证泄露风险，影响深度高
+      confidence: 1.0 # 已确认问题（源码直接可见），修改方案简单
+      effort: 1       # S级=1人天，替换为$env读取
+      score: 9.00     # (3×3×1.0)/1
     status: candidate
     target_version: "v2.0"
     created_at: "2026-04-22"
@@ -110,11 +111,11 @@ backlog:
     type: improvement
     priority: P3
     rice:
-      reach: 2
-      impact: 5
-      confidence: 8
-      effort: M
-      score: 0
+      reach: 2        # 仅PMO工程师受影响
+      impact: 0.5     # 减少部署漏文件风险，运维质量提升
+      confidence: 0.8 # 方案成熟，主要是迁移成本
+      effort: 3       # M级=3人天，脚本编写+服务器配置+验证
+      score: 0.27     # (2×0.5×0.8)/3
     status: candidate
     target_version: "v2.0"
     created_at: "2026-04-22"
@@ -128,11 +129,11 @@ backlog:
     type: feature
     priority: P1
     rice:
-      reach: 2
-      impact: 9
-      confidence: 7
-      effort: L
-      score: 0
+      reach: 2        # 内部产品委员会使用（Lysander+总裁）
+      impact: 3       # 战略级功能，长期提升产品决策质量
+      confidence: 0.5 # 新功能，情报→需求→路线图联动复杂度高
+      effort: 8       # L级=8人天，情报管线+路线图联动+报告生成
+      score: 0.38     # (2×3×0.5)/8
     status: candidate
     target_version: "synapse_v2.0"
     created_at: "2026-04-22"
@@ -145,11 +146,11 @@ backlog:
     type: feature
     priority: P2
     rice:
-      reach: 2
-      impact: 8
-      confidence: 6
-      effort: M
-      score: 0
+      reach: 2        # 内部使用（Lysander+总裁）
+      impact: 2       # 减少需求漏捕，提升需求管理效率
+      confidence: 0.5 # AI识别口头需求准确率存在不确定性
+      effort: 3       # M级=3人天，识别逻辑+结构化+写入机制
+      score: 0.67     # (2×2×0.5)/3
     status: candidate
     target_version: "synapse_v2.0"
     created_at: "2026-04-22"

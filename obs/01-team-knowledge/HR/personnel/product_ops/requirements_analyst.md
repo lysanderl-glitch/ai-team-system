@@ -3,7 +3,7 @@ title: 需求分析师
 specialist_id: requirements_analyst
 team: product_ops
 role: 需求捕获与分析
-status: probation
+status: active
 type: ai_agent
 
 name: AI - 需求分析师
