@@ -368,7 +368,7 @@ tasks:
 
   - id: STRATEGY-001
     title: "Synapse产品化升级：Phase 1执行"
-    status: in_progress
+    status: completed
     team: product_ops
     assigned_to: synapse_product_owner
     description: "总裁2026-04-22批准战略升级，Phase 1立即执行"
@@ -379,6 +379,7 @@ tasks:
       - "knowledge_engineer 基于09-system-spec编写PMO Auto V2.0回顾性PRD"
     progress:
       - "Phase 1 完成：HR入职审批通过，product_ops团队正式激活，requirements_pool.yaml + product_committee_charter.md 已建立"
+      - "Phase 2 完成：RICE评分 + V2.0 PRD 交付，等待产品委员会审议"
     blockers: []
     created_at: "2026-04-22"
     decision_ref: "2026-04-22战略圆桌会议纪要"
@@ -394,7 +395,10 @@ tasks:
     next_steps:
       - "召开产品委员会会议确认V2.0范围"
       - "从requirements_pool.yaml选取V2.0候选需求"
-    next_action: "synapse_product_owner 召开产品委员会第一次会议，确认 PMO Auto V2.0 PRD 范围"
+    milestones:
+      - "RICE评分完成：REQ-001~008 全部评分，requirements_pool.yaml 已更新"
+      - "V2.0 PRD 完成：obs/02-product-knowledge/prd-v200-pmo-auto.md，458行，9章节，待产品委员会审议"
+    next_action: "产品委员会审议 PRD，批准后进入研发双轨制执行"
     created_at: "2026-04-22"
 
 notes:
