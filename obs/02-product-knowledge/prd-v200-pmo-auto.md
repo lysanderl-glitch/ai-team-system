@@ -13,6 +13,13 @@
 | **基准版本** | V1.7.0（commit `106532a`，2026-04-22 verified） |
 | **参考文档** | `09-system-spec-v170-verified.md`（源码验证版，15条差异） |
 
+### 修订记录
+
+| 版本 | 日期 | 描述 |
+|------|------|------|
+| v0.1 | 2026-04-22 | 初稿，基于 V1.7.0 源码审计 |
+| v0.2 | 2026-04-22 | 依据总裁约束修订范围：REQ-001 范围锁定 target_team、REQ-005 修复方式改为 n8n Credentials Store、新增 REQ-009 团队范围可配置化、REQ-006/007/008 移出 V2.0 |
+
 ---
 
 ## 2. 背景与目标
@@ -136,49 +143,77 @@ V1.7.0 于 2026-04-22 正式发布（E2E 验证通过），核心里程碑是引
 
 基于 `requirements_pool.yaml`（2026-04-22，requirements_analyst 完成评分），Effort 换算：S=1天，M=3天，L=8天，XL=20天。
 
-| ID | 需求标题 | Reach | Impact | Confidence | Effort（天） | RICE Score | 优先级 |
-|----|---------|-------|--------|------------|------------|-----------|--------|
-| REQ-005 | WF-06 Code节点移除硬编码凭证 | 3 | 3 | 1.0 | 1 | **9.00** | P2 |
-| REQ-002 | WBS L3/L4前置依赖字段补齐 | 6 | 1 | 0.8 | 1 | **4.80** | P2 |
-| REQ-001 | 全量项目Asana Webhook注册 | 8 | 2 | 0.8 | 3 | **4.27** | P1 |
-| REQ-003 | 时区配置统一（SGT vs Dubai） | 5 | 0.5 | 1.0 | 1 | **2.50** | P2 |
-| REQ-004 | WF-06/WF-08幂等去重共享 | 7 | 1 | 0.8 | 3 | **1.87** | P2 |
-| REQ-006 | 服务器部署git clone化 | 2 | 0.5 | 0.8 | 3 | **0.27** | P3 |
+| ID | 需求标题 | Reach | Impact | Confidence | Effort（天） | RICE Score | 优先级 | 备注 |
+|----|---------|-------|--------|------------|------------|-----------|--------|------|
+| REQ-005 | WF-06 Code节点移除硬编码凭证 | 3 | 3 | 1.0 | 1 | **9.00** | P2 | 修复方式：n8n Credentials Store 引用，非 env 变量；pmo-api 侧 config.yaml 明文维持现状 |
+| REQ-009 | Asana 目标团队范围可配置化 | 3 | 1 | 1.0 | 0.5 | **6.00** | P1 | Beta 范围；总裁约束新增 |
+| REQ-002 | WBS L3/L4前置依赖字段补齐 | 6 | 1 | 0.8 | 1 | **4.80** | P2 | — |
+| REQ-001 | 全量项目Asana Webhook注册 | 8 | 2 | 0.8 | 3 | **4.27** | P1 | 范围限定为 target_team（ProjectProgressTesting），不是全量所有团队 |
+| REQ-003 | 时区配置统一（SGT vs Dubai） | 5 | 0.5 | 1.0 | 1 | **2.50** | P2 | — |
+| REQ-004 | WF-06/WF-08幂等去重共享 | 7 | 1 | 0.8 | 3 | **1.87** | P2 | — |
+| REQ-006 | 服务器部署git clone化 | 2 | 0.5 | 0.8 | 3 | **0.27** | P3 | Deferred（移出 V2.0） |
+| REQ-007 | 产品路线图自动维护机制 | — | — | — | — | — | — | Deferred（移出 V2.0） |
+| REQ-008 | 需求自动捕获 | — | — | — | — | — | — | Deferred（移出 V2.0） |
 
 ### 4.2 分级决策
 
 **P0（必须做，V2.0 不包含，V1.7.0 已满足）**：无。系统当前可运行，无阻断性故障。
 
 **P1（V2.0 Beta 范围）**：
-- REQ-001：全量 Webhook 注册（RICE 4.27，是北极星指标的直接驱动）
+- REQ-009：Asana 目标团队范围可配置化（RICE 6.00，总裁约束新增，Beta 前置条件）
+- REQ-001：target_team 范围 Webhook 注册（RICE 4.27，北极星指标直接驱动；范围锁定为 config.yaml `asana.target_team`，不是全量所有团队）
 
-> P1 判断依据：REQ-001 是 V2.0 北极星指标的唯一直接驱动项。虽然 REQ-005 RICE 评分最高（安全漏洞），但属于 P2 是因为 V1.7.0 系统已可运行，安全修复可与其他P2需求并行在 GA 阶段完成；若将安全漏洞判定为阻断，可提升至P1。
+> P1 判断依据：REQ-009 是 REQ-001 的前置依赖，必须先完成团队范围可配置化，再执行 Webhook 批量注册。REQ-001 范围依据总裁约束收窄为 target_team 下项目，不扩展到其他团队。REQ-005 RICE 评分最高但属于 P2，原因是安全修复不阻断 Beta 功能验证，可在 GA 阶段完成。
 
 **P2（V2.0 GA 范围，Beta 后完成）**：
-- REQ-005：WF-06 硬编码凭证安全化（RICE 9.00，安全类，高于其他P2优先处理）
+- REQ-005：WF-06 硬编码凭证安全化（RICE 9.00，修复方式为 n8n Credentials Store 引用；pmo-api 侧 config.yaml 明文维持现状，依赖文件权限控制）
 - REQ-002：WBS L3/L4 前置依赖字段（RICE 4.80）
 - REQ-003：时区统一化（RICE 2.50）
 - REQ-004：WF-06/WF-08 幂等去重共享（RICE 1.87）
 
-**P3（后续版本）**：
+**Deferred（移出 V2.0，归入 backlog/future）**：
 - REQ-006：git clone 化部署（RICE 0.27，运维改进，不影响功能）
+- REQ-007：产品路线图自动维护机制（Synapse 体系需求，范围超出 PMO Auto V2.0）
+- REQ-008：需求自动捕获（Synapse 体系需求，范围超出 PMO Auto V2.0）
 
 ---
 
 ## 5. 功能规格
 
-### 5.1 全量项目 Asana Webhook 注册（REQ-001，P1）
+### 5.0 团队范围可配置化（REQ-009，P1-Beta）
+
+**背景**
+
+V1.7.0 代码中 Asana 团队 GID（`1213938170960375`，对应 ProjectProgressTesting 团队）以硬编码字符串的形式散布在代码和配置中。当需要将系统迁移至其他团队或增加多团队支持时，必须逐处搜索替换，存在遗漏风险。本需求将团队范围外化为 `config.yaml` 的 `asana.target_team` 字段，使 Webhook 注册、同步等所有依赖团队范围的逻辑统一从配置读取。
+
+**预期行为**
+
+1. `config.yaml` 新增 `asana.target_team` 字段，默认值为 ProjectProgressTesting 的 Team GID（`1213938170960375`），与现状保持一致。
+2. 代码中所有引用该 GID 的位置改为从配置读取，不含任何硬编码的 `1213938170960375` 或 `ProjectProgressTesting` 字符串。
+3. 修改 `config.yaml` 中 `asana.target_team` 值后，Webhook 批量注册脚本、定期同步任务等自动使用新团队范围，无需修改代码。
+
+**验收标准（AC）**
+
+- AC1：`config.yaml` 存在 `asana.target_team` 字段，默认值为 ProjectProgressTesting 的 Team GID
+- AC2：代码全局搜索 `ProjectProgressTesting` 和原 GID 字符串 `1213938170960375`，结果为 0 条硬编码匹配（配置文件默认值除外）
+- AC3：将 `asana.target_team` 修改为另一个测试团队 GID 后，执行批量注册脚本，注册目标为新团队下的项目（通过日志确认）
+
+---
+
+### 5.1 target_team 范围 Asana Webhook 注册（REQ-001，P1）
+
+> **范围说明**：Webhook 注册范围锁定为 `config.yaml` 中 `asana.target_team` 所指定的团队（默认为 ProjectProgressTesting）。注册为累加操作，已注册项目幂等跳过，不删除现有订阅。本节前置依赖 §5.0 REQ-009 完成。
 
 **背景问题描述**
 
 V1.7.0 仅在 STD-TEST 项目完成了 Webhook 灰度验证（`webhook_gid=1214163857544647`），`webhook_subscriptions` 表中仅有 1 条活跃记录。当前除 STD-TEST 外的所有活跃项目，任务完成事件必须等待 WF-06 每 60 分钟轮询才能触发 PM 通知，与 V1.7.0 引入 WF-08 的核心价值（实时通知）相矛盾。
 
-根据 `asana_webhook.py` 的 `/webhooks/asana/register` 端点，注册一个 Webhook 需要传入 `project_gid`，调用 Asana `POST /webhooks`，filters 默认为 `{resource_type:task, action:changed, fields:[completed]}`。全量注册的核心问题是：缺少一个能够自动枚举所有活跃项目并批量注册的运维机制。
+根据 `asana_webhook.py` 的 `/webhooks/asana/register` 端点，注册一个 Webhook 需要传入 `project_gid`，调用 Asana `POST /webhooks`，filters 默认为 `{resource_type:task, action:changed, fields:[completed]}`。全量注册的核心问题是：缺少一个能够自动枚举 target_team 下所有活跃项目并批量注册的运维机制。
 
 **预期行为**
 
-1. 系统提供一次性批量注册脚本（或 n8n 工作流），遍历 Asana 团队（gid=`1213938170960375`）下所有非 archived 项目，对每个项目调用 `POST /webhooks/asana/register`。
-2. 注册结果写入 `webhook_subscriptions` 表，已注册项目幂等跳过（`project_gid PRIMARY KEY` 保证）。
+1. 系统提供一次性批量注册脚本（或 n8n 工作流），遍历 `config.yaml` 中 `asana.target_team` 所指向的团队下所有非 archived 项目，对每个项目调用 `POST /webhooks/asana/register`。
+2. 注册结果写入 `webhook_subscriptions` 表，已注册项目幂等跳过（`project_gid PRIMARY KEY` 保证）；不删除已有的 Webhook 订阅。
 3. 注册完成后，系统定期检查（每日）是否有新项目创建但未注册 Webhook，自动补注册。
 
 **验收标准（AC）**
@@ -195,19 +230,21 @@ V1.7.0 仅在 STD-TEST 项目完成了 Webhook 灰度验证（`webhook_gid=12141
 
 `WF-06_任务依赖通知.json` 的 Code 节点（`:104` 和 `:119`）中，`ASANA_PAT` 和 `SLACK_TOKEN` 以明文字符串硬编码：`const ASANA_PAT = '2/1213400756695149/...'`。节点 notes（`:121`）标称"v1.5.6 已移除硬编码凭证"，与实际代码直接矛盾。
 
-对比 WF-08 的正确实现：Code 节点从 `$env.ASANA_PAT` 和 `$env.SLACK_BOT_TOKEN` 读取（`WF-08.json:86,101`），是 n8n 凭证管理的标准方式。WF-06 需要同步改造为相同模式。
+对比 WF-08 的实现：Code 节点从 `$env.ASANA_PAT` 和 `$env.SLACK_BOT_TOKEN` 读取（`WF-08.json:86,101`）。V2.0 对 WF-06 的修复方式采用 **n8n 内置 Credentials Store 引用**（`$credentials.xxx`），而非 env 变量——这是 n8n 平台推荐的凭证管理标准方式，比 env 变量更安全（凭证加密存储，不出现在进程环境中）。
+
+> **注意**：pmo-api 侧的 `config.yaml` 明文凭证维持现状，不在本需求范围内。pmo-api 侧凭证安全性依赖服务器文件权限控制（chmod 600）。
 
 **预期行为**
 
-1. WF-06 Code 节点中的所有硬编码凭证字符串替换为 `$env.ASANA_PAT`、`$env.SLACK_BOT_TOKEN` 读取。
+1. WF-06 Code 节点中的所有硬编码凭证字符串替换为 n8n Credentials Store 引用（`$credentials.asanaPAT.apiKey`、`$credentials.slackBotToken.token` 等，具体字段名以 n8n Credentials 类型为准）。
 2. 节点 notes 中移除"v1.5.6 已移除硬编码"的错误声明，替换为准确的实现描述。
-3. `config.yaml` 的 `secrets.*` 区域明文凭证参照同样标准移除（或配合环境变量注入方案处理）。
+3. pmo-api 侧 `config.yaml` 的 `secrets.*` 区域明文凭证维持现状（不在本需求范围内）。
 
 **验收标准（AC）**
 
 - AC1：在 WF-06 JSON 文件中，全局搜索 `2/1213400756695149`、`xoxb-` 等凭证前缀字符串，结果为 0 条匹配。
-- AC2：在 n8n UI 中将 `ASANA_PAT` 环境变量设置为测试值，手动触发 WF-06，Code 节点能成功读取该值并向 Asana API 发起请求（返回非401）。
-- AC3：将 n8n 环境变量 `ASANA_PAT` 设为空值，手动触发 WF-06，Code 节点抛出明确的 `Missing required env var: ASANA_PAT` 错误，而非因空字符串静默失败。
+- AC2：在 n8n UI 中配置 Credentials Store 中对应凭证，手动触发 WF-06，Code 节点能成功读取凭证值并向 Asana API 发起请求（返回非 401）。
+- AC3：删除 n8n Credentials Store 中对应凭证，手动触发 WF-06，Code 节点抛出明确的凭证缺失错误，而非因空字符串静默失败。
 
 ---
 
@@ -396,6 +433,7 @@ V1.7.0 存在两条并行的任务完成通知路径：
 | **SQLite WAL 模式** | pmo-api 使用 SQLite WAL 模式（已实现），生产环境 I/O 满足并发 Webhook 处理需求 |
 | **Asana 团队 GID** | 所有项目均属于同一 Asana 团队（`1213938170960375`），全量注册以该团队为边界 |
 | **Slack Bot 权限** | Bot 具备 `users:read.email`、`chat:write` 权限（已在 V1.7.0 验证） |
+| **凭证安全分层** | pmo-api config.yaml 凭证安全性依赖服务器文件权限（chmod 600）控制，n8n 平台使用内置 Credentials Store 管理 WF 侧凭证（加密存储，不暴露于进程环境） |
 
 ---
 

@@ -138,8 +138,8 @@ backlog:
       confidence: 0.5 # 新功能，情报→需求→路线图联动复杂度高
       effort: 8       # L级=8人天，情报管线+路线图联动+报告生成
       score: 0.38     # (2×3×0.5)/8
-    status: candidate
-    target_version: "synapse_v2.0"
+    status: deferred
+    target_version: "backlog"
     created_at: "2026-04-22"
 
   - id: REQ-008
@@ -155,9 +155,28 @@ backlog:
       confidence: 0.5 # AI识别口头需求准确率存在不确定性
       effort: 3       # M级=3人天，识别逻辑+结构化+写入机制
       score: 0.67     # (2×2×0.5)/3
-    status: candidate
-    target_version: "synapse_v2.0"
+    status: deferred
+    target_version: "backlog"
     created_at: "2026-04-22"
+
+  - id: REQ-009
+    product: pmo_auto
+    title: "Asana 目标团队范围可配置化"
+    description: "将当前硬编码的 ProjectProgressTesting 团队 GID 外化到 config.yaml 的 asana.target_team 字段，代码从配置读取，默认值与现状一致"
+    priority: P1
+    version: "v2.0-beta"
+    status: approved
+    source: president_constraint
+    rice_score:
+      reach: 3
+      impact: 1
+      confidence: 1.0
+      effort: 0.5
+      score: 6.0
+    acceptance_criteria:
+      - "config.yaml 存在 asana.target_team 字段，默认值为 ProjectProgressTesting 的 Team GID"
+      - "代码不含 ProjectProgressTesting 硬编码字符串，改从配置读取"
+      - "修改 target_team 值后，Webhook 注册/同步逻辑自动使用新团队范围"
 
 in_review: []
 
