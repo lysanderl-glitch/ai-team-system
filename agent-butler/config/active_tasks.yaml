@@ -386,15 +386,12 @@ tasks:
 
   - id: PMO-AUTO-V20
     title: "PMO Auto V2.0 版本规划"
-    status: in_progress
+    status: completed
     team: product_ops
     assigned_to: synapse_product_owner
     description: "以PMO Auto V2.0为首个双轨制研发试点，完成PRD→版本规划→开发→测试→验收全流程"
     depends_on: ["STRATEGY-001"]
     hr_approved: "2026-04-22, synapse_product_owner + requirements_analyst 通过 capability_architect 审计"
-    next_steps:
-      - "召开产品委员会会议确认V2.0范围"
-      - "从requirements_pool.yaml选取V2.0候选需求"
     milestones:
       - "RICE评分完成：REQ-001~008 全部评分，requirements_pool.yaml 已更新"
       - "V2.0 PRD 完成：obs/02-product-knowledge/prd-v200-pmo-auto.md，458行，9章节，待产品委员会审议"
@@ -404,11 +401,13 @@ tasks:
       - "REQ-005 完成：WF-06硬编码Token(Asana PAT + Slack Token)已替换为n8n Credentials Store引用，WF-06 ID: knVJ8Uq2D1UZmpxr"
       - "V2.0 GA 服务器部署完成：git commit fddb933，docker-compose rebuild 成功，migration 004 执行完成"
       - "全量Webhook注册：36个项目全部注册完成（含STD-TEST旧冲突清理+重注册），active_subscriptions=72"
-    next_action: "V2.0 GA 全量交付完成，等待总裁验收"
+      - "V2.0.0 版本锁定完成（2026-04-22），全链路验证通过，执行ID 9162，Slack通知已发送"
+    next_action: "V2.0.0 已交付，待总裁验收。后续：V2.1规划（REQ-006 git化部署等）"
     deployment:
-      version: "v2.0-ga"
+      version: "v2.0.0"
       commit: "fddb933"
       deployed_at: "2026-04-22"
+      locked_at: "2026-04-22"
       server: "lysander-server:/home/ubuntu/pmo-ai-auto"
       webhooks_registered: 36
       webhooks_pending: 0
