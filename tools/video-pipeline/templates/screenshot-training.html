@@ -299,9 +299,9 @@ async function runTitleCard(scene) {
 
 async function runEndCard(scene) {
   const html = `
-    <div class="card-thanks">感谢观看</div>
-    <div class="card-training-label">MEOS 能源管理模块 · 用户培训</div>
-    <div class="card-contact">如需支持请联系 Janus Digital 团队</div>
+    <div class="card-thanks">${scene.title || '感谢观看'}</div>
+    <div class="card-training-label">${scene.subtitle || 'MEOS 能源管理模块 · 用户培训'}</div>
+    <div class="card-contact">${scene.info || '如需支持请联系 Janus Digital 团队'}</div>
   `;
   await showFullscreen(html, scene.duration || 8000);
 }

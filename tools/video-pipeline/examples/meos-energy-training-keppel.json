@@ -1,9 +1,11 @@
 {
-  "title": "MEOS Energy & Carbon Management Module — User Training Video",
-  "voice": "en-US-GuyNeural",
-  "rate": "+0%",
-  "resolution": { "width": 1920, "height": 1080 },
-  "template": "screenshot-training.html",
+  "meta": {
+    "title": "MEOS Energy Keppel Training Video",
+    "resolution": [1920, 1080],
+    "voice": "en-US-GuyNeural",
+    "voice_rate": "+0%",
+    "template": "screenshot-training.html"
+  },
   "scenes": [
     {
       "id": "title",
@@ -11,7 +13,8 @@
       "duration": 14000,
       "title": "MEOS Energy & Carbon Management Module",
       "subtitle": "User Training Video",
-      "meta": "Keppel South Central  ·  Janusd Global Delivery",
+      "info": "Keppel South Central  ·  Janusd Global Delivery",
+      "doc_id": "KPC-TRN-VID-ENE-001  |  V1.0  |  2026-04-23",
       "narration": "Welcome to the MEOS Energy and Carbon Management Module user training video. This video covers 8 chapters and 22 key functional screens, providing a comprehensive guide to monitoring energy consumption, managing budgets, and optimizing energy efficiency."
     },
     {
@@ -370,9 +373,9 @@
       "id": "end",
       "type": "end-card",
       "duration": 12000,
-      "title": "MEOS Energy & Carbon Management Module",
-      "subtitle": "Thank you for watching",
-      "meta": "For support, please contact Janusd Global Delivery",
+      "title": "Thank you for watching",
+      "subtitle": "MEOS Energy & Carbon Management Module",
+      "info": "For support, please contact Janusd Global Delivery",
       "narration": "Thank you for watching the MEOS Energy and Carbon Management Module user training video. For technical questions or operational support, please reach out to the Janusd Global Delivery team. We wish you confident and effective use of the system."
     }
   ]
