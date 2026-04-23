@@ -27,6 +27,7 @@ import platform
 import shutil
 import subprocess
 import sys
+sys.stdout.reconfigure(encoding='utf-8')
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -168,18 +169,38 @@ async def generate_narration(scenes: list[dict], voice: str, rate: str, volume: 
 # ---------------------------------------------------------------------------
 
 def _convert_screenshot_images_to_base64(scenes_data: dict, config_dir: Path) -> None:
-    """For screenshot-demo scenes, convert image_path references to inline base64 data URIs.
+    """For screenshot-demo and training-slide scenes, convert image references to inline base64 data URIs.
 
     This keeps the generated HTML self-contained (single-file).
     Modifies scenes_data in place.
     """
     for scene in scenes_data.get("scenes", []):
-        if scene.get("type") != "screenshot-demo":
-            continue
-        for ss in scene.get("screenshots", []):
-            if "image_path" not in ss:
+        scene_type = scene.get("type", "")
+
+        # --- screenshot-demo: converts screenshots[].image_path ---
+        if scene_type == "screenshot-demo":
+            for ss in scene.get("screenshots", []):
+                if "image_path" not in ss:
+                    continue
+                raw = ss["image_path"]
+                img_path = Path(raw).resolve() if Path(raw).is_absolute() else (config_dir / raw).resolve()
+                if not img_path.is_file():
+                    print(f"  WARNING: Screenshot image not found: {img_path}")
+                    continue
+                with open(img_path, "rb") as f:
+                    b64 = base64.b64encode(f.read()).decode()
+                ext = img_path.suffix.lstrip(".").lower()
+                mime_map = {"jpg": "jpeg", "svg": "svg+xml"}
+                mime_ext = mime_map.get(ext, ext)
+                ss["image_base64"] = f"data:image/{mime_ext};base64,{b64}"
+                size_kb = len(b64) * 3 / 4 / 1024
+                print(f"  Embedded screenshot: {ss['image_path']} ({size_kb:.0f} KB)")
+
+        # --- training-slide: converts scene.screenshot ---
+        elif scene_type == "training-slide":
+            if "screenshot" not in scene:
                 continue
-            raw = ss["image_path"]
+            raw = scene["screenshot"]
             img_path = Path(raw).resolve() if Path(raw).is_absolute() else (config_dir / raw).resolve()
             if not img_path.is_file():
                 print(f"  WARNING: Screenshot image not found: {img_path}")
@@ -187,12 +208,11 @@ def _convert_screenshot_images_to_base64(scenes_data: dict, config_dir: Path) ->
             with open(img_path, "rb") as f:
                 b64 = base64.b64encode(f.read()).decode()
             ext = img_path.suffix.lstrip(".").lower()
-            # Normalise common extensions to MIME subtypes
             mime_map = {"jpg": "jpeg", "svg": "svg+xml"}
             mime_ext = mime_map.get(ext, ext)
-            ss["image_base64"] = f"data:image/{mime_ext};base64,{b64}"
+            scene["image_base64"] = f"data:image/{mime_ext};base64,{b64}"
             size_kb = len(b64) * 3 / 4 / 1024
-            print(f"  Embedded screenshot: {ss['image_path']} ({size_kb:.0f} KB)")
+            print(f"  Embedded screenshot: {scene['screenshot']} ({size_kb:.0f} KB)")
 
 
 def inject_scenes_into_template(template_path: Path, scenes_data: dict, output_html: Path, config_dir: Path | None = None) -> Path:

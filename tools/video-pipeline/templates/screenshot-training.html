@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1">
+<title>MEOS Training Video</title>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0D1B2A;
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', sans-serif;
+}
+
+#app {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  background: #0D1B2A;
+}
+
+/* ================================================================
+   FULL-SCREEN CARD OVERLAY (title / end cards)
+   ================================================================ */
+#fullscreen {
+  position: absolute;
+  inset: 0;
+  background: #0D1B2A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.center-card {
+  background: #1F4E79;
+  border-radius: 16px;
+  padding: 64px 96px;
+  width: 960px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+}
+
+.card-accent-top {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 6px;
+  background: #2E75B6;
+}
+
+.card-accent-bottom {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 6px;
+  background: #2E75B6;
+}
+
+.card-main-title {
+  font-size: 46px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+
+.card-subtitle {
+  font-size: 26px;
+  color: #BDD7EE;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.card-info {
+  font-size: 14px;
+  color: #BDD7EE;
+  text-align: center;
+  margin-bottom: 10px;
+  opacity: 0.85;
+}
+
+.card-docid {
+  font-size: 11px;
+  color: #BDD7EE;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.card-thanks {
+  font-size: 44px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 28px;
+  letter-spacing: 0.02em;
+}
+
+.card-training-label {
+  font-size: 20px;
+  color: #BDD7EE;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.card-contact {
+  font-size: 13px;
+  color: #BDD7EE;
+  text-align: center;
+  opacity: 0.75;
+}
+
+/* ================================================================
+   SPLIT LAYOUT (training slide)
+   ================================================================ */
+#layout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+/* Left: screenshot area (80% = 1536px) */
+#slide-left {
+  width: 1536px;
+  height: 1080px;
+  background: #0D1B2A;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#slide-img {
+  max-width: 1500px;
+  max-height: 1040px;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+/* Vertical separator */
+#slide-sep {
+  width: 3px;
+  height: 1080px;
+  background: #2E75B6;
+  flex-shrink: 0;
+}
+
+/* Right: annotation strip (20% = 381px) */
+#slide-right {
+  flex: 1;
+  height: 1080px;
+  background: #1F4E79;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 22px 28px 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Bottom accent on right panel */
+#slide-right::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 3px;
+  background: #2E75B6;
+}
+
+#strip-chapter {
+  font-size: 10.5px;
+  color: #BDD7EE;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  opacity: 0.9;
+}
+
+#strip-divider {
+  height: 1px;
+  background: #2E75B6;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+#strip-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.55;
+  margin-bottom: 28px;
+}
+
+#strip-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.strip-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.strip-bullet-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2E75B6;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.strip-bullet-text {
+  font-size: 11px;
+  color: #BDD7EE;
+  line-height: 1.6;
+}
+
+#strip-page {
+  font-size: 10px;
+  color: #BDD7EE;
+  text-align: center;
+  opacity: 0.65;
+  margin-top: auto;
+  padding-top: 20px;
+  padding-bottom: 8px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Full-screen overlay for title and end cards -->
+  <div id="fullscreen">
+    <div class="center-card">
+      <div class="card-accent-top"></div>
+      <div id="card-content"></div>
+      <div class="card-accent-bottom"></div>
+    </div>
+  </div>
+
+  <!-- Split layout for training slides (hidden by default) -->
+  <div id="layout" style="display:none;">
+    <div id="slide-left">
+      <img id="slide-img" src="" alt="">
+    </div>
+    <div id="slide-sep"></div>
+    <div id="slide-right">
+      <div id="strip-chapter"></div>
+      <div id="strip-divider"></div>
+      <div id="strip-title"></div>
+      <div id="strip-bullets"></div>
+      <div id="strip-page"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// SCENES DATA — injected by video-gen.py at build time
+// ============================================================
+const SCENES_CONFIG = /*SCENES_DATA*/null;
+
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// ============================================================
+// SCENE RUNNERS
+// ============================================================
+
+async function showFullscreen(htmlContent, duration) {
+  const fs = document.getElementById('fullscreen');
+  const content = document.getElementById('card-content');
+  content.innerHTML = htmlContent;
+  fs.style.display = 'flex';
+  document.getElementById('layout').style.display = 'none';
+  await wait(duration);
+  fs.style.display = 'none';
+}
+
+async function runTitleCard(scene) {
+  const html = `
+    <div class="card-main-title">${scene.title || 'MEOS 培训视频'}</div>
+    <div class="card-subtitle">${scene.subtitle || ''}</div>
+    <div class="card-info">${scene.info || ''}</div>
+    <div class="card-docid">${scene.doc_id || ''}</div>
+  `;
+  await showFullscreen(html, scene.duration || 10000);
+}
+
+async function runEndCard(scene) {
+  const html = `
+    <div class="card-thanks">感谢观看</div>
+    <div class="card-training-label">MEOS 能源管理模块 · 用户培训</div>
+    <div class="card-contact">如需支持请联系 Janus Digital 团队</div>
+  `;
+  await showFullscreen(html, scene.duration || 8000);
+}
+
+async function runTrainingSlide(scene) {
+  const layout = document.getElementById('layout');
+  const img = document.getElementById('slide-img');
+  const chapter = document.getElementById('strip-chapter');
+  const title = document.getElementById('strip-title');
+  const bullets = document.getElementById('strip-bullets');
+  const page = document.getElementById('strip-page');
+
+  // Populate annotation strip
+  chapter.textContent = scene.chapter || '';
+  title.textContent = scene.title || '';
+  page.textContent = (scene.page || '?') + ' / ' + (scene.total || '?');
+
+  bullets.innerHTML = (scene.bullets || []).map(b =>
+    `<div class="strip-bullet-item">
+      <div class="strip-bullet-dot"></div>
+      <div class="strip-bullet-text">${b}</div>
+    </div>`
+  ).join('');
+
+  // Load screenshot (base64 preferred, fallback to path)
+  const src = scene.image_base64 || scene.screenshot || '';
+  img.src = src;
+
+  // Show slide
+  document.getElementById('fullscreen').style.display = 'none';
+  layout.style.display = 'flex';
+
+  await wait(scene.duration || 18000);
+  layout.style.display = 'none';
+}
+
+// ============================================================
+// MAIN TIMELINE
+// ============================================================
+
+async function runAnimation() {
+  if (!SCENES_CONFIG) {
+    document.body.innerHTML = '<div style="padding:40px;color:#ef4444;font-size:24px;">ERROR: No scenes data injected. Run video-gen.py to build.</div>';
+    return;
+  }
+
+  const scenes = SCENES_CONFIG.scenes || [];
+
+  await wait(1000); // initial settle delay
+
+  for (const scene of scenes) {
+    const type = scene.type || '';
+    if (type === 'title-card') {
+      await runTitleCard(scene);
+    } else if (type === 'training-slide') {
+      await runTrainingSlide(scene);
+    } else if (type === 'end-card') {
+      await runEndCard(scene);
+    }
+    await wait(300);
+  }
+
+  // Signal Playwright recorder to stop
+  document.body.setAttribute('data-animation-complete', 'true');
+}
+
+window.addEventListener('load', () => { runAnimation(); });
+</script>
+</body>
+</html>

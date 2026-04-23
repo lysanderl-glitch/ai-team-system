@@ -130,11 +130,11 @@ async function record(options) {
   });
 
   console.log('[4/5] Waiting for animation to complete...');
-  console.log('       (timeout: 5 minutes, watching for data-animation-complete="true" on body)');
+  console.log('       (timeout: 15 minutes, watching for data-animation-complete="true" on body)');
 
   try {
     await page.waitForSelector('body[data-animation-complete="true"]', {
-      timeout: 300000, // 5 minutes
+      timeout: 900000, // 15 minutes
       state: 'attached',
     });
     console.log('       Animation completed!');
