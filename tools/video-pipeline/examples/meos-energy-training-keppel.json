@@ -1,7 +1,10 @@
 {
   "meta": {
     "title": "MEOS Energy Keppel Training Video",
-    "resolution": [1920, 1080],
+    "resolution": [
+      1920,
+      1080
+    ],
     "voice": "en-US-GuyNeural",
     "voice_rate": "+0%",
     "template": "screenshot-training.html"
@@ -30,7 +33,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch1-01-report-list.png",
       "page": 1,
-      "total": 22,
+      "total": 19,
       "narration": "Open the Energy Review Reports page to see all historical reports sorted by date. The system automatically generates weekly and monthly reports. Use the filter bar to narrow results by report type, date range, or keywords. Click the action buttons in each row to view details or trigger an update."
     },
     {
@@ -46,7 +49,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch1-02-period-filter-open.png",
       "page": 2,
-      "total": 22,
+      "total": 19,
       "narration": "Expand the filter panel to select report types: All, Weekly, or Monthly. Set a custom date range to locate reports from any period. The keyword search field supports fuzzy matching, so you can quickly find the target report without entering the exact title."
     },
     {
@@ -62,7 +65,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch1-03-report-actions.png",
       "page": 3,
-      "total": 22,
+      "total": 19,
       "narration": "Each report row provides two action buttons. Click Detail to open the full report, or click Update to trigger a re-generation that pulls the latest energy data. The pagination control at the bottom lets you browse through large report archives efficiently."
     },
     {
@@ -78,7 +81,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch2-01-energy-budget-overview.png",
       "page": 4,
-      "total": 22,
+      "total": 19,
       "narration": "The Energy Budget Monitoring page presents the current month's budget execution at a glance. The top summary cards compare actual energy consumption against the control target, and display both year-over-year and month-over-month change indicators to help you quickly assess whether energy usage is on track."
     },
     {
@@ -94,7 +97,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch2-02-annual-overview-chart.png",
       "page": 5,
-      "total": 22,
+      "total": 19,
       "narration": "The annual overview chart shows cumulative energy consumption for the full year alongside a time-progress reference line. Below it, a month-by-month breakdown compares daily actual usage against the plan, making it easy to identify seasonal peaks, high-consumption periods, and opportunities for optimization throughout the year."
     },
     {
@@ -110,7 +113,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch2-03-subitem-table.png",
       "page": 6,
-      "total": 22,
+      "total": 19,
       "narration": "The sub-item energy table breaks total consumption down by category — HVAC, lighting, and other systems — providing a side-by-side comparison against budget targets. Click any column header to sort the data. The Budget Settings link in the table takes you directly to the parameter configuration page."
     },
     {
@@ -126,7 +129,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch3-01-cost-budget-overview.png",
       "page": 7,
-      "total": 22,
+      "total": 19,
       "narration": "The Cost Budget Analysis page compares the month's actual total expenditure against the approved budget. Use the export button in the top-right corner to download a detailed breakdown report. The month selector at the top lets you switch between any historical period for retrospective review."
     },
     {
@@ -142,7 +145,7 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch3-02-single-energy-detail.png",
       "page": 8,
-      "total": 22,
+      "total": 19,
       "narration": "The single-energy cost detail section separates expenditure by energy type — electricity, water, gas, and heat — showing both actual consumption volume and the corresponding cost for each. The monthly average temperature is also displayed as a contextual reference for energy analysis and anomaly investigation."
     },
     {
@@ -158,56 +161,8 @@
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch3-03-annual-budget-overview.png",
       "page": 9,
-      "total": 22,
+      "total": 19,
       "narration": "The annual budget execution summary uses a month-by-month bar chart to compare actual costs against budget targets throughout the year. The cumulative cost totals below provide a full-year view, while the trend line helps management evaluate spending trajectory and forecast whether the annual budget will be met."
-    },
-    {
-      "id": "slide_10",
-      "type": "training-slide",
-      "duration": 22000,
-      "chapter": "Chapter 4  —  Energy Usage Map",
-      "title": "Treemap Heat Map Overview",
-      "bullets": [
-        "Hierarchical treemap of building energy distribution",
-        "Block size proportional to energy consumption",
-        "Red highlights indicate significant deviations"
-      ],
-      "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-01-usage-map-overview.png",
-      "page": 10,
-      "total": 22,
-      "narration": "The Energy Usage Map visualizes building energy distribution as a hierarchical treemap. Block size is proportional to energy consumption, so the largest energy consumers are immediately visible. Blocks flagged with significant deviations are highlighted in red, allowing operations staff to pinpoint high-consumption units at a glance."
-    },
-    {
-      "id": "slide_11",
-      "type": "training-slide",
-      "duration": 22000,
-      "chapter": "Chapter 4  —  Energy Usage Map",
-      "title": "Drill-Down View",
-      "bullets": [
-        "Click any block's Drill Down button to expand",
-        "View sub-item distribution within each node",
-        "Example: Chiller, pump, fan breakdown in HVAC"
-      ],
-      "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-02-drill-down-result.png",
-      "page": 11,
-      "total": 22,
-      "narration": "Click the Drill Down button on any block to expand that node and reveal its sub-item energy distribution. For example, drilling into the HVAC system shows the individual contributions of chillers, pumps, fans, and other components — enabling granular analysis of where energy is consumed within each system."
-    },
-    {
-      "id": "slide_12",
-      "type": "training-slide",
-      "duration": 22000,
-      "chapter": "Chapter 4  —  Energy Usage Map",
-      "title": "Legend & Display Controls",
-      "bullets": [
-        "Legend explains positive-deviation and focus-area colors",
-        "Top controls set the number of display hierarchy levels",
-        "Save current view as the default configuration"
-      ],
-      "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch4-03-legend-controls.png",
-      "page": 12,
-      "total": 22,
-      "narration": "The legend panel on the right explains the color coding: orange marks positive deviations, and red marks focus areas requiring immediate attention. The display level controls at the top let you adjust how many hierarchy levels the map renders. After customizing the view, click Save to persist it as the default layout for all users."
     },
     {
       "id": "slide_13",
@@ -221,8 +176,8 @@
         "Select energy model and time range as query inputs"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch5-01-energy-analysis-overview.png",
-      "page": 13,
-      "total": 22,
+      "page": 10,
+      "total": 19,
       "narration": "The Energy Consumption Query page offers two modes. Analysis mode enables deep investigation of a single time period, while Comparison mode displays multiple periods side by side for trend and variance analysis. Choose the appropriate energy calculation model and define your time range before running the query."
     },
     {
@@ -237,8 +192,8 @@
         "Click Query to load results into the dashboard"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch5-02-query-panel.png",
-      "page": 14,
-      "total": 22,
+      "page": 11,
+      "total": 19,
       "narration": "In the query conditions panel, set the analysis time interval and choose the energy calculation model. The node list below lets you select specific sub-items or load nodes as the analysis targets. Once your parameters are configured, click Query and the results will load directly into the dashboard charts."
     },
     {
@@ -253,8 +208,8 @@
         "Daily year-over-year change rate"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch5-03-reference-info.png",
-      "page": 15,
-      "total": 22,
+      "page": 12,
+      "total": 19,
       "narration": "The reference information panel highlights three key performance indicators for the selected period: total energy consumption, the daily month-over-month change rate, and the daily year-over-year change rate. These three figures are the primary signals for determining whether current energy levels are within normal operating range."
     },
     {
@@ -269,8 +224,8 @@
         "Transmission loss rates annotated at each node"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch6-01-sankey-overview.png",
-      "page": 16,
-      "total": 22,
+      "page": 13,
+      "total": 19,
       "narration": "The Energy Flow Diagram uses a Sankey chart to visualize the entire energy chain within the building. Flow line width is proportional to energy volume, making the highest-consumption pathways immediately apparent. Transmission loss rates are annotated at each node, helping facilities teams identify where energy is being lost in the distribution network."
     },
     {
@@ -285,8 +240,8 @@
         "Create and save custom models for different scenarios"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch6-02-energy-flow-model-sidebar.png",
-      "page": 17,
-      "total": 22,
+      "page": 14,
+      "total": 19,
       "narration": "The left sidebar lists all available energy flow models. Click any model to instantly switch the diagram to that analytical perspective. The system ships with several built-in templates, and you can create and save additional custom models to accommodate different reporting scenarios or stakeholder requirements."
     },
     {
@@ -301,8 +256,8 @@
         "Legend identifies electricity, gas, and other energy types"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch6-03-stats-filter.png",
-      "page": 18,
-      "total": 22,
+      "page": 15,
+      "total": 19,
       "narration": "The top filter bar lets you toggle between monthly, quarterly, and yearly statistical periods. You can also select any specific historical month to review past energy flow data. The legend area identifies the color coding for different energy carriers — electricity, gas, and other types — displayed in the Sankey flows."
     },
     {
@@ -317,8 +272,8 @@
         "One-click Excel export for downstream reporting"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch7-01-allocation-filter.png",
-      "page": 19,
-      "total": 22,
+      "page": 16,
+      "total": 19,
       "narration": "The Energy Allocation Report supports filtering by month and energy type. Switch the data view between consumption volume and cost using the toggle control. All filtered results can be exported to Excel in one click, providing the data source needed for internal cost recovery and financial reporting workflows."
     },
     {
@@ -333,8 +288,8 @@
         "Exported report ready for financial reconciliation"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch7-02-allocation-table.png",
-      "page": 20,
-      "total": 22,
+      "page": 17,
+      "total": 19,
       "narration": "The allocation table lists each department's energy consumption and corresponding cost, providing the authoritative data basis for internal cost chargebacks. The exported report can be fed directly into cost-splitting calculations and financial statements, enabling full energy cost accountability across all departments."
     },
     {
@@ -349,8 +304,8 @@
         "Drill into individual issues for detailed analysis"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch8-01-diagnosis-report-overview.png",
-      "page": 21,
-      "total": 22,
+      "page": 18,
+      "total": 19,
       "narration": "The Operational Diagnostics Report performs a systematic assessment of equipment operating conditions and generates a structured issue summary on a weekly basis. The report lists each detected anomaly category with its frequency and affected scope, allowing facilities managers to prioritize remediation by impact and urgency."
     },
     {
@@ -365,8 +320,8 @@
         "Mark each recommendation with handling progress"
       ],
       "screenshot": "C:/Users/lysanderl_janusd/Claude Code/meos-e2e-docs/screenshots/energy/ch8-02-abnormality-analysis.png",
-      "page": 22,
-      "total": 22,
+      "page": 19,
+      "total": 19,
       "narration": "The abnormality analysis page describes the context of each detected event, delivers a root cause conclusion, and provides targeted improvement recommendations. Every recommendation can be tagged with its handling progress status, ensuring that identified issues are tracked through to resolution and that findings translate into measurable operational improvements."
     },
     {
