@@ -318,7 +318,7 @@ def compose_video(
         "Generating 500ms silence...",
     )
 
-    # Build filelist with gaps
+    # Build filelist with gaps (use absolute paths so location of filelist doesn't matter)
     filelist_with_gaps = output_dir / "filelist-with-gaps.txt"
     lines = narration_filelist.read_text(encoding="utf-8").strip().splitlines()
 
@@ -330,11 +330,12 @@ def compose_video(
             # Extract filename from "file 'name.mp3'"
             fname = line.replace("file '", "").replace("'", "").strip()
             if not first:
-                # Relative path from output_dir to silence
-                f.write(f"file '{silence_path.name}'\n")
+                abs_silence = str(silence_path).replace("\\", "/")
+                f.write(f"file '{abs_silence}'\n")
             first = False
-            # narration files are in narration/ subdir relative to output_dir
-            f.write(f"file 'narration/{fname}'\n")
+            # Use absolute path so FFmpeg can find narration files regardless of cwd
+            abs_narration = str(narration_dir / fname).replace("\\", "/")
+            f.write(f"file '{abs_narration}'\n")
 
     narration_combined = output_dir / "narration-combined.mp3"
     result = run_ffmpeg(
