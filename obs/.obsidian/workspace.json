@@ -189,8 +189,10 @@
       "meld-encrypt:Decrypt at Cursor": false
     }
   },
-  "active": "9d4eacd1d5951dd5",
+  "active": "2a0b619b7e416494",
   "lastOpenFiles": [
+    "credentials 1.mdenc",
+    "credentials.mdenc",
     "02-product-knowledge/product_ops_integration_checklist.md",
     "01-team-knowledge/HR/personnel/janus/janus_cde.md.tmp.32684.1776923925613",
     "01-team-knowledge/HR/personnel/janus/janus_cde.md.tmp.32684.1776923914676",
@@ -208,7 +210,6 @@
     "03-process-knowledge/psl-presidential-service-layer.md",
     "01-team-knowledge/HR/personnel/pdg/style_calibrator.md",
     "01-team-knowledge/HR/personnel/pdg/executive_briefer.md",
-    "01-team-knowledge/HR/personnel/pdg",
     "03-process-knowledge/quality-assurance-framework.md",
     "03-process-knowledge/index.md",
     "03-process-knowledge/video-production-pipeline-knowledge.md",
@@ -225,7 +226,6 @@
     "01-team-knowledge/HR/personnel/graphify/evolution_engine.md",
     "04-decision-knowledge/synapse-self-evolution-feasibility.md",
     "04-decision-knowledge/website-visual-v2-plan.md",
-    "05-industry-knowledge/blog/2026-04-11-gstack-team-empowerment.md",
-    "01-team-knowledge/OBS第二大脑2.0系统说明.md"
+    "05-industry-knowledge/blog/2026-04-11-gstack-team-empowerment.md"
   ]
 }
