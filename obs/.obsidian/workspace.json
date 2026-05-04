@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "532f51463d876f5d",
+        "id": "c723dc7d45c64fea",
         "type": "tabs",
         "children": [
           {
-            "id": "9d4eacd1d5951dd5",
+            "id": "0c349b018821cc82",
             "type": "leaf",
             "state": {
-              "type": "meld-encrypted-view",
-              "state": {
-                "file": "credentials.mdenc",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "credentials"
+              "title": "New tab"
             }
           }
         ]
